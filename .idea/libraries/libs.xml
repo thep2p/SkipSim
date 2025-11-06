@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/javailp-1.2a.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/corba-api-5.0.1 .jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/lpsolve55j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-math3-3.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/ujmp-complete-0.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/sqlite-jdbc-3.18.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/commons-lang3-3.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/java-util-1.9.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/bcprov-jdk15on-1.62.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/mdsj.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
