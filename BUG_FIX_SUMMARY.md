@@ -36,7 +36,7 @@ Added null check in `printSearchPath()` to gracefully handle any remaining edge 
 
 ## Testing Infrastructure
 
-Created comprehensive test infrastructure for future testing:
+Created comprehensive test infrastructure using **JUnit 4** for future testing:
 
 ### Test Fixtures (`src/test/java/TestFixtures/`)
 - **SkipGraphTestFixture.java**: Reusable factory for creating test Skip Graphs
@@ -44,13 +44,8 @@ Created comprehensive test infrastructure for future testing:
   - `createAndInsertNodes(numNodes)`: Safe node creation
   - `createAndInsertTransaction(owner, index, time)`: Safe transaction insertion
 
-- **TestRunner.java**: Simple test runner without external dependencies
-  - Auto-discovers test methods (start with "test")
-  - Provides assertion methods (assertTrue, assertEquals, etc.)
-  - Generates test reports with pass/fail summary
-
 ### Tests (`src/test/java/SkipGraph/`)
-- **TransactionInsertionTest.java**: Comprehensive transaction insertion tests
+- **TransactionInsertionTest.java**: Comprehensive transaction insertion tests using JUnit 4
   - `testSingleTransactionInsertion()`: Basic case
   - `testMultipleSequentialTransactionInsertions()`: Bug scenario
   - `testTransactionInsertionWithExistingTransactions()`: mostSimilarTXB path
@@ -58,12 +53,22 @@ Created comprehensive test infrastructure for future testing:
   - `testSkipGraphConsistencyAfterManyInsertions()`: Consistency validation
   - `testRegressionNoNullPointerDuringInsertion()`: Specific regression test
 
+### Setting Up JUnit
+
+See `JUNIT_SETUP.md` for detailed instructions. Quick setup:
+1. Open `TransactionInsertionTest.java` in IntelliJ
+2. Click on red `@Test` annotation
+3. Alt+Enter → "Add JUnit 4 to classpath"
+4. Click OK
+
 ### Running Tests
 
 ```bash
-# In IntelliJ: Right-click on TransactionInsertionTest.java → Run 'main()'
-# Or from command line after compilation:
-java -cp <classpath> SkipGraph.TransactionInsertionTest
+# In IntelliJ: Right-click on TransactionInsertionTest.java → Run 'TransactionInsertionTest'
+# Or click the green arrow next to the class name
+
+# From command line after compilation:
+java -cp "libs/*:out" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 ```
 
 ## Documentation Updates
@@ -89,29 +94,48 @@ Created detailed documentation at `src/test/java/TestFixtures/README.md`:
 
 1. `src/main/java/SkipGraph/SkipGraphOperations.java` (FIXED)
 2. `src/main/java/DataTypes/Message.java` (SAFETY)
-3. `CLAUDE.md` (DOCUMENTATION)
-4. `src/test/java/TestFixtures/SkipGraphTestFixture.java` (NEW)
-5. `src/test/java/TestFixtures/TestRunner.java` (NEW)
-6. `src/test/java/TestFixtures/README.md` (NEW)
-7. `src/test/java/SkipGraph/TransactionInsertionTest.java` (NEW)
+3. `CLAUDE.md` (DOCUMENTATION - Updated for JUnit)
+4. `JUNIT_SETUP.md` (NEW - JUnit setup instructions)
+5. `src/test/java/TestFixtures/SkipGraphTestFixture.java` (NEW)
+6. `src/test/java/TestFixtures/README.md` (NEW - Updated for JUnit)
+7. `src/test/java/SkipGraph/TransactionInsertionTest.java` (NEW - JUnit tests)
 
 ## Verification
 
 To verify the fix works:
 
-1. Run the simulation with your original scenario
-2. Run the regression test: `TransactionInsertionTest.testRegressionNoNullPointerDuringInsertion()`
-3. All tests should pass with no NullPointerExceptions
+1. Set up JUnit (see `JUNIT_SETUP.md`)
+2. Run all tests in IntelliJ: Right-click `TransactionInsertionTest` → Run
+3. All 7 tests should pass ✓
+4. Run the simulation with your original scenario - no NullPointerException should occur
 
 ## Future Testing
 
-All future tests should use `SkipGraphTestFixture` for creating test data:
+All future tests should use `SkipGraphTestFixture` with JUnit:
 
 ```java
-// Good practice
-SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-TestNetwork network = fixture.createTestNetwork(20, 3);
-Transaction tx = fixture.createAndInsertTransaction(node, 1, 0);
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class MyFeatureTest {
+    private SkipGraphTestFixture fixture;
+
+    @Before
+    public void setUp() {
+        fixture = new SkipGraphTestFixture();
+    }
+
+    @Test
+    public void testMyFeature() {
+        // Good practice
+        TestNetwork network = fixture.createTestNetwork(20, 3);
+        Transaction tx = fixture.createAndInsertTransaction(node, 1, 0);
+
+        // Assertions
+        assertNotNull("Transaction created", tx);
+    }
+}
 
 // Avoid manual construction
 // Transaction tx = new Transaction(1, nodeIndex); // DON'T DO THIS IN TESTS

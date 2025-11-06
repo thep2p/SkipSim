@@ -1,21 +1,32 @@
 # SkipSim Test Fixtures
 
-This directory contains reusable test fixtures and utilities for testing SkipSim components.
+This directory contains reusable test fixtures for testing SkipSim components.
 
 ## Overview
 
 The test infrastructure provides:
 - **SkipGraphTestFixture**: Factory for creating Skip Graph test data
-- **TestRunner**: Simple test runner without external dependencies
+
+Tests use **JUnit 4**. See `JUNIT_SETUP.md` in the project root for setup instructions.
 
 ## Quick Start
 
 ```java
-// Create a test class
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class MyFeatureTest {
+    private SkipGraphTestFixture fixture;
+
+    @Before
+    public void setUp() {
+        fixture = new SkipGraphTestFixture();
+    }
+
+    @Test
     public void testSomething() {
         // Setup
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
         TestNetwork network = fixture.createTestNetwork(10, 2);
 
         // Test
@@ -23,12 +34,7 @@ public class MyFeatureTest {
         // ... perform operations ...
 
         // Assert
-        TestRunner.Assert.assertNotNull("Node should exist", node);
-    }
-
-    public static void main(String[] args) {
-        TestRunner runner = new TestRunner();
-        runner.runTests(MyFeatureTest.class);
+        assertNotNull("Node should exist", node);
     }
 }
 ```
@@ -76,42 +82,37 @@ List<Transaction> txs = fixture.createAndInsertMultipleTransactions(
 SkipGraphTestFixture fixture = new SkipGraphTestFixture(12345L);
 ```
 
-## TestRunner
+## JUnit Assertions
 
-### Assertions
+Use standard JUnit 4 assertions:
 
 ```java
+import static org.junit.Assert.*;
+
 // Boolean assertions
-Assert.assertTrue("Should be true", someCondition);
-Assert.assertFalse("Should be false", someCondition);
+assertTrue("Should be true", someCondition);
+assertFalse("Should be false", someCondition);
 
 // Equality assertions
-Assert.assertEquals("Values should match", expected, actual);
+assertEquals("Values should match", expected, actual);
 
 // Null checks
-Assert.assertNotNull("Should not be null", someObject);
-Assert.assertNull("Should be null", someObject);
+assertNotNull("Should not be null", someObject);
+assertNull("Should be null", someObject);
 
 // Explicit failure
-Assert.fail("This should never happen");
+fail("This should never happen");
 ```
 
 ### Running Tests
 
-Tests are discovered by method name (must start with "test"):
+**In IntelliJ:**
+- Right-click on test class → Run
+- Or click green arrow next to test method/class
 
-```java
-public void testFeatureA() { ... }
-public void testFeatureB() { ... }
-
-public static void main(String[] args) {
-    TestRunner runner = new TestRunner();
-    runner.runTests(MyTestClass.class);
-
-    if (!runner.allTestsPassed()) {
-        System.exit(1);  // Return non-zero for CI/CD
-    }
-}
+**From command line:**
+```bash
+java -cp "libs/*:out" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 ```
 
 ## Best Practices

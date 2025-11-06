@@ -134,18 +134,24 @@ Search starts from the uppermost level (`SkipSimParameters.getLookupTableSize()-
 
 ### Test Infrastructure
 
-Test code is located in `src/test/java/`. The testing infrastructure provides:
+Test code is located in `src/test/java/`. The project uses **JUnit 4** for testing.
 
 **Test Fixtures** (`TestFixtures` package):
 - `SkipGraphTestFixture`: Reusable fixture for generating Skip Graph test data
-- `TestRunner`: Simple test runner without external dependencies (no JUnit required)
+
+**Setting up JUnit:**
+See `JUNIT_SETUP.md` for detailed instructions. Quick setup in IntelliJ:
+1. Open a test file
+2. Click on red `@Test` annotation
+3. Alt+Enter → "Add JUnit 4 to classpath"
 
 **Running Tests:**
 ```bash
-# Compile test classes in IntelliJ, then run:
-java -cp <classpath> SkipGraph.TransactionInsertionTest
+# In IntelliJ: Right-click on test class → Run 'TransactionInsertionTest'
+# Or click green arrow next to test method/class
 
-# Or run from IntelliJ by executing the main() method in any test class
+# From command line:
+java -cp "libs/*:out" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 ```
 
 ### Using Test Fixtures
@@ -153,16 +159,29 @@ java -cp <classpath> SkipGraph.TransactionInsertionTest
 The `SkipGraphTestFixture` provides convenient methods for creating test scenarios:
 
 ```java
-// Create a fixture
-SkipGraphTestFixture fixture = new SkipGraphTestFixture();
+public class MyTest {
+    private SkipGraphTestFixture fixture;
 
-// Create a small network with nodes and transactions
-TestNetwork network = fixture.createTestNetwork(20, 3); // 20 nodes, 3 txs each
+    @Before
+    public void setUp() {
+        fixture = new SkipGraphTestFixture();
+    }
 
-// Or manually create components
-SkipGraphOperations ops = fixture.createSkipGraphOperations();
-List<Node> nodes = fixture.createAndInsertNodes(10);
-Transaction tx = fixture.createAndInsertTransaction(nodes.get(0), 1, 0);
+    @Test
+    public void testSomething() {
+        // Create a network with nodes and transactions
+        TestNetwork network = fixture.createTestNetwork(20, 3); // 20 nodes, 3 txs each
+
+        // Or manually create components
+        SkipGraphOperations ops = fixture.createSkipGraphOperations();
+        List<Node> nodes = fixture.createAndInsertNodes(10);
+        Transaction tx = fixture.createAndInsertTransaction(nodes.get(0), 1, 0);
+
+        // Assertions
+        assertNotNull("Transaction should exist", tx);
+        assertEquals("Owner should match", 0, tx.getOwnerIndex());
+    }
+}
 ```
 
 **Key Fixture Methods:**
@@ -178,19 +197,41 @@ Transaction tx = fixture.createAndInsertTransaction(nodes.get(0), 1, 0);
 To create a new test class:
 
 1. Create the test class in `src/test/java/` (match the package structure of the code under test)
-2. Write test methods starting with "test" (e.g., `testMyFeature()`)
-3. Use `TestRunner.Assert` for assertions:
-   - `Assert.assertTrue(message, condition)`
-   - `Assert.assertEquals(message, expected, actual)`
-   - `Assert.assertNotNull(message, object)`
-   - `Assert.fail(message)`
-4. Add a main method to run tests:
+2. Import JUnit annotations and assertions:
 ```java
-public static void main(String[] args) {
-    TestRunner runner = new TestRunner();
-    runner.runTests(YourTestClass.class);
-    if (!runner.allTestsPassed()) {
-        System.exit(1);
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+```
+3. Add `@Before` setup method for fixture initialization
+4. Write test methods with `@Test` annotation
+5. Use JUnit assertions: `assertEquals()`, `assertTrue()`, `assertNotNull()`, etc.
+
+Example:
+```java
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class MyFeatureTest {
+    private SkipGraphTestFixture fixture;
+
+    @Before
+    public void setUp() {
+        fixture = new SkipGraphTestFixture();
+    }
+
+    @Test
+    public void testMyFeature() {
+        // Arrange
+        List<Node> nodes = fixture.createAndInsertNodes(10);
+
+        // Act
+        Node node = nodes.get(5);
+
+        // Assert
+        assertNotNull("Node should exist", node);
+        assertEquals("Node index should be 5", 5, node.getIndex());
     }
 }
 ```

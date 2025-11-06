@@ -2,10 +2,12 @@ package SkipGraph;
 
 import Blockchain.LightChain.Transaction;
 import TestFixtures.SkipGraphTestFixture;
-import TestFixtures.TestRunner;
-import TestFixtures.TestRunner.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for transaction insertion into the Skip Graph.
@@ -14,13 +16,19 @@ import java.util.List;
  */
 public class TransactionInsertionTest {
 
+    private SkipGraphTestFixture fixture;
+
+    @Before
+    public void setUp() {
+        fixture = new SkipGraphTestFixture();
+    }
+
     /**
      * Tests that a single transaction can be inserted without errors.
      * This is the basic case that should always work.
      */
+    @Test
     public void testSingleTransactionInsertion() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create a small network with nodes
         List<Node> nodes = fixture.createAndInsertNodes(10);
 
@@ -29,18 +37,17 @@ public class TransactionInsertionTest {
         Transaction tx = fixture.createAndInsertTransaction(ownerNode, 1, 0);
 
         // Verify transaction was created
-        Assert.assertNotNull("Transaction should not be null", tx);
+        assertNotNull("Transaction should not be null", tx);
 
         // Verify transaction has the correct owner
-        Assert.assertEquals("Transaction owner should be node 5",
-            5, tx.getOwnerIndex());
+        assertEquals("Transaction owner should be node 5", 5, tx.getOwnerIndex());
 
         // Verify owner's txSet contains the transaction
-        Assert.assertTrue("Owner's txSet should contain the transaction",
+        assertTrue("Owner's txSet should contain the transaction",
             ownerNode.getTxSet().contains(tx.getIndex()));
 
         // Verify transaction was inserted into Skip Graph (lookup table not empty)
-        Assert.assertFalse("Transaction lookup table should not be empty after insertion",
+        assertFalse("Transaction lookup table should not be empty after insertion",
             tx.isLookupTableEmpty(Transaction.LOOKUP_TABLE_SIZE));
     }
 
@@ -49,9 +56,8 @@ public class TransactionInsertionTest {
      * This was causing NullPointerException before the fix because transactions
      * were added to owner's txSet before being inserted into Skip Graph.
      */
+    @Test
     public void testMultipleSequentialTransactionInsertions() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create a small network with nodes
         List<Node> nodes = fixture.createAndInsertNodes(10);
 
@@ -62,15 +68,15 @@ public class TransactionInsertionTest {
         for (int i = 1; i <= numTransactions; i++) {
             Transaction tx = fixture.createAndInsertTransaction(ownerNode, i, 0);
 
-            Assert.assertNotNull("Transaction " + i + " should not be null", tx);
-            Assert.assertTrue("Owner's txSet should contain transaction " + i,
+            assertNotNull("Transaction " + i + " should not be null", tx);
+            assertTrue("Owner's txSet should contain transaction " + i,
                 ownerNode.getTxSet().contains(tx.getIndex()));
-            Assert.assertFalse("Transaction " + i + " lookup table should not be empty",
+            assertFalse("Transaction " + i + " lookup table should not be empty",
                 tx.isLookupTableEmpty(Transaction.LOOKUP_TABLE_SIZE));
         }
 
         // Verify all transactions are in owner's txSet
-        Assert.assertEquals("Owner should have " + numTransactions + " transactions",
+        assertEquals("Owner should have " + numTransactions + " transactions",
             numTransactions, ownerNode.getTxSet().size());
     }
 
@@ -79,37 +85,34 @@ public class TransactionInsertionTest {
      * This specifically tests the scenario where mostSimilarTXB() needs to find a starting
      * point for the search, and verifies it doesn't encounter uninitialized transactions.
      */
+    @Test
     public void testTransactionInsertionWithExistingTransactions() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create network
         List<Node> nodes = fixture.createAndInsertNodes(20);
 
         // Node 5 inserts first transaction
         Node node5 = nodes.get(5);
         Transaction tx1 = fixture.createAndInsertTransaction(node5, 1, 0);
-        Assert.assertNotNull("First transaction should not be null", tx1);
+        assertNotNull("First transaction should not be null", tx1);
 
         // Node 10 inserts a transaction
         Node node10 = nodes.get(10);
         Transaction tx2 = fixture.createAndInsertTransaction(node10, 2, 0);
-        Assert.assertNotNull("Second transaction should not be null", tx2);
+        assertNotNull("Second transaction should not be null", tx2);
 
         // Node 5 inserts another transaction (this tests the mostSimilarTXB path)
         Transaction tx3 = fixture.createAndInsertTransaction(node5, 3, 0);
-        Assert.assertNotNull("Third transaction should not be null", tx3);
+        assertNotNull("Third transaction should not be null", tx3);
 
         // Verify node 5 has both transactions
-        Assert.assertEquals("Node 5 should have 2 transactions",
-            2, node5.getTxSet().size());
-        Assert.assertTrue("Node 5 txSet should contain tx1",
+        assertEquals("Node 5 should have 2 transactions", 2, node5.getTxSet().size());
+        assertTrue("Node 5 txSet should contain tx1",
             node5.getTxSet().contains(tx1.getIndex()));
-        Assert.assertTrue("Node 5 txSet should contain tx3",
+        assertTrue("Node 5 txSet should contain tx3",
             node5.getTxSet().contains(tx3.getIndex()));
 
         // Verify node 10 has one transaction
-        Assert.assertEquals("Node 10 should have 1 transaction",
-            1, node10.getTxSet().size());
+        assertEquals("Node 10 should have 1 transaction", 1, node10.getTxSet().size());
     }
 
     /**
@@ -117,9 +120,8 @@ public class TransactionInsertionTest {
      * This simulates the scenario from the bug report where multiple nodes
      * generate transactions at the same time slot.
      */
+    @Test
     public void testMultipleNodesInsertingTransactions() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create a moderate-sized network
         List<Node> nodes = fixture.createAndInsertNodes(30);
 
@@ -129,8 +131,8 @@ public class TransactionInsertionTest {
             Node node = nodes.get(i);
             Transaction tx = fixture.createAndInsertTransaction(node, txIndex++, 0);
 
-            Assert.assertNotNull("Transaction for node " + i + " should not be null", tx);
-            Assert.assertTrue("Node " + i + " should contain its transaction",
+            assertNotNull("Transaction for node " + i + " should not be null", tx);
+            assertTrue("Node " + i + " should contain its transaction",
                 node.getTxSet().contains(tx.getIndex()));
         }
 
@@ -140,8 +142,8 @@ public class TransactionInsertionTest {
             Node node = nodes.get(i);
             Transaction tx = fixture.createAndInsertTransaction(node, txIndex++, 0);
 
-            Assert.assertNotNull("Second transaction for node " + i + " should not be null", tx);
-            Assert.assertEquals("Node " + i + " should have 2 transactions",
+            assertNotNull("Second transaction for node " + i + " should not be null", tx);
+            assertEquals("Node " + i + " should have 2 transactions",
                 2, node.getTxSet().size());
         }
     }
@@ -150,16 +152,15 @@ public class TransactionInsertionTest {
      * Tests that the Skip Graph remains valid after many transaction insertions.
      * Verifies lookup table consistency.
      */
+    @Test
     public void testSkipGraphConsistencyAfterManyInsertions() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create a test network with multiple transactions per node
         SkipGraphTestFixture.TestNetwork network = fixture.createTestNetwork(15, 3);
 
         // Verify all transactions have non-empty lookup tables
         for (Transaction tx : network.transactions) {
             if (tx.getIndex() > 0) { // Skip transaction 0 as it's special
-                Assert.assertFalse("Transaction " + tx.getIndex() + " should have non-empty lookup table",
+                assertFalse("Transaction " + tx.getIndex() + " should have non-empty lookup table",
                     tx.isLookupTableEmpty(Transaction.LOOKUP_TABLE_SIZE));
             }
         }
@@ -168,8 +169,8 @@ public class TransactionInsertionTest {
         for (Node node : network.nodes) {
             for (int txIndex : node.getTxSet()) {
                 Transaction tx = (Transaction) network.operations.getTransactions().getNode(txIndex);
-                Assert.assertNotNull("Transaction " + txIndex + " should exist", tx);
-                Assert.assertEquals("Transaction " + txIndex + " should be owned by node " + node.getIndex(),
+                assertNotNull("Transaction " + txIndex + " should exist", tx);
+                assertEquals("Transaction " + txIndex + " should be owned by node " + node.getIndex(),
                     node.getIndex(), tx.getOwnerIndex());
             }
         }
@@ -179,9 +180,8 @@ public class TransactionInsertionTest {
      * Regression test for the specific bug: transaction insertion causing NullPointerException.
      * This test mimics the exact scenario from the bug report.
      */
+    @Test
     public void testRegressionNoNullPointerDuringInsertion() {
-        SkipGraphTestFixture fixture = new SkipGraphTestFixture();
-
         // Create network similar to bug scenario
         List<Node> nodes = fixture.createAndInsertNodes(50);
 
@@ -192,29 +192,17 @@ public class TransactionInsertionTest {
         try {
             // Insert first transaction - this should work
             Transaction tx1 = fixture.createAndInsertTransaction(problematicNode, 1, 0);
-            Assert.assertNotNull("First transaction should succeed", tx1);
+            assertNotNull("First transaction should succeed", tx1);
 
             // Insert second transaction - this was causing NPE before fix
             Transaction tx2 = fixture.createAndInsertTransaction(problematicNode, 2, 0);
-            Assert.assertNotNull("Second transaction should succeed (regression test)", tx2);
+            assertNotNull("Second transaction should succeed (regression test)", tx2);
 
             // If we got here without exception, the bug is fixed
-            Assert.assertTrue("Regression test passed - no NullPointerException during insertion", true);
+            assertTrue("Regression test passed - no NullPointerException during insertion", true);
 
         } catch (NullPointerException e) {
-            Assert.fail("NullPointerException during transaction insertion (BUG NOT FIXED): " + e.getMessage());
-        }
-    }
-
-    /**
-     * Main method to run all tests.
-     */
-    public static void main(String[] args) {
-        TestRunner runner = new TestRunner();
-        runner.runTests(TransactionInsertionTest.class);
-
-        if (!runner.allTestsPassed()) {
-            System.exit(1);
+            fail("NullPointerException during transaction insertion (BUG NOT FIXED): " + e.getMessage());
         }
     }
 }
