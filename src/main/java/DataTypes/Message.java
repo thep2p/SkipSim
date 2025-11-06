@@ -189,6 +189,17 @@ public class Message
         System.out.println("Message.java: print search path");
         for(int index: nodeIndices)
         {
+            /*
+            Null safety check: Skip nodes/transactions that haven't been fully initialized yet.
+            This can happen during insertion when a transaction is added to the search path
+            before it's been fully inserted into the Skip Graph.
+             */
+            if(nodeSet.getNode(index) == null)
+            {
+                System.out.println("Message.java/ WARNING: Skipping null node at index " + index + " (not yet initialized)");
+                continue;
+            }
+
             if(nodeSet instanceof Nodes)
             {
                 System.out.println("Message.java/ Node: index " + index + " numID " + nodeSet.getNode(index).getNumID());

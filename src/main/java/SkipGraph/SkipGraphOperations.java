@@ -91,11 +91,22 @@ public class SkipGraphOperations
         else
             index = tx.getIndex();
         int ownerIndex = tx.getOwnerIndex();
-        ((Node) getTG().mNodeSet.getNode(ownerIndex)).addToTXSet(index);
+
+        /*
+        FIX: Insert the transaction into the Skip Graph BEFORE adding it to the owner's txSet.
+        This prevents the search during insertion from encountering an uninitialized transaction
+        in the owner's txSet, which would cause a NullPointerException when the search path
+        tries to access the transaction before it's fully inserted.
+         */
         if (index > 0)
         {
             insert(tx, mTransactions, index, true, currentTime);
         }
+
+        /*
+        Add to owner's txSet AFTER successful insertion into Skip Graph
+         */
+        ((Node) getTG().mNodeSet.getNode(ownerIndex)).addToTXSet(index);
 
     }
 

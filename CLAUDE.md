@@ -130,10 +130,80 @@ Search starts from the uppermost level (`SkipSimParameters.getLookupTableSize()-
 - Name ID assignment strategy names
 - Use these constants instead of hardcoded strings
 
+## Testing
+
+### Test Infrastructure
+
+Test code is located in `src/test/java/`. The testing infrastructure provides:
+
+**Test Fixtures** (`TestFixtures` package):
+- `SkipGraphTestFixture`: Reusable fixture for generating Skip Graph test data
+- `TestRunner`: Simple test runner without external dependencies (no JUnit required)
+
+**Running Tests:**
+```bash
+# Compile test classes in IntelliJ, then run:
+java -cp <classpath> SkipGraph.TransactionInsertionTest
+
+# Or run from IntelliJ by executing the main() method in any test class
+```
+
+### Using Test Fixtures
+
+The `SkipGraphTestFixture` provides convenient methods for creating test scenarios:
+
+```java
+// Create a fixture
+SkipGraphTestFixture fixture = new SkipGraphTestFixture();
+
+// Create a small network with nodes and transactions
+TestNetwork network = fixture.createTestNetwork(20, 3); // 20 nodes, 3 txs each
+
+// Or manually create components
+SkipGraphOperations ops = fixture.createSkipGraphOperations();
+List<Node> nodes = fixture.createAndInsertNodes(10);
+Transaction tx = fixture.createAndInsertTransaction(nodes.get(0), 1, 0);
+```
+
+**Key Fixture Methods:**
+- `createSkipGraphOperations()`: Creates a SkipGraphOperations instance with blockchain mode
+- `createAndInsertNodes(int numNodes)`: Creates and inserts nodes into the Skip Graph
+- `createAndInsertTransaction(Node owner, int txIndex, int time)`: Safely creates and inserts a transaction
+- `createTestNetwork(int nodes, int txsPerNode)`: Creates a complete test network
+
+**Important:** Always use `createAndInsertTransaction()` rather than manually creating transactions. This ensures proper insertion order and prevents NullPointerExceptions.
+
+### Writing New Tests
+
+To create a new test class:
+
+1. Create the test class in `src/test/java/` (match the package structure of the code under test)
+2. Write test methods starting with "test" (e.g., `testMyFeature()`)
+3. Use `TestRunner.Assert` for assertions:
+   - `Assert.assertTrue(message, condition)`
+   - `Assert.assertEquals(message, expected, actual)`
+   - `Assert.assertNotNull(message, object)`
+   - `Assert.fail(message)`
+4. Add a main method to run tests:
+```java
+public static void main(String[] args) {
+    TestRunner runner = new TestRunner();
+    runner.runTests(YourTestClass.class);
+    if (!runner.allTestsPassed()) {
+        System.exit(1);
+    }
+}
+```
+
+### Existing Tests
+
+- `SkipGraph.TransactionInsertionTest`: Tests for transaction insertion, including regression tests for the transaction insertion NullPointerException bug
+
 ## Important Implementation Notes
 
 - **Numerical ID Hashing**: `NumIDHashing = true` is required for Proof-of-Validation and randomized bootstrapping
 - **Lookup Table Size**: Automatically computed as `ceil(NameIDLength + log2(SystemCapacity))`
+- **Transaction Insertion Order**: Critical bug fix - transactions MUST be inserted into Skip Graph BEFORE being added to owner's txSet. This prevents NullPointerException during insertion when `mostSimilarTXB()` searches through the owner's transactions.
 - **Transaction Insertion**: When a peer arrives, all its transactions must be re-inserted into the transaction Skip Graph
 - **Time Slots**: Simulations operate in hourly time slots for dynamic/blockchain modes
 - **Transaction Rate**: `TXB_RATE` controls transactions generated per node per time slot
