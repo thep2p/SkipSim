@@ -616,7 +616,8 @@ public class SkipGraphOperations
         /*
         Size of the lookup table of the Node
          */
-        int lookupTableSize = (skipGraphNode instanceof Node) ? SkipSimParameters.getLookupTableSize() : Transaction.LOOKUP_TABLE_SIZE;
+        boolean isNodeInsertion = (skipGraphNode instanceof Node);
+        int lookupTableSize = isNodeInsertion ? SkipSimParameters.getLookupTableSize() : Transaction.LOOKUP_TABLE_SIZE;
 
         /*
         Only is used to check the existence of loops in dynamic simulation adversarial churn
@@ -650,7 +651,7 @@ public class SkipGraphOperations
                 Left = nodeSet.getNode(Left).getLookup(level, 0);
                 //System.out.println("SkipGraphOperations.java: insertion inner loop, left was switched to " + Left );
                 //mTopologyGenerator.mNodeSet.getNode(index).printLookup();
-                if (visitedLeftNodes.contains(Left) || (Left != -1 && ((Node) nodeSet.getNode(Left)).isOffline()))
+                if (visitedLeftNodes.contains(Left) || (Left != -1 && isNodeInsertion && ((Node) nodeSet.getNode(Left)).isOffline()))
                 //Cycle checking in dynamic adversarial churn or offline neighbor
                 {
                     if (SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
@@ -688,7 +689,7 @@ public class SkipGraphOperations
                 Right = nodeSet.getNode(Right).getLookup(level, 1);
                 //System.out.println("SkipGraphOperations.java: insertion inner loop, right was switched to " + Right );
                 //mTopologyGenerator.mNodeSet.getNode(index).printLookup();
-                if (visitedRightNodes.contains(Right) || (Right != -1 && ((Node) nodeSet.getNode(Right)).isOffline()))
+                if (visitedRightNodes.contains(Right) || (Right != -1 && isNodeInsertion && ((Node) nodeSet.getNode(Right)).isOffline()))
                 {
                     if (SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
                     {

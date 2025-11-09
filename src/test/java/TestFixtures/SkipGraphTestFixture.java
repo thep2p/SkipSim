@@ -55,10 +55,18 @@ public class SkipGraphTestFixture {
 
     /**
      * Creates a new SkipGraphOperations instance for blockchain mode.
+     * Also initializes transaction 0, which is required for the transaction Skip Graph.
      * @return SkipGraphOperations configured for blockchain
      */
     public SkipGraphOperations createSkipGraphOperations() {
         skipGraphOps = new SkipGraphOperations(true);
+
+        // Initialize transaction 0 (required as the root transaction in the Skip Graph)
+        // Transaction 0 doesn't need to be inserted - it's the starting point
+        // We use addToSet to properly register it and increment the index counter
+        Transaction tx0 = new Transaction(0, 0);
+        skipGraphOps.getTransactions().addToSet(tx0);
+
         return skipGraphOps;
     }
 
@@ -87,6 +95,8 @@ public class SkipGraphTestFixture {
                 // Node 0 is special - just set it in the node set
                 node.setIndex(0);
                 nodeSet.setNode(0, node);
+                // Add transaction 0 to node 0's txSet
+                node.addToTXSet(0);
             }
             nodes.add(node);
         }

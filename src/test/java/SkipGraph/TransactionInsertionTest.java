@@ -143,8 +143,10 @@ public class TransactionInsertionTest {
             Transaction tx = fixture.createAndInsertTransaction(node, txIndex++, 0);
 
             assertNotNull("Second transaction for node " + i + " should not be null", tx);
-            assertEquals("Node " + i + " should have 2 transactions",
-                2, node.getTxSet().size());
+            // Node 0 has an extra transaction (transaction 0) used as the root of the transaction Skip Graph
+            int expectedTxCount = (i == 0) ? 3 : 2;
+            assertEquals("Node " + i + " should have " + expectedTxCount + " transactions",
+                expectedTxCount, node.getTxSet().size());
         }
     }
 
