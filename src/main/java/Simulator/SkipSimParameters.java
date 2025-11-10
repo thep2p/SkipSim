@@ -63,7 +63,15 @@ public class SkipSimParameters
 
     public static float MaliciousFraction = 0.33f;
 
+    public static void setMaliciousFraction(float maliciousFraction) {
+        MaliciousFraction = maliciousFraction;
+    }
+
     public static String BlockchainProtocol = Constants.Protocol.LIGHTCHAIN;
+
+    public static void setBlockchainProtocol(String protocol) {
+        BlockchainProtocol = protocol;
+    }
 
     //////////////////////////////////////View/////////////////////////////////////////
 
@@ -191,6 +199,10 @@ public class SkipSimParameters
      */
     protected static  int SystemCapacity = 1024;
 
+    public static void setSystemCapacity(int capacity) {
+        SystemCapacity = capacity;
+    }
+
     /**
      * LandmarksNum denotes the number of landmarks in the system, it is recommended to be equal to
      * Log(SystemCapacity) in base 2 e.g., SystemCapacity = 1024 then LandmarkNum = 10
@@ -295,7 +307,11 @@ public class SkipSimParameters
      */
     protected static int LifeTime = 72;
 
-    public void setChurnModel(String churnModel) {
+    public static void setLifeTime(int lifeTime) {
+        LifeTime = lifeTime;
+    }
+
+    public static void setChurnModel(String churnModel) {
         switch(churnModel) {
             case Constants.Churn.Model.Debian.Fast.Name:
                 SessionLengthScaleParameter = Constants.Churn.Model.Debian.Fast.SessionLength.Scale;
@@ -404,6 +420,11 @@ public class SkipSimParameters
      * Total number of the topologies that the simulation is executed over
      */
     protected static int Topologies;
+
+    public static void setTopologies(int topologies) {
+        Topologies = topologies;
+    }
+
     /**
      * Index of the current topology under simulation
      */
@@ -685,6 +706,10 @@ public class SkipSimParameters
      * ADVERSARIAL i.e., Nodes do not inform their neighbors upon departure
      */
     protected static String ChurnType = Constants.Churn.Type.COOPERATIVE;
+
+    public static void setChurnType(String churnType) {
+        ChurnType = churnType;
+    }
 
     /**
      * The name of churn stabilization algorithm.

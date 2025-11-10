@@ -59,26 +59,41 @@ test-verbose: compile-tests
 run-new: compile
 	@if [ -z "$(NAME)" ]; then \
 		echo "Error: Simulation name required"; \
-		echo "Usage: make run-new NAME=<simulation-name>"; \
+		echo "Usage: make run-new NAME=<simulation-name> [CONFIG=<config-file>]"; \
 		exit 1; \
 	fi
 	@echo "Creating new simulation: $(NAME)"
-	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME)
+	@if [ -n "$(CONFIG)" ]; then \
+		echo "Using config file: $(CONFIG)"; \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME) --config $(CONFIG); \
+	else \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME); \
+	fi
 
 .PHONY: run-load
 run-load: compile
 	@if [ -z "$(NAME)" ]; then \
 		echo "Error: Simulation name required"; \
-		echo "Usage: make run-load NAME=<simulation-name>"; \
+		echo "Usage: make run-load NAME=<simulation-name> [CONFIG=<config-file>]"; \
 		exit 1; \
 	fi
 	@echo "Loading simulation: $(NAME)"
-	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME)
+	@if [ -n "$(CONFIG)" ]; then \
+		echo "Using config file: $(CONFIG)"; \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME) --config $(CONFIG); \
+	else \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME); \
+	fi
 
 .PHONY: run-list
 run-list: compile
 	@echo "Listing available simulations..."
-	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main list
+	@if [ -n "$(CONFIG)" ]; then \
+		echo "Using config file: $(CONFIG)"; \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main list --config $(CONFIG); \
+	else \
+		$(JAVA) -cp "$(CP_RUN)" Simulator.Main list; \
+	fi
 
 .PHONY: run-delete
 run-delete: compile
@@ -113,15 +128,21 @@ help:
 	@echo "  make test-verbose - Run tests with verbose output"
 	@echo ""
 	@echo "Simulation targets:"
-	@echo "  make run-load NAME=<name>   - Load or create simulation (recommended)"
-	@echo "  make run-new NAME=<name>    - Explicitly create a new simulation"
-	@echo "  make run-list               - List available simulations"
-	@echo "  make run-delete NAME=<name> - Delete a simulation"
+	@echo "  make run-load NAME=<name> [CONFIG=<file>]   - Load or create simulation"
+	@echo "  make run-new NAME=<name> [CONFIG=<file>]    - Create new simulation"
+	@echo "  make run-list                               - List available simulations"
+	@echo "  make run-delete NAME=<name>                 - Delete a simulation"
 	@echo ""
 	@echo "Examples:"
-	@echo "  make run-load NAME=my_blockchain_sim   # Creates if doesn't exist"
-	@echo "  make run-new NAME=my_blockchain_sim    # Always creates new"
+	@echo "  make run-load NAME=my_sim"
+	@echo "  make run-load NAME=my_sim CONFIG=configs/quick-test.properties"
+	@echo "  make run-new NAME=my_sim CONFIG=configs/full-experiment.properties"
 	@echo "  make run-list"
+	@echo ""
+	@echo "Configuration:"
+	@echo "  Default config: simulation-config.properties"
+	@echo "  Custom configs: configs/quick-test.properties, configs/full-experiment.properties"
+	@echo "  Edit config files to change parameters without recompilation!"
 	@echo ""
 	@echo "Help:"
 	@echo "  make help         - Show this help message"

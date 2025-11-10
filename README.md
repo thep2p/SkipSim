@@ -55,45 +55,84 @@ Examples:
 
 ### Configure Simulation Parameters
 
-All simulation parameters are configured in the **`SimulationSchema`** package. To customize your simulation:
+SkipSim supports **two configuration methods**:
 
-1. **Choose or create a schema** in `src/main/java/SimulationSchema/`:
-   - `Blockchain.java` - Full blockchain simulation (100 topologies, 1024 nodes, 168 hours)
-   - `BlockchainSmall.java` - Quick test simulation (2 topologies, 64 nodes, 24 hours)
-   - `StaticReplication.java` - For static replication experiments
-   - `MultiObjectiveReplication.java` - For multi-objective optimization
-   - Or create your own by extending `SkipSimParameters`
+#### Method 1: Configuration Files (Recommended - No Recompilation!)
 
-   > **Note**: The default `Blockchain` schema is large and may take hours to complete. For testing, use `BlockchainSmall` or create a custom schema with smaller parameters.
+Edit `simulation-config.properties` or create custom config files:
 
-2. **Activate your schema** in `SimulationSchema/SchemaManager.java`:
-   ```java
-   public class SchemaManager {
-       public SchemaManager() {
-           new BlockchainSmall(); // For quick testing (2 topologies, 64 nodes)
-           // new Blockchain();   // For full experiments (100 topologies, 1024 nodes)
-       }
-   }
-   ```
+```properties
+# Quick Test Configuration
+simulation.type=BLOCKCHAIN
+system.capacity=64
+system.lifetime=24
+system.topologies=2
+txb.rate=1
+churn.model=DEBIAN_FAST
+churn.type=ADVERSARIAL
+malicious.fraction=0.16
+validator.threshold=12
+signature.threshold=1
+```
 
-3. **Key parameters you can configure** (in your schema's constructor):
-   - `SystemCapacity` - Number of nodes (e.g., 1024)
-   - `LifeTime` - Simulation duration in hours (e.g., 168 for one week)
-   - `Topologies` - Number of topology instances to run (e.g., 100)
-   - `MaliciousFraction` - Proportion of malicious nodes (e.g., 0.16f = 16%)
-   - `ValidatorThreshold` - Number of validators in Proof-of-Validation
-   - `SignatureThreshold` - Minimum honest validators required
-   - `ChurnModel` - Node churn pattern (e.g., DEBIAN_FAST, DEBIAN_SLOW, FLATOUT)
-   - `ReplicationAlgorithm` - Replication strategy (e.g., LARAS, GLARAS, LP)
-   - Experiment flags (e.g., `MaliciousSuccessExperiment`, `EfficiencyExperiment`)
+**Run with different configs:**
+```bash
+# Use default config (simulation-config.properties)
+make run-load NAME=my_sim
 
-4. **Recompile and run:**
-   ```bash
-   make clean && make compile
-   make run-new NAME=my_custom_simulation
-   ```
+# Use custom config
+make run-load NAME=my_sim CONFIG=configs/full-experiment.properties
+make run-load NAME=quick_test CONFIG=configs/quick-test.properties
+```
 
-Please see the [first tutorial](https://github.com/yhassanzadeh13/SkipSim/blob/master/Tutorial1.md) for detailed instructions on configuring and running SkipSim experiments.
+**Available config files:**
+- `simulation-config.properties` - Default configuration
+- `configs/quick-test.properties` - Small test (64 nodes, 2 topologies, 24 hours)
+- `configs/full-experiment.properties` - Full research (1024 nodes, 100 topologies, 168 hours)
+
+#### Method 2: Schema Classes (Legacy)
+
+Alternatively, use Java classes in `src/main/java/SimulationSchema/`:
+- `Blockchain.java` - Full blockchain simulation (100 topologies, 1024 nodes, 168 hours)
+- `BlockchainSmall.java` - Quick test simulation (2 topologies, 64 nodes, 24 hours)
+- `StaticReplication.java` - For static replication experiments
+- `MultiObjectiveReplication.java` - For multi-objective optimization
+
+Edit `SimulationSchema/SchemaManager.java` and recompile (not recommended).
+
+#### Configurable Parameters
+
+All parameters in config files or schema classes:
+- `simulation.type` - BLOCKCHAIN, DYNAMIC, STATIC, LANDMARK
+- `system.capacity` - Number of nodes (e.g., 64, 1024)
+- `system.lifetime` - Simulation duration in hours (e.g., 24, 168)
+- `system.topologies` - Number of topology instances (e.g., 2, 100)
+- `malicious.fraction` - Proportion of malicious nodes (e.g., 0.16 = 16%)
+- `validator.threshold` - Validators in Proof-of-Validation (e.g., 12)
+- `signature.threshold` - Minimum honest validators required (e.g., 1)
+- `churn.model` - DEBIAN_FAST, DEBIAN_SLOW, FLATOUT
+- `churn.type` - ADVERSARIAL, COOPERATIVE
+- `txb.rate` - Transactions per node per hour (e.g., 1)
+- `blockchain.protocol` - LIGHTCHAIN (default)
+- `logging.enabled` - true/false
+
+#### Quick Start Examples
+
+```bash
+# 1. Quick test (finishes in minutes)
+make run-load NAME=quick_test CONFIG=configs/quick-test.properties
+
+# 2. Full experiment (takes hours)
+make run-load NAME=full_exp CONFIG=configs/full-experiment.properties
+
+# 3. Custom parameters - just edit simulation-config.properties!
+nano simulation-config.properties
+make run-load NAME=my_custom_sim
+```
+
+**No recompilation needed when using config files!**
+
+Please see the [first tutorial](https://github.com/yhassanzadeh13/SkipSim/blob/master/Tutorial1.md) for detailed instructions on running SkipSim experiments.
 
 ## Skip graph
 Skip-graph(s)

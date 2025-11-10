@@ -34,20 +34,36 @@ public class Main {
     }
 
     public void run(String[] args) {
-        // Initialize schema and database
-        new SchemaManager();
+        // Parse command-line arguments
+        if (args.length == 0) {
+            printUsage();
+            return;
+        }
+
+        // Check for --config argument and extract it
+        String configFile = null;
+        int commandIndex = 0;
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--config") && i + 1 < args.length) {
+                configFile = args[i + 1];
+                break;
+            }
+        }
+
+        // Initialize schema (with custom config if provided) and database
+        if (configFile != null) {
+            new SchemaManager(configFile);
+        } else {
+            new SchemaManager();  // Uses default simulation-config.properties
+        }
+
         simDB = new SimulationDB();
         FileInteractions.PrintSimulationParameters();
 
         // Determine if simulation is blockchain type
         isBlockChain = SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.BLOCKCHAIN);
         isReplica = new boolean[SkipSimParameters.getSystemCapacity()];
-
-        // Parse command-line arguments
-        if (args.length == 0) {
-            printUsage();
-            return;
-        }
 
         String command = args[0].toLowerCase();
 
@@ -93,19 +109,23 @@ public class Main {
     private void printUsage() {
         System.out.println("\nSkipSim Command-Line Interface");
         System.out.println("==============================");
-        System.out.println("Usage: java Simulator.Main <command> [arguments]");
+        System.out.println("Usage: java Simulator.Main <command> [arguments] [options]");
         System.out.println("\nCommands:");
         System.out.println("  load <simulation-name>    Load existing or create new simulation (recommended)");
         System.out.println("  new <simulation-name>     Explicitly create a new simulation");
         System.out.println("  list                      List all available simulations");
         System.out.println("  delete <simulation-name>  Delete a simulation");
+        System.out.println("\nOptions:");
+        System.out.println("  --config <file>           Specify custom configuration file");
+        System.out.println("                            (default: simulation-config.properties)");
         System.out.println("\nExamples:");
-        System.out.println("  java Simulator.Main load my_blockchain_sim    # Creates if doesn't exist");
-        System.out.println("  java Simulator.Main new my_blockchain_sim     # Always creates new");
+        System.out.println("  java Simulator.Main load my_sim");
+        System.out.println("  java Simulator.Main load my_sim --config configs/large-experiment.properties");
+        System.out.println("  java Simulator.Main new my_sim --config configs/quick-test.properties");
         System.out.println("  java Simulator.Main list");
-        System.out.println("  java Simulator.Main delete old_simulation");
-        System.out.println("\nNote: 'load' is recommended as it automatically creates the simulation");
-        System.out.println("      if it doesn't exist in the database.");
+        System.out.println("\nConfiguration:");
+        System.out.println("  Edit simulation-config.properties or create custom config files in configs/");
+        System.out.println("  No recompilation needed when changing configuration files!");
     }
 
     /**
