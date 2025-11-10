@@ -95,15 +95,17 @@ public class Main {
         System.out.println("==============================");
         System.out.println("Usage: java Simulator.Main <command> [arguments]");
         System.out.println("\nCommands:");
-        System.out.println("  new <simulation-name>     Create a new simulation");
-        System.out.println("  load <simulation-name>    Load and run an existing simulation");
+        System.out.println("  load <simulation-name>    Load existing or create new simulation (recommended)");
+        System.out.println("  new <simulation-name>     Explicitly create a new simulation");
         System.out.println("  list                      List all available simulations");
         System.out.println("  delete <simulation-name>  Delete a simulation");
         System.out.println("\nExamples:");
-        System.out.println("  java Simulator.Main new my_blockchain_sim");
-        System.out.println("  java Simulator.Main load 100_1024_DEBIAN_1W");
+        System.out.println("  java Simulator.Main load my_blockchain_sim    # Creates if doesn't exist");
+        System.out.println("  java Simulator.Main new my_blockchain_sim     # Always creates new");
         System.out.println("  java Simulator.Main list");
         System.out.println("  java Simulator.Main delete old_simulation");
+        System.out.println("\nNote: 'load' is recommended as it automatically creates the simulation");
+        System.out.println("      if it doesn't exist in the database.");
     }
 
     /**
@@ -188,7 +190,8 @@ public class Main {
     }
 
     /**
-     * Loads and runs an existing simulation from the database
+     * Loads and runs an existing simulation from the database.
+     * If the simulation doesn't exist, it will be created automatically.
      */
     private void loadSimulation(String simulationName) {
         System.out.println("\n=== Loading Simulation: " + simulationName + " ===");
@@ -198,15 +201,13 @@ public class Main {
                 ? Constants.SimulationType.DYNAMIC
                 : SkipSimParameters.getSimulationType();
 
-        // Verify simulation exists
+        // Check if simulation exists
         Vector<String> availableSimulations = simDB.fetchSimulationNamesFromDB(simType);
         if (!availableSimulations.contains(simulationName)) {
-            System.err.println("Error: Simulation '" + simulationName + "' not found");
-            System.err.println("Available simulations:");
-            for (String sim : availableSimulations) {
-                System.err.println("  - " + sim);
-            }
-            System.exit(1);
+            System.out.println("Simulation '" + simulationName + "' not found in database.");
+            System.out.println("Creating new simulation...\n");
+            createNewSimulation(simulationName);
+            System.out.println("\n=== Now Loading the Created Simulation ===\n");
         }
 
         int totalTopologies = SkipSimParameters.getTopologies();

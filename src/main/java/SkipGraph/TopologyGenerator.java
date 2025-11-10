@@ -63,7 +63,7 @@ public class TopologyGenerator
         maxProb = 0;
 
         if(SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC)
-        || SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
+        || SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.BLOCKCHAIN))
         {
         /*
         Churn parameters

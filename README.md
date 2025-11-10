@@ -25,11 +25,11 @@ make help
 # List available simulations
 make run-list
 
-# Create a new simulation
-make run-new NAME=my_simulation
+# Create or load a simulation (recommended - creates if doesn't exist)
+make run-load NAME=my_simulation
 
-# Load an existing simulation
-make run-load NAME=100_1024_DEBIAN_1W
+# Explicitly create a new simulation
+make run-new NAME=my_simulation
 
 # Delete a simulation
 make run-delete NAME=old_simulation
@@ -40,32 +40,38 @@ make run-delete NAME=old_simulation
 java -cp "libs/*:out/production" Simulator.Main <command> [arguments]
 
 Commands:
-  new <simulation-name>     Create a new simulation
-  load <simulation-name>    Load and run an existing simulation
+  load <simulation-name>    Load existing or create new simulation (recommended)
+  new <simulation-name>     Explicitly create a new simulation
   list                      List available simulations
   delete <simulation-name>  Delete a simulation
 
 Examples:
   java -cp "libs/*:out/production" Simulator.Main list
-  java -cp "libs/*:out/production" Simulator.Main new my_blockchain_sim
   java -cp "libs/*:out/production" Simulator.Main load my_blockchain_sim
+  java -cp "libs/*:out/production" Simulator.Main new my_explicit_sim
 ```
+
+> **Note**: The `load` command will automatically create the simulation if it doesn't exist in the database, making it the most convenient option for both creating and running simulations.
 
 ### Configure Simulation Parameters
 
 All simulation parameters are configured in the **`SimulationSchema`** package. To customize your simulation:
 
 1. **Choose or create a schema** in `src/main/java/SimulationSchema/`:
-   - `Blockchain.java` - For blockchain/Proof-of-Validation experiments
+   - `Blockchain.java` - Full blockchain simulation (100 topologies, 1024 nodes, 168 hours)
+   - `BlockchainSmall.java` - Quick test simulation (2 topologies, 64 nodes, 24 hours)
    - `StaticReplication.java` - For static replication experiments
    - `MultiObjectiveReplication.java` - For multi-objective optimization
    - Or create your own by extending `SkipSimParameters`
+
+   > **Note**: The default `Blockchain` schema is large and may take hours to complete. For testing, use `BlockchainSmall` or create a custom schema with smaller parameters.
 
 2. **Activate your schema** in `SimulationSchema/SchemaManager.java`:
    ```java
    public class SchemaManager {
        public SchemaManager() {
-           new Blockchain(); // Activate the Blockchain schema
+           new BlockchainSmall(); // For quick testing (2 topologies, 64 nodes)
+           // new Blockchain();   // For full experiments (100 topologies, 1024 nodes)
        }
    }
    ```
