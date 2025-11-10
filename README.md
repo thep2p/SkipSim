@@ -3,7 +3,91 @@
 
 SkipSim is a simulator that can be used for the design, implementation, and evaluation of the distributed Skip Graph-based protocols.
 
-Please see the [first tutorial](https://github.com/yhassanzadeh13/SkipSim/blob/master/Tutorial1.md) to get instructions on how to build, configure and run the SkipSim.
+## Quick Start
+
+### Build and Test
+
+```bash
+# Clean and compile everything
+make clean && make compile
+
+# Run tests to verify everything works
+make test
+
+# Get help on available commands
+make help
+```
+
+### Run Simulations
+
+**Using Makefile (recommended):**
+```bash
+# List available simulations
+make run-list
+
+# Create a new simulation
+make run-new NAME=my_simulation
+
+# Load an existing simulation
+make run-load NAME=100_1024_DEBIAN_1W
+
+# Delete a simulation
+make run-delete NAME=old_simulation
+```
+
+**Direct command-line usage:**
+```bash
+java -cp "libs/*:out/production" Simulator.Main <command> [arguments]
+
+Commands:
+  new <simulation-name>     Create a new simulation
+  load <simulation-name>    Load and run an existing simulation
+  list                      List available simulations
+  delete <simulation-name>  Delete a simulation
+
+Examples:
+  java -cp "libs/*:out/production" Simulator.Main list
+  java -cp "libs/*:out/production" Simulator.Main new my_blockchain_sim
+  java -cp "libs/*:out/production" Simulator.Main load my_blockchain_sim
+```
+
+### Configure Simulation Parameters
+
+All simulation parameters are configured in the **`SimulationSchema`** package. To customize your simulation:
+
+1. **Choose or create a schema** in `src/main/java/SimulationSchema/`:
+   - `Blockchain.java` - For blockchain/Proof-of-Validation experiments
+   - `StaticReplication.java` - For static replication experiments
+   - `MultiObjectiveReplication.java` - For multi-objective optimization
+   - Or create your own by extending `SkipSimParameters`
+
+2. **Activate your schema** in `SimulationSchema/SchemaManager.java`:
+   ```java
+   public class SchemaManager {
+       public SchemaManager() {
+           new Blockchain(); // Activate the Blockchain schema
+       }
+   }
+   ```
+
+3. **Key parameters you can configure** (in your schema's constructor):
+   - `SystemCapacity` - Number of nodes (e.g., 1024)
+   - `LifeTime` - Simulation duration in hours (e.g., 168 for one week)
+   - `Topologies` - Number of topology instances to run (e.g., 100)
+   - `MaliciousFraction` - Proportion of malicious nodes (e.g., 0.16f = 16%)
+   - `ValidatorThreshold` - Number of validators in Proof-of-Validation
+   - `SignatureThreshold` - Minimum honest validators required
+   - `ChurnModel` - Node churn pattern (e.g., DEBIAN_FAST, DEBIAN_SLOW, FLATOUT)
+   - `ReplicationAlgorithm` - Replication strategy (e.g., LARAS, GLARAS, LP)
+   - Experiment flags (e.g., `MaliciousSuccessExperiment`, `EfficiencyExperiment`)
+
+4. **Recompile and run:**
+   ```bash
+   make clean && make compile
+   make run-new NAME=my_custom_simulation
+   ```
+
+Please see the [first tutorial](https://github.com/yhassanzadeh13/SkipSim/blob/master/Tutorial1.md) for detailed instructions on configuring and running SkipSim experiments.
 
 ## Skip graph
 Skip-graph(s)

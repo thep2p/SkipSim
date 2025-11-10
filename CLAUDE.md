@@ -8,18 +8,50 @@ SkipSim is a simulator for designing, implementing, and evaluating distributed S
 
 ## Build and Run
 
-This is an IntelliJ IDEA project with Java sources in `src/main/java/`. There is no Maven or Gradle build system configured - the project uses IntelliJ's native build system.
+This is an IntelliJ IDEA project with Java sources in `src/main/java/`. The project supports both IntelliJ's native build system and command-line builds via Makefile.
+
+**Command-line build and run:**
+```bash
+# Compile the project
+make compile
+
+# Run tests
+make test
+
+# Run a simulation (after compilation)
+java -cp "libs/*:out/production" Simulator.Main <command> [arguments]
+```
 
 **To build and run in IntelliJ:**
 - Open the project in IntelliJ IDEA
-- Ensure JDK is configured (JavaFX required for GUI)
-- Main entry point: `Simulator.GUI.main()` for GUI mode
+- Ensure JDK is configured
+- Main entry point: `Simulator.Main.main()`
 - Build using IntelliJ's Build > Build Project
 
-**Running experiments:**
-The simulator can either load existing simulations or generate new ones. When running, you'll be prompted to:
-1. Load a simulation (e.g., `100_1024_DEBIAN_1W`) from a SQLite database
-2. Or create a new simulation with specified parameters
+**Running simulations:**
+The simulator supports four main operations via command-line:
+
+1. **Create a new simulation:**
+   ```bash
+   java -cp "libs/*:out/production" Simulator.Main new <simulation-name>
+   ```
+
+2. **Load an existing simulation:**
+   ```bash
+   java -cp "libs/*:out/production" Simulator.Main load <simulation-name>
+   ```
+
+3. **List available simulations:**
+   ```bash
+   java -cp "libs/*:out/production" Simulator.Main list
+   ```
+
+4. **Delete a simulation:**
+   ```bash
+   java -cp "libs/*:out/production" Simulator.Main delete <simulation-name>
+   ```
+
+Simulations are stored in a SQLite database (`skipsim3db.db`). When creating a new simulation, the system generates the specified number of topologies based on your schema configuration. When loading an existing simulation, it replays the simulation using stored topology and churn data.
 
 ## Core Architecture
 
@@ -140,18 +172,25 @@ Test code is located in `src/test/java/`. The project uses **JUnit 4** for testi
 - `SkipGraphTestFixture`: Reusable fixture for generating Skip Graph test data
 
 **Setting up JUnit:**
-See `JUNIT_SETUP.md` for detailed instructions. Quick setup in IntelliJ:
+JUnit 4 libraries are included in the `libs/` directory:
+- `libs/junit-4.13.2.jar`
+- `libs/hamcrest-core-1.3.jar`
+
+Quick setup in IntelliJ:
 1. Open a test file
 2. Click on red `@Test` annotation
 3. Alt+Enter → "Add JUnit 4 to classpath"
 
 **Running Tests:**
 ```bash
+# Using Makefile
+make test
+
 # In IntelliJ: Right-click on test class → Run 'TransactionInsertionTest'
 # Or click green arrow next to test method/class
 
 # From command line:
-java -cp "libs/*:out" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
+java -cp "libs/*:out/production:out/test" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 ```
 
 ### Using Test Fixtures

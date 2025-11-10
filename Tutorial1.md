@@ -1,14 +1,23 @@
 ## Tutorial: Efficiency Experiment
-For this quick-start tutorial, we will perform an efficiency experiment on Proof-of-Validation consensus protocol defined [here](https://www.researchgate.net/publication/332104732_LightChain_A_DHT-based_Blockchain_for_Resource_Constrained_Environments). 
+For this quick-start tutorial, we will perform an efficiency experiment on Proof-of-Validation consensus protocol defined [here](https://www.researchgate.net/publication/332104732_LightChain_A_DHT-based_Blockchain_for_Resource_Constrained_Environments).
 When a new transaction is generated, we aim to find a predefined number of honest nodes that can act as validators for the transaction.
 Efficiency experiment measures the average number of honest nodes that are acquired throughout the simulation.
+
 ### Building
 
 First, clone this repository on your local computer:
 
-`$ git clone https://github.com/yhassanzadeh13/SkipSimWS` 
+`$ git clone https://github.com/yhassanzadeh13/SkipSimWS`
 
-This project uses Gradle as its build system.
+This project can be built using the provided Makefile or IntelliJ IDEA.
+
+**Using Makefile:**
+```bash
+make compile
+```
+
+**Using IntelliJ IDEA:**
+Open the project in IntelliJ and build using Build > Build Project.
 
 ### Configuring
 
@@ -67,13 +76,29 @@ public class SchemaManager {
 With these settings, we will measure the average number of honest nodes that are achievable in 12 (ValidatorThreshold) trials.
 
 ### Running
+
 For this tutorial we will use an already generated simulation. Download it [here](#) and put it on the SkipSim directory. Rename it as `skipsim3db.db`.
 
-Run SkipSim, and you will presented with the options of
-(1) loading a simulation
-(2) creating a new simulation. 
+Run SkipSim using the command-line interface:
 
-Click on `Open` from the top menu, and choose `100_1024_DEBIAN_1W` from the drop-down menu. 
-This simulation uses FAST_DEBIAN as a churn model, and it has 1024 nodes. The simulation is done over one week (168 hours).
+**Using Makefile:**
+```bash
+# List available simulations
+make run-list
 
-Click on `OK` and watch as the simulation runs. The experiment results will be outputted on the standard output.
+# Load the simulation
+make run-load NAME=100_1024_DEBIAN_1W
+```
+
+**Using direct Java command:**
+```bash
+# List available simulations
+java -cp "libs/*:out/production" Simulator.Main list
+
+# Load the simulation
+java -cp "libs/*:out/production" Simulator.Main load 100_1024_DEBIAN_1W
+```
+
+The `100_1024_DEBIAN_1W` simulation uses FAST_DEBIAN as a churn model, and it has 1024 nodes. The simulation is done over one week (168 hours).
+
+Watch as the simulation runs. The experiment results will be outputted on the standard output.

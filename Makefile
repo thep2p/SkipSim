@@ -16,6 +16,7 @@ JAVA = java
 # Classpath
 CP_COMPILE = $(LIBS_DIR)/*
 CP_TEST = $(LIBS_DIR)/*:$(PRODUCTION_DIR):$(TEST_OUT_DIR)
+CP_RUN = $(LIBS_DIR)/*:$(PRODUCTION_DIR)
 
 # Find all Java source files (excluding GUI files that require JavaFX)
 SRC_FILES = $(shell find $(SRC_DIR) -name "*.java" ! -name "NewMain.java")
@@ -53,6 +54,42 @@ test-verbose: compile-tests
 	@echo "Running tests with verbose output..."
 	$(JAVA) -cp "$(CP_TEST)" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 
+# Run simulation commands
+.PHONY: run-new
+run-new: compile
+	@if [ -z "$(NAME)" ]; then \
+		echo "Error: Simulation name required"; \
+		echo "Usage: make run-new NAME=<simulation-name>"; \
+		exit 1; \
+	fi
+	@echo "Creating new simulation: $(NAME)"
+	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME)
+
+.PHONY: run-load
+run-load: compile
+	@if [ -z "$(NAME)" ]; then \
+		echo "Error: Simulation name required"; \
+		echo "Usage: make run-load NAME=<simulation-name>"; \
+		exit 1; \
+	fi
+	@echo "Loading simulation: $(NAME)"
+	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME)
+
+.PHONY: run-list
+run-list: compile
+	@echo "Listing available simulations..."
+	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main list
+
+.PHONY: run-delete
+run-delete: compile
+	@if [ -z "$(NAME)" ]; then \
+		echo "Error: Simulation name required"; \
+		echo "Usage: make run-delete NAME=<simulation-name>"; \
+		exit 1; \
+	fi
+	@echo "Deleting simulation: $(NAME)"
+	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main delete $(NAME)
+
 # Clean build artifacts
 .PHONY: clean
 clean:
@@ -64,10 +101,27 @@ clean:
 .PHONY: help
 help:
 	@echo "SkipSim Makefile targets:"
+	@echo ""
+	@echo "Build targets:"
 	@echo "  make              - Compile main sources (default)"
 	@echo "  make compile      - Compile main sources"
 	@echo "  make compile-tests - Compile main and test sources"
+	@echo "  make clean        - Remove build artifacts"
+	@echo ""
+	@echo "Test targets:"
 	@echo "  make test         - Compile and run tests"
 	@echo "  make test-verbose - Run tests with verbose output"
-	@echo "  make clean        - Remove build artifacts"
+	@echo ""
+	@echo "Simulation targets:"
+	@echo "  make run-new NAME=<name>    - Create a new simulation"
+	@echo "  make run-load NAME=<name>   - Load an existing simulation"
+	@echo "  make run-list               - List available simulations"
+	@echo "  make run-delete NAME=<name> - Delete a simulation"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make run-new NAME=my_blockchain_sim"
+	@echo "  make run-load NAME=100_1024_DEBIAN_1W"
+	@echo "  make run-list"
+	@echo ""
+	@echo "Help:"
 	@echo "  make help         - Show this help message"

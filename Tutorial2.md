@@ -34,8 +34,19 @@ public class Blockchain extends SkipSimParameters {
 ```
 
 ### Running
-Running is the same as the previous tutorial.
-Click on `Open` from the top menu, and choose `100_1024_DEBIAN_1W` from the drop-down menu. 
-This simulation uses FAST_DEBIAN as a churn model, and it has 1024 nodes. The simulation is done over one week (168 hours).
 
-Click on `OK` and watch as the simulation runs. The experiment results will be outputted on the standard output.
+Running is the same as the previous tutorial using the command-line interface.
+
+**Using Makefile:**
+```bash
+make run-load NAME=100_1024_DEBIAN_1W
+```
+
+**Using direct Java command:**
+```bash
+java -cp "libs/*:out/production" Simulator.Main load 100_1024_DEBIAN_1W
+```
+
+The `100_1024_DEBIAN_1W` simulation uses FAST_DEBIAN as a churn model, and it has 1024 nodes. The simulation is done over one week (168 hours).
+
+Watch as the simulation runs. The experiment results will be outputted on the standard output.

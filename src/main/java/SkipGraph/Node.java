@@ -8,7 +8,7 @@ import ChurnStabilization.BucketItem;
 import ChurnStabilization.ChurnStochastics;
 import DataTypes.Constants;
 import DataTypes.Message;
-import Simulator.GUI;
+import Simulator.Main;
 import Simulator.SkipSimParameters;
 
 import java.awt.*;
@@ -630,8 +630,8 @@ public class Node extends SkipGraphNode implements Serializable
                 }
             }
         }
-        if (GUI.isReplica != null)
-            GUI.isReplica[index] = true;
+        if (Main.isReplica != null)
+            Main.isReplica[index] = true;
         replicaIDSet.add(dataOwnerIndex);
         //System.out.println("Node.java: index " + index + " replication load " + replicaIDSet.size() + " maximum load " +  SkipSimParameters.getStorageCapacity());
         return true;

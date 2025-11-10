@@ -1,4 +1,4 @@
-## Simulator
+and wh## Simulator
 This package contains configuration and execution procedures for the SkipSim itself.
 Mainly, SkipSimParameters class is used for configuring the simulator.
 ### SkipSimParameters
