@@ -88,29 +88,34 @@ Key classes:
 - `Blockchain.LightChain.Transaction`: Represents a transaction in the blockchain overlay
 - `SkipGraph.TopologyGenerator`: Generates network topologies with geographic coordinates
 
-### Simulation Schema System
+### Configuration System
 
-**All simulations are configured via simulation schemas** in the `SimulationSchema` package:
-1. Create a class extending `SkipSimParameters` (e.g., `Blockchain`, `StaticReplication`, `MultiObjectiveReplication`)
-2. In the constructor, set simulation parameters (system capacity, churn model, experiment flags, etc.)
-3. Register the schema in `SimulationSchema.SchemaManager` constructor
+**All simulations are configured via `.properties` files**:
+- Default: `simulation-config.properties`
+- Examples: `configs/quick-test.properties`, `configs/full-experiment.properties`
 
-Example:
-```java
-public class SchemaManager {
-    public SchemaManager() {
-        new Blockchain(); // Active schema
-    }
-}
-```
-
-The schema system controls:
+Configuration files control:
 - Simulation type (STATIC, DYNAMIC, BLOCKCHAIN)
 - System parameters (capacity, lifetime, landmarks)
 - Churn models (Debian Fast/Slow, Flatout)
 - Experiment flags
 - Replication algorithms
 - Name ID assignment strategies
+
+Example configuration:
+```properties
+simulation.type=BLOCKCHAIN
+system.capacity=1024
+system.lifetime=168
+system.topologies=100
+churn.model=DEBIAN_FAST
+churn.type=ADVERSARIAL
+malicious.fraction=0.16
+validator.threshold=12
+signature.threshold=1
+```
+
+Configuration is loaded automatically by `Main.java` at startup. No recompilation needed when changing parameters.
 
 ### Key Parameter Configuration
 

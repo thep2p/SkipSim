@@ -309,8 +309,7 @@ SkipSim/
 │   ├── AvailabilityPrediction/     # LUDP, BruijnGraph predictors
 │   ├── Aggregation/                # Aggregation protocols
 │   ├── Simulator/                  # Simulation engine
-│   │   ├── Main.java               # CLI entry point
-│   │   ├── SchemaManager.java      # Configuration file loader
+│   │   ├── Main.java               # CLI entry point and configuration loader
 │   │   ├── SkipSimParameters.java  # Global parameters
 │   │   └── DynamicSimulation.java  # Simulation loop
 │   └── DataBase/                   # SQLite persistence layer

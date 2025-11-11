@@ -6,6 +6,7 @@ import DataTypes.Constants;
 import LandmarkPlacement.landmarkSimulation;
 import SkipGraph.SkipGraphOperations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -50,12 +51,9 @@ public class Main {
             }
         }
 
-        // Initialize schema (with custom config if provided) and database
-        if (configFile != null) {
-            new SchemaManager(configFile);
-        } else {
-            new SchemaManager();  // Uses default simulation-config.properties
-        }
+        // Load configuration
+        String configPath = (configFile != null) ? configFile : "simulation-config.properties";
+        loadConfiguration(configPath);
 
         simDB = new SimulationDB();
         FileInteractions.PrintSimulationParameters();
@@ -102,6 +100,30 @@ public class Main {
                 System.err.println("Error: Unknown command '" + command + "'");
                 printUsage();
                 System.exit(1);
+        }
+    }
+
+    /**
+     * Loads simulation configuration from a properties file.
+     * @param configPath Path to the configuration file
+     */
+    private static void loadConfiguration(String configPath) {
+        File configFile = new File(configPath);
+        if (configFile.exists()) {
+            System.out.println("Loading configuration from: " + configPath);
+            ConfigLoader.loadFromFile(configPath);
+        } else {
+            System.err.println("ERROR: Configuration file not found: " + configPath);
+            System.err.println();
+            System.err.println("Available configuration files:");
+            System.err.println("  - simulation-config.properties (default)");
+            System.err.println("  - configs/quick-test.properties (64 nodes, 24 hours)");
+            System.err.println("  - configs/full-experiment.properties (1024 nodes, 168 hours)");
+            System.err.println();
+            System.err.println("Usage:");
+            System.err.println("  make run-load NAME=my_sim CONFIG=configs/quick-test.properties");
+            System.err.println("  or create a custom config file based on the examples above");
+            System.exit(1);
         }
     }
 
