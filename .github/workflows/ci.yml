@@ -23,33 +23,32 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
+        cache: 'maven'
 
     - name: Verify Java version
       run: java -version
 
-    - name: Download dependencies
-      run: |
-        curl -L -o libs/junit-4.13.2.jar https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
-        curl -L -o libs/hamcrest-core-1.3.jar https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
-        curl -L -o libs/sqlite-jdbc-3.45.1.0.jar https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.45.1.0/sqlite-jdbc-3.45.1.0.jar
-        curl -L -o libs/slf4j-api-1.7.36.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-        curl -L -o libs/slf4j-simple-1.7.36.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar
+    - name: Download Maven dependencies
+      run: mvn dependency:resolve
 
     - name: Compile sources
-      run: make compile
-
-    - name: Compile tests
-      run: make compile-tests
+      run: mvn compile
 
     - name: Run tests
-      run: make test
+      run: mvn test
 
     - name: Test summary
       if: always()
       run: |
-        if [ $? -eq 0 ]; then
-          echo "✅ All tests passed!"
-        else
-          echo "❌ Some tests failed"
-          exit 1
+        echo "📊 Test Results:"
+        if [ -f target/surefire-reports/*.xml ]; then
+          echo "Test reports generated in target/surefire-reports/"
         fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-java-${{ matrix.java-version }}
+        path: target/surefire-reports/
+        retention-days: 30

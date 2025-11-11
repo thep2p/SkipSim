@@ -1,5 +1,7 @@
 # SkipSim
 
+[![CI](https://github.com/thep2p/SkipSim/actions/workflows/ci.yml/badge.svg)](https://github.com/thep2p/SkipSim/actions/workflows/ci.yml)
+
 A comprehensive simulator for designing, implementing, and evaluating distributed Skip Graph-based protocols for peer-to-peer networks and blockchain systems.
 
 ## What is SkipSim?
