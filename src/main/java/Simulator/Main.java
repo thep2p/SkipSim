@@ -4,7 +4,6 @@ import DataBase.ChurnDBEntry;
 import DataBase.SimulationDB;
 import DataTypes.Constants;
 import LandmarkPlacement.landmarkSimulation;
-import SimulationSchema.SchemaManager;
 import SkipGraph.SkipGraphOperations;
 
 import java.util.ArrayList;

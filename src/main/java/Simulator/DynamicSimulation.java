@@ -15,7 +15,7 @@ import SkipGraph.SkipGraphOperations;
 
 import java.util.ArrayList;
 
-import static Simulator.Parameters.REPLICATION_TIME_INTERVAL;
+import static Simulator.SkipSimParameters.REPLICATION_TIME_INTERVAL;
 
 /**
  * Created by Yahya on 8/23/2016.

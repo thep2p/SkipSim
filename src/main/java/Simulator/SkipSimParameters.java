@@ -10,6 +10,11 @@ public class SkipSimParameters
      */
     public static int TXB_RATE = 1;
     /**
+     * The delay between replication time in dynamic replication when there exists more than a
+     * single data owner.
+     */
+    public static final int REPLICATION_TIME_INTERVAL = 1;
+    /**
      * Boolean flag determining whether randomized lookup tests should be performed at the beginning
      * of each time slot.
      */

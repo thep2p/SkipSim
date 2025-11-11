@@ -308,3 +308,37 @@ public class MyFeatureTest {
 - **Time Slots**: Simulations operate in hourly time slots for dynamic/blockchain modes
 - **Transaction Rate**: `TXB_RATE` controls transactions generated per node per time slot
 - **Geographic Model**: Nodes have 2D coordinates in a domain of size `DomainSize × DomainSize`
+
+## Documentation Guidelines
+
+### Keeping README.md Updated
+
+**IMPORTANT**: When making significant changes to the codebase, ensure that `README.md` remains accurate and up-to-date.
+
+**Update README.md when:**
+- Changing how the project is built or configured
+- Adding/removing major features or components
+- Modifying the project structure
+- Changing how users interact with the simulator
+- Updating configuration approaches or command-line interfaces
+
+**DO NOT update README.md for:**
+- Minor bug fixes that don't change user-facing behavior
+- Internal refactoring that doesn't affect usage
+- Implementation details that don't impact the API
+
+**Guidelines:**
+- Keep changes concise - README.md is for users, not exhaustive documentation
+- Update relevant sections only (don't rewrite the entire file)
+- Ensure Quick Start examples remain valid and tested
+- Verify that configuration examples match actual config files
+- Remove outdated references to deprecated approaches
+
+### Configuration-First Approach
+
+SkipSim uses configuration files exclusively. The legacy schema class approach has been removed. All configuration must be done via `.properties` files:
+
+- Default: `simulation-config.properties`
+- Examples: `configs/quick-test.properties`, `configs/full-experiment.properties`
+
+When documenting features, always show the configuration file approach, not Java code modification.

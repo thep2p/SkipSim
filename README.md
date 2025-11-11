@@ -308,12 +308,9 @@ SkipSim/
 │   ├── NameIDAssignment/           # Name ID strategies (LANS, DPAD, LDHT, etc.)
 │   ├── AvailabilityPrediction/     # LUDP, BruijnGraph predictors
 │   ├── Aggregation/                # Aggregation protocols
-│   ├── SimulationSchema/           # Simulation configurations
-│   │   ├── SchemaManager.java      # Configuration loader
-│   │   ├── Blockchain.java         # Full blockchain schema
-│   │   └── BlockchainSmall.java    # Quick test schema
 │   ├── Simulator/                  # Simulation engine
 │   │   ├── Main.java               # CLI entry point
+│   │   ├── SchemaManager.java      # Configuration file loader
 │   │   ├── SkipSimParameters.java  # Global parameters
 │   │   └── DynamicSimulation.java  # Simulation loop
 │   └── DataBase/                   # SQLite persistence layer
@@ -459,60 +456,6 @@ Always use fixtures instead of manual construction to avoid common pitfalls.
   - `getSystemCapacity()` - Number of nodes
   - `getLookupTableSize()` - Skip Graph levels
   - `getMaliciousFraction()` - Malicious node fraction
-
-## Alternative: Schema Classes (Legacy)
-
-If you prefer Java-based configuration instead of property files:
-
-1. Create a schema class in `SimulationSchema/`:
-
-```java
-package SimulationSchema;
-
-import DataTypes.Constants;
-import Simulator.SkipSimParameters;
-
-public class MyExperiment extends SkipSimParameters {
-    public MyExperiment() {
-        SimulationType = Constants.SimulationType.BLOCKCHAIN;
-        SystemCapacity = 1024;
-        LandmarksNum = 10;
-        NameIDLength = 10;
-        TopologyNumbers = 100;
-        LifeTime = 168;
-        ChurnType = Constants.Churn.Type.ADVERSARIAL;
-
-        // Debian Fast churn model
-        SessionLengthScaleParameter =
-            Constants.Churn.Model.Debian.Fast.SessionLength.Scale;
-        SessionLengthShapeParameter =
-            Constants.Churn.Model.Debian.Fast.SessionLength.Shape;
-        InterarrivalScaleParameter =
-            Constants.Churn.Model.Debian.Fast.SessionInterarrival.Scale;
-        InterarrivalShapeParameter =
-            Constants.Churn.Model.Debian.Fast.SessionInterarrival.Shape;
-    }
-}
-```
-
-2. Activate in `SimulationSchema/SchemaManager.java`:
-
-```java
-package SimulationSchema;
-
-public class SchemaManager {
-    public SchemaManager() {
-        new MyExperiment();  // Activate your schema
-    }
-}
-```
-
-3. Recompile:
-```bash
-make clean && make compile
-```
-
-**Note**: Configuration files are recommended as they don't require recompilation.
 
 ## Build Commands Reference
 

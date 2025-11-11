@@ -2,7 +2,6 @@ package TestFixtures;
 
 import Blockchain.LightChain.Transaction;
 import DataTypes.Constants;
-import SimulationSchema.Blockchain;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
@@ -44,10 +43,7 @@ public class SkipGraphTestFixture {
      * Sets up a minimal blockchain simulation configuration.
      */
     private void initializeParameters() {
-        // Initialize with Blockchain schema for testing
-        new Blockchain();
-
-        // Override with minimal test parameters
+        // Set minimal test parameters
         SkipSimParameters.setSimulationType(Constants.SimulationType.BLOCKCHAIN);
         SkipSimParameters.setValidatorThreshold(12);
         SkipSimParameters.setSignatureThreshold(1);

@@ -5,7 +5,7 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
 
-import static Simulator.Parameters.REPLICATION_TIME_INTERVAL;
+import static Simulator.SkipSimParameters.REPLICATION_TIME_INTERVAL;
 
 public class ReplicationEvaluation
 {
