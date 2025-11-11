@@ -47,6 +47,10 @@ public class SkipGraphTestFixture {
         SkipSimParameters.setSimulationType(Constants.SimulationType.BLOCKCHAIN);
         SkipSimParameters.setValidatorThreshold(12);
         SkipSimParameters.setSignatureThreshold(1);
+
+        // Set churn model to initialize Weibull distribution parameters
+        // This is required for TopologyGenerator to work correctly
+        SkipSimParameters.setChurnModel(Constants.Churn.Model.Flatout.Name);
     }
 
     /**
