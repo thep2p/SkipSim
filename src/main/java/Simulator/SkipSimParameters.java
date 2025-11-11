@@ -258,6 +258,10 @@ public class SkipSimParameters
         CurrentTopologyIndex++;
     }
 
+    public static void resetTopologyIndex()
+    {
+        CurrentTopologyIndex = 0;
+    }
 
     public static int getCurrentTopologyIndex()
     {

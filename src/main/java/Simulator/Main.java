@@ -155,6 +155,9 @@ public class Main {
     private void createNewSimulation(String simulationName) {
         System.out.println("\n=== Creating New Simulation: " + simulationName + " ===");
 
+        // Reset topology index at the start of simulation
+        SkipSimParameters.resetTopologyIndex();
+
         // Save simulation name to database
         simDB.saveSimulationName(simulationName, SkipSimParameters.getSimulationType());
 
@@ -184,6 +187,9 @@ public class Main {
 
                 // Create Skip Graph operations
                 SkipGraphOperations sgo = new SkipGraphOperations(isBlockChain);
+
+                // Generate landmarks for the topology
+                sgo.getTG().mLandmarks.generatingLandmarks();
 
                 // Run simulation based on type
                 if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.LANDMARK)) {
@@ -237,6 +243,9 @@ public class Main {
     private void loadSimulation(String simulationName) {
         System.out.println("\n=== Loading Simulation: " + simulationName + " ===");
 
+        // Reset topology index at the start of simulation
+        SkipSimParameters.resetTopologyIndex();
+
         // Fetch simulation type from database to determine which type to load
         String simType = SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)
                 ? Constants.SimulationType.DYNAMIC
@@ -249,6 +258,8 @@ public class Main {
             System.out.println("Creating new simulation...\n");
             createNewSimulation(simulationName);
             System.out.println("\n=== Now Loading the Created Simulation ===\n");
+            // Reset topology index again after creation before loading
+            SkipSimParameters.resetTopologyIndex();
         }
 
         int totalTopologies = SkipSimParameters.getTopologies();

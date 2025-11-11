@@ -415,9 +415,11 @@ public class DynamicSimulation
             previousArrivalTime = 0;
             System.out.println("DynamicSimulation.java: Generating the topology");
                     /*
-                    Generating landmarks
+                    Generating landmarks (only if not already generated)
                     */
-            sgo.getTG().mLandmarks.generatingLandmarks();
+            if (sgo.getTG().mLandmarks.getLandmarkCoordination(0) == null) {
+                sgo.getTG().mLandmarks.generatingLandmarks();
+            }
                     /*
                     Generating Nodes
                      */
