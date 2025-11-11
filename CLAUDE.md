@@ -8,7 +8,15 @@ SkipSim is a simulator for designing, implementing, and evaluating distributed S
 
 ## Build and Run
 
-This is an IntelliJ IDEA project with Java sources in `src/main/java/`. The project supports both IntelliJ's native build system and command-line builds via Makefile.
+This is a Maven-based Java project with sources in `src/main/java/`. The project uses Maven for dependency management and build automation, with a Makefile wrapper for convenience.
+
+**First-time setup:**
+```bash
+# Download all dependencies from Maven Central
+make install
+# Or use Maven directly:
+mvn dependency:resolve
+```
 
 **Command-line build and run:**
 ```bash
@@ -18,13 +26,22 @@ make compile
 # Run tests
 make test
 
-# Run a simulation (after compilation)
-java -cp "libs/*:out/production" Simulator.Main <command> [arguments]
+# Run a simulation using Makefile
+make run-list
+make run-load NAME=my_simulation
+make run-new NAME=new_simulation
+
+# Or use Maven directly:
+mvn compile
+mvn test
+mvn exec:java -Dexec.args="list"
+mvn exec:java -Dexec.args="load my_simulation"
 ```
 
 **To build and run in IntelliJ:**
 - Open the project in IntelliJ IDEA
-- Ensure JDK is configured
+- IntelliJ will automatically detect the Maven `pom.xml` and import dependencies
+- Ensure JDK 11 or higher is configured
 - Main entry point: `Simulator.Main.main()`
 - Build using IntelliJ's Build > Build Project
 
@@ -33,22 +50,26 @@ The simulator supports four main operations via command-line:
 
 1. **Create a new simulation:**
    ```bash
-   java -cp "libs/*:out/production" Simulator.Main new <simulation-name>
+   make run-new NAME=<simulation-name>
+   # Or: mvn exec:java -Dexec.args="new <simulation-name>"
    ```
 
 2. **Load an existing simulation:**
    ```bash
-   java -cp "libs/*:out/production" Simulator.Main load <simulation-name>
+   make run-load NAME=<simulation-name>
+   # Or: mvn exec:java -Dexec.args="load <simulation-name>"
    ```
 
 3. **List available simulations:**
    ```bash
-   java -cp "libs/*:out/production" Simulator.Main list
+   make run-list
+   # Or: mvn exec:java -Dexec.args="list"
    ```
 
 4. **Delete a simulation:**
    ```bash
-   java -cp "libs/*:out/production" Simulator.Main delete <simulation-name>
+   make run-delete NAME=<simulation-name>
+   # Or: mvn exec:java -Dexec.args="delete <simulation-name>"
    ```
 
 Simulations are stored in a SQLite database (`skipsim3db.db`). When creating a new simulation, the system generates the specified number of topologies based on your schema configuration. When loading an existing simulation, it replays the simulation using stored topology and churn data.
@@ -172,25 +193,24 @@ Test code is located in `src/test/java/`. The project uses **JUnit 4** for testi
 - `SkipGraphTestFixture`: Reusable fixture for generating Skip Graph test data
 
 **Setting up JUnit:**
-JUnit 4 libraries are included in the `libs/` directory:
-- `libs/junit-4.13.2.jar`
-- `libs/hamcrest-core-1.3.jar`
+JUnit 4 is managed by Maven and defined in `pom.xml`. Maven will automatically download JUnit (4.13.2) and Hamcrest (1.3) when you run `make install` or `mvn dependency:resolve`.
 
-Quick setup in IntelliJ:
-1. Open a test file
-2. Click on red `@Test` annotation
-3. Alt+Enter → "Add JUnit 4 to classpath"
+IntelliJ IDEA will automatically detect Maven dependencies and configure the classpath.
 
 **Running Tests:**
 ```bash
 # Using Makefile
 make test
 
+# Using Maven directly
+mvn test
+
+# Run with verbose output
+make test-verbose
+# Or: mvn test -X
+
 # In IntelliJ: Right-click on test class → Run 'TransactionInsertionTest'
 # Or click green arrow next to test method/class
-
-# From command line:
-java -cp "libs/*:out/production:out/test" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
 ```
 
 ### Using Test Fixtures

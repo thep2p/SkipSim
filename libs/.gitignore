@@ -1,0 +1,20 @@
+# Ignore Maven-managed dependencies (will be downloaded automatically)
+# Keep only system dependencies that aren't in Maven Central
+
+# Maven-managed (ignored)
+bcprov-jdk15on-*.jar
+commons-lang3-*.jar
+commons-math3-*.jar
+corba-api-*.jar
+hamcrest-core-*.jar
+java-util-*.jar
+junit-*.jar
+slf4j-*.jar
+sqlite-jdbc-*.jar
+ujmp-complete-*.jar
+
+# System dependencies - explicitly NOT ignored (kept in git)
+!javailp-1.2a.jar
+!javaml-0.1.7/
+!lpsolve55j.jar
+!mdsj.jar

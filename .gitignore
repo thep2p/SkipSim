@@ -1,8 +1,8 @@
 # Build artifacts
 .idea/
 out/
+target/
 *.class
-libs/
 
 # Database files
 *.db

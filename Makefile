@@ -1,60 +1,50 @@
 # Makefile for SkipSim project
-# This Makefile provides targets for compiling, testing, and cleaning the project
+# This Makefile provides convenient wrappers around Maven commands
 
-# Directories
-SRC_DIR = src/main/java
-TEST_DIR = src/test/java
+# Maven executable
+MVN = mvn
+
+# Directories (for backwards compatibility and direct java runs)
 OUT_DIR = out
 PRODUCTION_DIR = $(OUT_DIR)/production
-TEST_OUT_DIR = $(OUT_DIR)/test
 LIBS_DIR = libs
-
-# Java compiler
-JAVAC = javac
-JAVA = java
-
-# Classpath
-CP_COMPILE = $(LIBS_DIR)/*
-CP_TEST = $(LIBS_DIR)/*:$(PRODUCTION_DIR):$(TEST_OUT_DIR)
-CP_RUN = $(LIBS_DIR)/*:$(PRODUCTION_DIR)
-
-# Find all Java source files (excluding GUI files that require JavaFX)
-SRC_FILES = $(shell find $(SRC_DIR) -name "*.java" ! -name "NewMain.java")
-TEST_FILES = $(shell find $(TEST_DIR) -name "*.java")
 
 # Default target
 .PHONY: all
 all: compile
 
+# Download dependencies (first time setup)
+.PHONY: install
+install:
+	@echo "Downloading Maven dependencies..."
+	@$(MVN) dependency:resolve
+	@echo "Dependencies downloaded successfully."
+
 # Compile main sources
 .PHONY: compile
 compile:
-	@echo "Compiling main sources..."
-	@mkdir -p $(PRODUCTION_DIR)
-	@$(JAVAC) -d $(PRODUCTION_DIR) -cp "$(CP_COMPILE)" $(SRC_FILES)
-	@echo "Main sources compiled successfully."
+	@echo "Compiling main sources with Maven..."
+	@$(MVN) compile
 
 # Compile test sources
 .PHONY: compile-tests
-compile-tests: compile
-	@echo "Compiling test sources..."
-	@mkdir -p $(TEST_OUT_DIR)
-	@$(JAVAC) -d $(TEST_OUT_DIR) -cp "$(CP_COMPILE):$(PRODUCTION_DIR)" $(TEST_FILES)
-	@echo "Test sources compiled successfully."
+compile-tests:
+	@echo "Compiling test sources with Maven..."
+	@$(MVN) test-compile
 
 # Run tests
 .PHONY: test
-test: compile-tests
-	@echo "Running tests..."
-	@$(JAVA) -cp "$(CP_TEST)" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
+test:
+	@echo "Running tests with Maven..."
+	@$(MVN) test
 
 # Run tests with verbose output
 .PHONY: test-verbose
-test-verbose: compile-tests
+test-verbose:
 	@echo "Running tests with verbose output..."
-	$(JAVA) -cp "$(CP_TEST)" org.junit.runner.JUnitCore SkipGraph.TransactionInsertionTest
+	@$(MVN) test -X
 
-# Run simulation commands
+# Run simulation commands using Maven exec plugin
 .PHONY: run-new
 run-new: compile
 	@if [ -z "$(NAME)" ]; then \
@@ -65,9 +55,9 @@ run-new: compile
 	@echo "Creating new simulation: $(NAME)"
 	@if [ -n "$(CONFIG)" ]; then \
 		echo "Using config file: $(CONFIG)"; \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME) --config $(CONFIG); \
+		$(MVN) exec:java -Dexec.args="new $(NAME) --config $(CONFIG)"; \
 	else \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main new $(NAME); \
+		$(MVN) exec:java -Dexec.args="new $(NAME)"; \
 	fi
 
 .PHONY: run-load
@@ -80,9 +70,9 @@ run-load: compile
 	@echo "Loading simulation: $(NAME)"
 	@if [ -n "$(CONFIG)" ]; then \
 		echo "Using config file: $(CONFIG)"; \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME) --config $(CONFIG); \
+		$(MVN) exec:java -Dexec.args="load $(NAME) --config $(CONFIG)"; \
 	else \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main load $(NAME); \
+		$(MVN) exec:java -Dexec.args="load $(NAME)"; \
 	fi
 
 .PHONY: run-list
@@ -90,9 +80,9 @@ run-list: compile
 	@echo "Listing available simulations..."
 	@if [ -n "$(CONFIG)" ]; then \
 		echo "Using config file: $(CONFIG)"; \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main list --config $(CONFIG); \
+		$(MVN) exec:java -Dexec.args="list --config $(CONFIG)"; \
 	else \
-		$(JAVA) -cp "$(CP_RUN)" Simulator.Main list; \
+		$(MVN) exec:java -Dexec.args="list"; \
 	fi
 
 .PHONY: run-delete
@@ -103,19 +93,22 @@ run-delete: compile
 		exit 1; \
 	fi
 	@echo "Deleting simulation: $(NAME)"
-	@$(JAVA) -cp "$(CP_RUN)" Simulator.Main delete $(NAME)
+	@$(MVN) exec:java -Dexec.args="delete $(NAME)"
 
 # Clean build artifacts
 .PHONY: clean
 clean:
-	@echo "Cleaning build artifacts..."
-	@rm -rf $(OUT_DIR)
+	@echo "Cleaning build artifacts with Maven..."
+	@$(MVN) clean
 	@echo "Clean complete."
 
 # Display help
 .PHONY: help
 help:
-	@echo "SkipSim Makefile targets:"
+	@echo "SkipSim Makefile - Maven-based build system"
+	@echo ""
+	@echo "Setup:"
+	@echo "  make install      - Download Maven dependencies (first time setup)"
 	@echo ""
 	@echo "Build targets:"
 	@echo "  make              - Compile main sources (default)"
@@ -124,8 +117,8 @@ help:
 	@echo "  make clean        - Remove build artifacts"
 	@echo ""
 	@echo "Test targets:"
-	@echo "  make test         - Compile and run tests"
-	@echo "  make test-verbose - Run tests with verbose output"
+	@echo "  make test         - Compile and run all tests"
+	@echo "  make test-verbose - Run tests with verbose Maven output"
 	@echo ""
 	@echo "Simulation targets:"
 	@echo "  make run-load NAME=<name> [CONFIG=<file>]   - Load or create simulation"
@@ -134,15 +127,18 @@ help:
 	@echo "  make run-delete NAME=<name>                 - Delete a simulation"
 	@echo ""
 	@echo "Examples:"
+	@echo "  make install                              # First time setup"
+	@echo "  make compile                              # Build the project"
+	@echo "  make test                                 # Run tests"
 	@echo "  make run-load NAME=my_sim"
 	@echo "  make run-load NAME=my_sim CONFIG=configs/quick-test.properties"
 	@echo "  make run-new NAME=my_sim CONFIG=configs/full-experiment.properties"
 	@echo "  make run-list"
 	@echo ""
-	@echo "Configuration:"
-	@echo "  Default config: simulation-config.properties"
-	@echo "  Custom configs: configs/quick-test.properties, configs/full-experiment.properties"
-	@echo "  Edit config files to change parameters without recompilation!"
+	@echo "Maven commands (alternative):"
+	@echo "  mvn compile                               # Compile sources"
+	@echo "  mvn test                                  # Run tests"
+	@echo "  mvn exec:java -Dexec.args=\"list\"          # Run simulator"
 	@echo ""
 	@echo "Help:"
 	@echo "  make help         - Show this help message"
