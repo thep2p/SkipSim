@@ -42,7 +42,10 @@ public class Agg_Alg1_ELATS extends Aggregation
 
     private void Algorithm()
     {
-        log.info("ELATS started");
+        log.info("ELATS aggregation started [topology={}, initiator={}, capacity={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            initiator,
+            SkipSimParameters.getSystemCapacity());
 
         //initiatorsList = initiators();
         //for(int i = 0 ; i < initiatorsList.size() ; i++)

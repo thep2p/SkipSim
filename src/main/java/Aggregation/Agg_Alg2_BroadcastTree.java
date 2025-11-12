@@ -17,13 +17,15 @@ public class Agg_Alg2_BroadcastTree extends Aggregation
 
         public Agg_Alg2_BroadcastTree(SkipGraphOperations insgo)
             {
-                log.info("BroadcastTree started");
                 sgo = insgo;
                 Random r  = new Random();
                 initiator = r.nextInt()% SkipSimParameters.getSystemCapacity();
                 while(initiator<0)
                     initiator = r.nextInt()% SkipSimParameters.getSystemCapacity();
-                log.debug("Initiator: {}", initiator);
+                log.info("BroadcastTree aggregation started [topology={}, initiator={}, capacity={}]",
+                    SkipSimParameters.getCurrentTopologyIndex(),
+                    initiator,
+                    SkipSimParameters.getSystemCapacity());
                 broadCast(initiator);
                 //findRoot();
                 energyEvaluation("BroadCast ");

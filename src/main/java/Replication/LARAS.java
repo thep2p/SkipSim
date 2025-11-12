@@ -29,7 +29,11 @@ public class LARAS extends Replication
     private void RWD(int dataOwnerIndex)
     {
 
-        log.info("RWD of LARAS has started");
+        log.info("LARAS RWD started [dataOwner={}, regions={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
             if (getSubReplicationDegree(i) == 0) continue;

@@ -213,7 +213,11 @@ public class Nodes extends SkipGraphNodes
 //        Updates the closet landmark to each node
 //         */
 //        updateClosestLandmark(landmarks);
-        log.info("Blockchain aggregation started");
+        log.info("Blockchain aggregation started [topology={}, domainSize={}, FPTI={}, dataOwners={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            SkipSimParameters.getAvailabilityAggregationDomainSize(),
+            SkipSimParameters.getFPTI(),
+            SkipSimParameters.getDataOwnerNumber());
         qosTable = new BlockchainAvailabilityAggreegation(SkipSimParameters.getAvailabilityAggregationDomainSize(), SkipSimParameters.getFPTI());
         for (int dataOwner = 0; dataOwner < SkipSimParameters.getDataOwnerNumber(); dataOwner++)
         {

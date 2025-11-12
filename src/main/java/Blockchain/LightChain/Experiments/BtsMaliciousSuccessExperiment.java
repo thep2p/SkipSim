@@ -58,7 +58,8 @@ public class BtsMaliciousSuccessExperiment {
      */
     public static void calculateResults(int time) {
         if(!successMap.containsKey(time)) {
-            log.info("Bts. Malicious Success Experiment: For t={} there were no malicious nodes chosen to generate a transaction.", time);
+            log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: noMaliciousBootstrapping=true",
+                SkipSimParameters.getCurrentTopologyIndex(), time);
         } else {
             Map<Integer, Integer> successMapForTime = successMap.get(time);
             // Find and report the avg. success chance for the current time.
@@ -66,12 +67,14 @@ public class BtsMaliciousSuccessExperiment {
                     .mapToInt(x -> x)
                     .sum()
                     / acquisitions;
-            log.info("Bts. Malicious Success Experiment: For t={} the avg malicious success chance (over the malicious nodes) was {}", time, avgSuccessForTime);
+            log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: avgMaliciousSuccessRate={}",
+                SkipSimParameters.getCurrentTopologyIndex(), time, avgSuccessForTime);
             successChances.add(avgSuccessForTime);
         }
         // Find and report the avg. success chance over all time slots.
         double overallSuccessChance = successChances.stream().mapToDouble(x -> x).average().orElse(0);
-        log.info("Bts. Malicious Success Experiment: Avg. malicious success chance over time is {}", overallSuccessChance);
+        log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: overallAvgSuccessRate={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallSuccessChance);
         acquisitions = 0;
     }
 

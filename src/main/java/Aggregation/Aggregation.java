@@ -52,7 +52,8 @@ public class Aggregation
                             }
                     }
 
-                log.debug("Find root completed, root: {}", root);
+                log.debug("Find root completed [algorithm={}, root={}, topology={}]",
+                    this.getClass().getSimpleName(), root, SkipSimParameters.getCurrentTopologyIndex());
                 return root;
             }
 

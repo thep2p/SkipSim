@@ -17,7 +17,6 @@ public class Agg_Alg3_PrefixTree extends Aggregation
 
         public Agg_Alg3_PrefixTree(SkipGraphOperations insgo)
             {
-                log.info("PrefixTree started");
                 sgo = insgo;
 //                Random r  = new Random();
 //                initiator = r.nextInt()%Simulator.system.getSystemCapacity();
@@ -26,6 +25,10 @@ public class Agg_Alg3_PrefixTree extends Aggregation
 //                System.out.println("Initiator " + initiator);
 ///                initPrefix(initiator);
                 ArrayList <Integer> initiatorsList = initiators();
+                log.info("PrefixTree aggregation started [topology={}, initiators={}, depth={}]",
+                    SkipSimParameters.getCurrentTopologyIndex(),
+                    initiatorsList.size(),
+                    SkipSimParameters.getNameIDLength());
                 for(int i = 0 ; i < initiatorsList.size() ; i++)
                     prefix(initiatorsList.get(i));
                 findRoot();

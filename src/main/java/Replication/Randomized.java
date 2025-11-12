@@ -15,7 +15,11 @@ public class Randomized extends Replication
 
     protected void randomReplicaGenerator(int dataOwnerID)
     {
-        log.info("Randomized replication started for data owner {}", dataOwnerID);
+        log.info("Randomized replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         Random random = new Random();
         int i = 0;
         while (i < SkipSimParameters.getReplicationDegree())
@@ -27,7 +31,8 @@ public class Randomized extends Replication
             boolean replicationResult = ((Node) sgo.getTG().mNodeSet.getNode(index)).setAsReplica(dataOwnerID);
             if (replicationResult)
             {
-                log.debug("Replica created at index {} - total replicas: {}", index, i);
+                log.debug("Replica created [dataOwner={}, nodeIndex={}, replicaNum={}, topology={}]",
+                    dataOwnerID, index, i + 1, SkipSimParameters.getCurrentTopologyIndex());
                 i++;
             }
         }

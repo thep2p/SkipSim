@@ -17,7 +17,11 @@ public class PowerOfChoice extends Randomized
     @Override
     protected void randomReplicaGenerator(int dataOwnerID)
     {
-        log.info("Randomized replication started for data owner {}", dataOwnerID);
+        log.info("PowerOfChoice replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         Random random = new Random();
         /*
         Addresses of the rep1 and rep2
@@ -51,12 +55,14 @@ public class PowerOfChoice extends Randomized
             if (nodeRep1.getBandwidthCapacity() * nodeRep1.getNormalizedStorageCapacity() > nodeRep2.getBandwidthCapacity() * nodeRep2.getNormalizedStorageCapacity())
             {
                 nodeRep1.setAsReplica(dataOwnerID);
-                log.debug("Replica created at index {} - total replicas: {}", rep1, i + 1);
+                log.debug("Replica created [dataOwner={}, nodeIndex={}, replicaNum={}, choice=REP1, topology={}]",
+                    dataOwnerID, rep1, i + 1, SkipSimParameters.getCurrentTopologyIndex());
             }
             else
             {
                 nodeRep2.setAsReplica(dataOwnerID);
-                log.debug("Replica created at index {} - total replicas: {}", rep2, i + 1);
+                log.debug("Replica created [dataOwner={}, nodeIndex={}, replicaNum={}, choice=REP2, topology={}]",
+                    dataOwnerID, rep2, i + 1, SkipSimParameters.getCurrentTopologyIndex());
             }
             i++;
 

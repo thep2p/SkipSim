@@ -20,7 +20,11 @@ public class CorrelationBased extends Replication
     public void Algorithm(SkipGraphOperations sgo, int dataOwnerID)
     {
         this.sgo = sgo;
-        log.info("CorrelationBased.java: The CorrelationBased replication started");
+        log.info("CorrelationBased replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         resetRep();
 
         Node dataOwner = (Node) sgo.getTG().mNodeSet.getNode(dataOwnerID);

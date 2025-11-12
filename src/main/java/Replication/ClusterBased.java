@@ -21,7 +21,11 @@ public class ClusterBased extends Replication
     public void Algorithm(SkipGraphOperations sgo, int dataOwnerID)
     {
         this.sgo = sgo;
-        log.info("ClusterBased.java: The clusterbased replication started");
+        log.info("ClusterBased replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         resetRep();
         dataRequesterPopulation();
         Node dataOwner = (Node) sgo.getTG().mNodeSet.getNode(dataOwnerID);

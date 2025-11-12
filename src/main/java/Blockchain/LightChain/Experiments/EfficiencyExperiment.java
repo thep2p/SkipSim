@@ -1,5 +1,6 @@
 package Blockchain.LightChain.Experiments;
 
+import Simulator.SkipSimParameters;
 import Blockchain.LightChain.Transaction;
 import SkipGraph.Node;
 import org.slf4j.Logger;
@@ -49,7 +50,8 @@ public class EfficiencyExperiment {
      */
     public static void calculateResults(int time) {
         if(!honestNodesNumber.containsKey(time)) {
-            log.info("Efficiency Experiment: For t={} there were no validator acquisition.", time);
+            log.info("Efficiency experiment [topology={}, time={}]: noValidatorAcquisitions=true",
+                SkipSimParameters.getCurrentTopologyIndex(), time);
         } else {
             Map<Integer, Integer> honestNodesNumberForTime = honestNodesNumber.get(time);
             // Find and report the avg. number of honest nodes for the current time slot.
@@ -57,7 +59,8 @@ public class EfficiencyExperiment {
                     .mapToInt(x -> x)
                     .average()
                     .orElse(0);
-            log.info("Efficiency Experiment: For t={} the avg. honest node per transaction is {}", time, avgHonestNodesForTime);
+            log.info("Efficiency experiment [topology={}, time={}]: avgHonestNodesPerTx={}",
+                SkipSimParameters.getCurrentTopologyIndex(), time, avgHonestNodesForTime);
             avgHonestNodes.add(avgHonestNodesForTime);
         }
         // Find and report the avg. number of honest nodes over all time slots.
@@ -65,7 +68,8 @@ public class EfficiencyExperiment {
                 .mapToDouble(x -> x)
                 .average()
                 .orElse(0);
-        log.info("Efficiency Experiment: Avg. honest node over time is {}", overallHonestNodes);
+        log.info("Efficiency experiment [topology={}, time={}]: overallAvgHonestNodes={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallHonestNodes);
     }
 
     public static void reset() {

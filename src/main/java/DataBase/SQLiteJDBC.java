@@ -22,7 +22,7 @@ public class SQLiteJDBC
         {
             Class.forName("org.sqlite.JDBC");
             Connection connection = DriverManager.getConnection(SkipSimDB);  //Create Database or connect if it exists
-            log.info("Database connection opened successfully");
+            log.info("Database connection opened [path={}, status=READY]", SkipSimDB);
 
             stmt = connection.createStatement();
 

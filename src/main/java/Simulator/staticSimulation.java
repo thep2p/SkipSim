@@ -21,7 +21,11 @@ public class staticSimulation
 
     private void Simulation(SkipGraphOperations sgo, boolean generateCoordination)
     {
-        log.info("Static Simulation started");
+        log.info("Static simulation started [capacity={}, landmarks={}, nameIDAssignment={}, replicationAlgorithm={}]",
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getNameIDAssignment(),
+            SkipSimParameters.getReplicationAlgorithm());
 
 
         //Generating or loading landmarks

@@ -101,7 +101,8 @@ public class AvailabilityExperiment {
             currAvgAvailability += averageAvailability * txList.size();
         }
         currAvgAvailability /= watchedTransactions.size();
-        log.info("Availability Experiment: For t={} avg. availability is {}", time, currAvgAvailability);
+        log.info("Availability experiment [topology={}, time={}]: avgAvailability={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, currAvgAvailability);
 
         // Calculate the overall availability in two different ways.
 
@@ -122,8 +123,10 @@ public class AvailabilityExperiment {
         overallCorrectedAvailability /= correctedDivisor;
         overallNaiveAvailability /= naiveDivisor;
         // Report the naive & corrected availability.
-        log.info("Availability Experiment: Avg. (naive) availability over time is {}", overallNaiveAvailability);
-        log.info("Availability Experiment: Avg. (corrected) availability over time is {}", overallCorrectedAvailability);
+        log.info("Availability experiment [topology={}, time={}]: overallNaiveAvailability={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallNaiveAvailability);
+        log.info("Availability experiment [topology={}, time={}]: overallCorrectedAvailability={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallCorrectedAvailability);
     }
 
     /**

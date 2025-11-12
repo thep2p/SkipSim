@@ -405,7 +405,10 @@ public class DynamicSimulation
         if (currentTime == 0)
         {
             previousArrivalTime = 0;
-            log.info("Generating topology");
+            log.info("Generating topology [index={}, capacity={}, lifetime={}h]",
+                SkipSimParameters.getCurrentTopologyIndex(),
+                SkipSimParameters.getSystemCapacity(),
+                SkipSimParameters.getLifeTime());
             // Generating landmarks (only if not already generated)
             if (sgo.getTG().mLandmarks.getLandmarkCoordination(0) == null) {
                 sgo.getTG().mLandmarks.generatingLandmarks();
@@ -466,7 +469,11 @@ public class DynamicSimulation
             sgo.getTG().updateNextArrivalTime(arrivingNode);
         }
 
-        log.debug("Total number of arrivals: {}", ChurnStochastics.getTopologyArrivals());
+        log.debug("Total arrivals [topology={}, time={}, arrivals={}, onlineNodes={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            currentTime,
+            ChurnStochastics.getTopologyArrivals(),
+            sgo.getTG().mNodeSet.getNumberOfOnlineNodes());
         return churnLog;
     }
 

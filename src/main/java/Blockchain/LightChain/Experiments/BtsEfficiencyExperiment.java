@@ -1,5 +1,6 @@
 package Blockchain.LightChain.Experiments;
 
+import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,8 @@ public class BtsEfficiencyExperiment {
      */
     public static void calculateResults(int time) {
         if(!honestIntroducerNumber.containsKey(time)) {
-            log.info("Bts. Efficiency Experiment: For t={} there were no bootstrapping.", time);
+            log.info("BtsEfficiency experiment [topology={}, time={}]: noBootstrapping=true",
+                SkipSimParameters.getCurrentTopologyIndex(), time);
         } else {
             Map<Integer, Integer> honestIntroducerNumberForTime = honestIntroducerNumber.get(time);
             // Finds and reports the average honest introducers for this time slot.
@@ -55,7 +57,8 @@ public class BtsEfficiencyExperiment {
                     .mapToInt(x -> x)
                     .average()
                     .orElse(0);
-            log.info("Bts. Efficiency Experiment: For t={} the avg. honest view introducer per node is {}", time, avgHonestIntroducerForTime);
+            log.info("BtsEfficiency experiment [topology={}, time={}]: avgHonestIntroducersPerNode={}",
+                SkipSimParameters.getCurrentTopologyIndex(), time, avgHonestIntroducerForTime);
             avgHonestIntroducers.add(avgHonestIntroducerForTime);
         }
         // Finds and reports the average honest introducers for all time slots.
@@ -63,7 +66,8 @@ public class BtsEfficiencyExperiment {
                 .mapToDouble(x -> x)
                 .average()
                 .orElse(0);
-        log.info("Bts. Efficiency Experiment: Avg. honest view introducer over time is {}", overallHonestNodes);
+        log.info("BtsEfficiency experiment [topology={}, time={}]: overallAvgHonestIntroducers={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallHonestNodes);
     }
 
     public static void reset() {

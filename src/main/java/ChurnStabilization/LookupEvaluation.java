@@ -91,8 +91,11 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
 //                    + "\n so far: average search time " + topologySearchTime / iterationCounter
 //                    + "\n so far : average successful search time " + topologySuccessfulSearchTime / iterationCounter
 //                    + "\n so far: average unsuccessful search time " + topologyFailureSearchTime / iterationCounter);
-            log.info("Average success ratio of this topology: {}, simulation: {}, search time: {}, successful: {}, unsuccessful: {}",
-                    successRatio, topologySuccessRate, getTopologySearchTime(), getTopologySuccessfulSearchTime(), getTopologyFailureSearchTime());
+            log.info("Lookup evaluation [algorithm={}, time={}, topology={}]: successRatio={}, searchTime={}, successfulTime={}, unsuccessfulTime={}",
+                    SkipSimParameters.getChurnStabilizationAlgorithm(),
+                    currentTime,
+                    SkipSimParameters.getCurrentTopologyIndex(),
+                    successRatio, getTopologySearchTime(), getTopologySuccessfulSearchTime(), getTopologyFailureSearchTime());
 
         }
 
@@ -104,7 +107,8 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
             successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologySuccessfulSearchTime();
             failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologyFailureSearchTime();
 
-            log.info("Intermediate results [topology={}]: successRatio={}, searchTime={}, successfulTime={}, unsuccessfulTime={}",
+            log.info("Intermediate results [algorithm={}, topology={}]: successRatio={}, searchTime={}, successfulTime={}, unsuccessfulTime={}",
+                    SkipSimParameters.getChurnStabilizationAlgorithm(),
                     SkipSimParameters.getCurrentTopologyIndex(),
                     successRatios[SkipSimParameters.getCurrentTopologyIndex() - 1],
                     searchTimes[SkipSimParameters.getCurrentTopologyIndex() - 1],
@@ -165,8 +169,9 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
                 searchFailureTimeSD = Math.sqrt(searchFailureTimeSD);
                 searchFailureTimeSD /= SkipSimParameters.getTopologies();
 
-                log.info("Final results [algorithm={}]: avgSuccessRatio={} (SD={}), avgSearchTime={} (SD={}), avgSuccessfulTime={} (SD={}), avgFailedTime={} (SD={})",
+                log.info("Final results [algorithm={}, topologies={}]: avgSuccessRatio={} (SD={}), avgSearchTime={} (SD={}), avgSuccessfulTime={} (SD={}), avgFailedTime={} (SD={})",
                         SkipSimParameters.getChurnStabilizationAlgorithm(),
+                        SkipSimParameters.getTopologies(),
                         averageSuccessRate, successRatioSD,
                         averageSearchTime, searchTimeSD,
                         averageSuccessTime, searchSuccessTimeSD,

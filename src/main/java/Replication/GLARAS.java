@@ -284,7 +284,12 @@ public class GLARAS extends LARAS
         Initial logarithm of the virtual system size
          */
         int virtualSystemSizePower = VIRTUAL_SYSTEM_INITIAL_SIZE;
-        log.info("RWD (Replica with Distance) of GLARAS started");
+        log.info("GLARAS RWD started [dataOwner={}, regions={}, degree={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
 
         /*
         Number of created replicas
@@ -423,7 +428,9 @@ public class GLARAS extends LARAS
         {
             throw new IllegalStateException("GLARAS: Error in the number of placed replicas, the degree is: " + SkipSimParameters.getReplicationDegree() + " but only " + repCounter + " replicas where made");
         }
-        log.info("GLARAS completed - total replicas created: {}", repCounter);
+        log.info("GLARAS completed [dataOwner={}, replicasCreated={}, expectedDegree={}, match={}]",
+            dataOwnerIndex, repCounter, SkipSimParameters.getReplicationDegree(),
+            repCounter == SkipSimParameters.getReplicationDegree() ? "VERIFIED" : "MISMATCH");
         sgo.getTG().getNodeSet().setCorrespondingReplica(dataOwnerIndex);
 
         log.debug("Virtual system size logarithm: {}, Current topology index: {}",

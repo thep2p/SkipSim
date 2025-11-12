@@ -220,7 +220,10 @@ public class SimulationDB extends SQLiteJDBC
                     + " VALUES (?,?,?,?) ", parameters);
         }
 
-        log.debug("Topology {} saved to database", SkipSimParameters.getCurrentTopologyIndex());
+        log.debug("Topology saved to database [index={}, nodesSaved={}, landmarksSaved={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getLandmarksNum());
 
     }
 

@@ -64,7 +64,8 @@ public class MaliciousSuccessExperiment {
      */
     public static void calculateResults(int time) {
         if(!successMap.containsKey(time)) {
-            log.info("Malicious Success Experiment: For t={} there were no malicious nodes chosen to generate a transaction.", time);
+            log.info("MaliciousSuccess experiment [topology={}, time={}]: noMaliciousTransactions=true",
+                SkipSimParameters.getCurrentTopologyIndex(), time);
         } else {
             // Malicious node -> malicious success amount
             Map<Integer, Integer> successMapForTime = successMap.get(time);
@@ -72,11 +73,13 @@ public class MaliciousSuccessExperiment {
                     .mapToInt(x -> x)
                     .sum()
                     / acquisitions;
-            log.info("Malicious Success Experiment: For t={} the avg malicious success chance (over the malicious nodes) was {}", time, avgSuccessForTime);
+            log.info("MaliciousSuccess experiment [topology={}, time={}]: avgMaliciousSuccessRate={}",
+                SkipSimParameters.getCurrentTopologyIndex(), time, avgSuccessForTime);
             successChances.add(avgSuccessForTime);
         }
         double overallSuccessChance = successChances.stream().mapToDouble(x -> x).average().orElse(0);
-        log.info("Malicious Success Experiment: Avg. malicious success chance over time is {}", overallSuccessChance);
+        log.info("MaliciousSuccess experiment [topology={}, time={}]: overallAvgSuccessRate={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallSuccessChance);
         acquisitions = 0;
     }
 

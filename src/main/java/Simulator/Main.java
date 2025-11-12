@@ -155,6 +155,7 @@ public class Main {
         simDB.saveSimulationName(simulationName, SkipSimParameters.getSimulationType());
 
         int totalTopologies = SkipSimParameters.getTopologies();
+        long creationStartTime = System.currentTimeMillis();
 
         // Run simulation for each topology
         for (int topologyIndex = 0; topologyIndex < totalTopologies; topologyIndex++) {
@@ -212,7 +213,12 @@ public class Main {
 
                 // Save topology to database
                 simDB.saveSkipGraph(sgo, topologyId);
-                log.debug("Topology saved successfully");
+                log.debug("Topology saved [simulation={}, index={}/{}, nodes={}, landmarks={}, mode=GENERATE]",
+                    simulationName,
+                    (topologyIndex + 1),
+                    totalTopologies,
+                    SkipSimParameters.getSystemCapacity(),
+                    SkipSimParameters.getLandmarksNum());
 
             } catch (Exception ex) {
                 log.error("Error during simulation", ex);
@@ -220,7 +226,14 @@ public class Main {
             }
         }
 
-        log.info("Simulation '{}' created successfully [type={}, topologies={}]", simulationName, SkipSimParameters.getSimulationType(), totalTopologies);
+        long creationEndTime = System.currentTimeMillis();
+        long totalCreationTime = creationEndTime - creationStartTime;
+        log.info("Simulation '{}' created successfully [type={}, topologies={}, totalTime={}ms, avgTopologyTime={}ms]",
+            simulationName,
+            SkipSimParameters.getSimulationType(),
+            totalTopologies,
+            totalCreationTime,
+            totalTopologies > 0 ? totalCreationTime / totalTopologies : 0);
     }
 
     /**
@@ -230,6 +243,8 @@ public class Main {
     private void loadSimulation(String simulationName) {
         // Reset topology index at the start of simulation
         SkipSimParameters.resetTopologyIndex();
+
+        long loadStartTime = System.currentTimeMillis();
 
         // Fetch simulation type from database to determine which type to load
         String simType = SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)
@@ -302,7 +317,12 @@ public class Main {
                     }
                 }
 
-                log.debug("Topology loaded successfully");
+                log.debug("Topology loaded [simulation={}, index={}/{}, nodes={}, landmarks={}, mode=LOAD]",
+                    simulationName,
+                    (topologyIndex + 1),
+                    totalTopologies,
+                    SkipSimParameters.getSystemCapacity(),
+                    SkipSimParameters.getLandmarksNum());
 
             } catch (Exception ex) {
                 log.error("Error during simulation", ex);
@@ -310,7 +330,14 @@ public class Main {
             }
         }
 
-        log.info("Simulation '{}' loaded and executed successfully [type={}, topologies={}]", simulationName, SkipSimParameters.getSimulationType(), totalTopologies);
+        long loadEndTime = System.currentTimeMillis();
+        long totalLoadTime = loadEndTime - loadStartTime;
+        log.info("Simulation '{}' loaded and executed successfully [type={}, topologies={}, totalTime={}ms, avgTopologyTime={}ms]",
+            simulationName,
+            SkipSimParameters.getSimulationType(),
+            totalTopologies,
+            totalLoadTime,
+            totalTopologies > 0 ? totalLoadTime / totalTopologies : 0);
     }
 
     /**
@@ -364,7 +391,9 @@ public class Main {
 
         if (confirmation.equals("yes") || confirmation.equals("y")) {
             simDB.deleteSimulationFromDB(simulationName);
-            log.info("Simulation '{}' has been deleted successfully.", simulationName);
+            log.info("Simulation '{}' deleted successfully [type={}, status=VERIFIED]",
+                simulationName,
+                SkipSimParameters.getSimulationType());
         } else {
             log.info("Deletion cancelled.");
         }

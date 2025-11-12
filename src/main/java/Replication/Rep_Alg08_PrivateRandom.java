@@ -37,7 +37,11 @@ public class Rep_Alg08_PrivateRandom extends Replication
     public void Algorithm(SkipGraphOperations inputSgo, int dataOwnerID)
     {
         sgo = inputSgo;
-        log.info("Private randomized replication started for data owner {}", dataOwnerID);
+        log.info("PrivateRandom replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         reset();
         resetRep();
         randomReplicaGenerator(dataOwnerID);

@@ -670,7 +670,12 @@ public abstract class Replication
         {
             throw new IllegalStateException("Delay based replication is not applicable to multiple-data owner cases, data owner index:" + dataOwnerIndex);
         }
-        log.info("Delay based replication just started!");
+        log.info("Delay-based replication started [dataOwner={}, initialDegree={}, delayBound={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            initialReplicationDegree,
+            delayBound,
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         int replicationDegree = initialReplicationDegree;
         double averageDelay;
         do

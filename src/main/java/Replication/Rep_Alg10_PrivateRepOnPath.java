@@ -70,7 +70,8 @@ public class Rep_Alg10_PrivateRepOnPath extends Replication
                     boolean replicationResult = ((Node) sgo.getTG().mNodeSet.getNode(MaxIndex)).setAsReplica(dataOwnerID);
                     if(replicationResult)
                     {
-                        log.debug("Replica {} created at index {} with histogram value {}", repNum, MaxIndex, pathHistogram[MaxIndex]);
+                        log.debug("Replica created [dataOwner={}, replicaNum={}, nodeIndex={}, histogramValue={}, topology={}]",
+                            dataOwnerID, repNum, MaxIndex, pathHistogram[MaxIndex], SkipSimParameters.getCurrentTopologyIndex());
                         pathHistogram[MaxIndex] = 0;
                         repNum++;
                     }

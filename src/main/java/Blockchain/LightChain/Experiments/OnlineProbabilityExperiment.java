@@ -30,12 +30,14 @@ public class OnlineProbabilityExperiment {
         onlineNodeAmounts.add(onlineNodes);
         // Calculate and report the current online probability.
         double probCurrent = (double)onlineNodes/ SkipSimParameters.getSystemCapacity();
-        log.info("Online Prob. Experiment: For t={} the prob. of a node being online is {}", time, probCurrent);
+        log.info("OnlineProbability experiment [topology={}, time={}]: onlineProb={}, onlineNodes={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, probCurrent, onlineNodes);
         // Calculate and report the overall online probability (over all the time slots).
         double probOverall = onlineNodeAmounts.stream()
                 .mapToDouble(x -> (double)x/SkipSimParameters.getSystemCapacity())
                 .average()
                 .orElse(0);
-        log.info("Online Prob. Experiment: Overall probability of a node being online is {}", probOverall);
+        log.info("OnlineProbability experiment [topology={}, time={}]: overallAvgOnlineProb={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, probOverall);
     }
 }

@@ -90,7 +90,11 @@ public class Pyramid extends GLARAS
     @Override
     public void Algorithm(SkipGraphOperations inputSgo, int dataOwnerIndex)
     {
-        log.info("Pyramid has started");
+        log.info("Pyramid replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         sgo = inputSgo;
         resetRep();
         dataRequesterPopulation();
