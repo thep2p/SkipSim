@@ -259,12 +259,14 @@ public class GLARAS extends LARAS
                     averageW2 / SkipSimParameters.getTopologies(),
                     averageW3 / SkipSimParameters.getTopologies());
 
-            for (int i = 0; i < 100; i++)
-                for (int j = 0; j < 100; j++)
-                {
-                    if (100 - i - j >= 0)
-                        log.debug("Weight histogram - ({}, {}, {}, {})", i, j, 100 - i - j, weightHistorgam[i][j]);
-                }
+            if (log.isTraceEnabled()) {
+                for (int i = 0; i < 100; i++)
+                    for (int j = 0; j < 100; j++)
+                    {
+                        if (100 - i - j >= 0)
+                            log.trace("Weight histogram - ({}, {}, {}, {})", i, j, 100 - i - j, weightHistorgam[i][j]);
+                    }
+            }
 
         }
 
@@ -417,7 +419,6 @@ public class GLARAS extends LARAS
 
             }
             log.debug("Sub-replication degree: {}", getSubReplicationDegree(i));
-            log.debug("----------------------------------------------------------------------");
 
         }
         /*

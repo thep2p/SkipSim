@@ -119,18 +119,21 @@ public class ReplicationEvaluation
 
                 sd /= SkipSimParameters.getTopologies();
                 sd = Math.sqrt(sd);
-                log.info("----------------------------------------------------------");
-                log.info("Dynamic Replication Evaluation - Algorithm: {}", algorithmName);
-                log.info("Replication time: {}", SkipSimParameters.getReplicationTime());
+
+                String pyramidParams = "";
                 if(SkipSimParameters.getReplicationAlgorithm().equalsIgnoreCase(Constants.Replication.Algorithms.PYRAMID))
                 {
-                    log.info("Aggregation domain size: {}", SkipSimParameters.getAvailabilityAggregationDomainSize());
-                    log.info("Search for utility alpha: {}", SkipSimParameters.getSearchForUtilityAlpha());
+                    pyramidParams = String.format(", aggDomainSize=%d, utilityAlpha=%s",
+                        SkipSimParameters.getAvailabilityAggregationDomainSize(),
+                        SkipSimParameters.getSearchForUtilityAlpha());
                 }
-                log.info("Replication degree: {}", SkipSimParameters.getReplicationDegree());
-                log.info("Average availability of replicas: {}, standard deviation: {}", average, sd);
-                log.info("Note: Average and standard deviation are taken over all topologies");
-                log.info("----------------------------------------------------------");
+                log.info("DynamicReplication evaluation [algorithm={}, repTime={}, degree={}{}]: avgAvailability={}, SD={} (across all topologies)",
+                    algorithmName,
+                    SkipSimParameters.getReplicationTime(),
+                    SkipSimParameters.getReplicationDegree(),
+                    pyramidParams,
+                    average,
+                    sd);
             }
         }
 
@@ -424,21 +427,22 @@ public class ReplicationEvaluation
             }
             SD = (double) SD / SkipSimParameters.getTopologies();
             SD = Math.sqrt(SD);
-            log.info("--------------------------------------------------");
+
             if(isQoS) {
-                log.info("QoS evaluation of replication:");
-                log.info("Replication Simulation: {}, replication degree = {}, data requesters = {}",
-                        algName.toUpperCase(), SkipSimParameters.getReplicationDegree(),
-                        SkipSimParameters.getDataRequesterNumber());
-                log.info("Average QoS: {} KB/s (SD: {})", overalDelay, SD);
+                log.info("QoS replication evaluation [algorithm={}, repDegree={}, dataRequesters={}]: avgQoS={} KB/s (SD={})",
+                        algName.toUpperCase(),
+                        SkipSimParameters.getReplicationDegree(),
+                        SkipSimParameters.getDataRequesterNumber(),
+                        overalDelay,
+                        SD);
             } else {
-                log.info("Locality-aware replication evaluation:");
-                log.info("Replication Simulation: {}, replication degree = {}, data requesters = {}",
-                        algName.toUpperCase(), SkipSimParameters.getReplicationDegree(),
-                        SkipSimParameters.getDataRequesterNumber());
-                log.info("Average access delay: {} (SD: {})", overalDelay, SD);
+                log.info("Locality-aware replication evaluation [algorithm={}, repDegree={}, dataRequesters={}]: avgAccessDelay={} (SD={})",
+                        algName.toUpperCase(),
+                        SkipSimParameters.getReplicationDegree(),
+                        SkipSimParameters.getDataRequesterNumber(),
+                        overalDelay,
+                        SD);
             }
-            log.info("--------------------------------------------------");
         }
         return overalDelay;
     }

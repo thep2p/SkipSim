@@ -631,16 +631,20 @@ public class Nodes extends SkipGraphNodes
 
     public void printLookupOnlineStatus(int index)
     {
-        for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
-        {
-            boolean right = false;
-            boolean left = false;
-            if (mNodeSet[index].getLookup(i, 0) != -1)
-                left = mNodeSet[mNodeSet[index].getLookup(i, 0)].isOnline();
-            if (mNodeSet[index].getLookup(i, 1) != -1)
-                right = mNodeSet[mNodeSet[index].getLookup(i, 1)].isOnline();
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
+            {
+                boolean right = false;
+                boolean left = false;
+                if (mNodeSet[index].getLookup(i, 0) != -1)
+                    left = mNodeSet[mNodeSet[index].getLookup(i, 0)].isOnline();
+                if (mNodeSet[index].getLookup(i, 1) != -1)
+                    right = mNodeSet[mNodeSet[index].getLookup(i, 1)].isOnline();
 
-            log.debug("Level: {}   Left: {}   Right: {}", i, left, right);
+                levels.append(String.format("[L%d: L=%b,R=%b] ", i, left, right));
+            }
+            log.debug("Lookup online status: {}", levels.toString().trim());
         }
 
     }

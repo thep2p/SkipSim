@@ -432,14 +432,17 @@ public class TopologyGenerator
 
     public void printGeneratorStochastics()
     {
-        log.info("------------------------------------------------------------");
-        log.info("TopologyGenerator: Real generator parameters");
-        for(int landmark = 0 ; landmark < SkipSimParameters.getLandmarksNum() ; landmark++)
-        {
-            log.info("Region {} Interarrival mean: {}",
-                landmark, weibullInterArrivalDistribution[landmark].getNumericalMean());
+        if (log.isInfoEnabled()) {
+            StringBuilder regionMeans = new StringBuilder();
+            for(int landmark = 0 ; landmark < SkipSimParameters.getLandmarksNum() ; landmark++)
+            {
+                regionMeans.append(String.format("R%d=%.2f ",
+                    landmark, weibullInterArrivalDistribution[landmark].getNumericalMean()));
+            }
+            log.info("TopologyGenerator params [sessionLengthMean={}, regionInterarrivalMeans=[{}]]",
+                weibullSessionLengthDistribution.getNumericalMean(),
+                regionMeans.toString().trim());
         }
-        log.info("Session length mean: {}", weibullSessionLengthDistribution.getNumericalMean());
     }
 
 

@@ -189,37 +189,40 @@ public class Message
 
     public void printSearchPath(SkipGraphNodes nodeSet, boolean lookupPrinted)
     {
-        log.debug("----------------------------------");
-        log.debug("Message: Print search path");
-        for(int index: nodeIndices)
-        {
-            /*
-            Null safety check: Skip nodes/transactions that haven't been fully initialized yet.
-            This can happen during insertion when a transaction is added to the search path
-            before it's been fully inserted into the Skip Graph.
-             */
-            if(nodeSet.getNode(index) == null)
+        if (log.isDebugEnabled()) {
+            StringBuilder pathBuilder = new StringBuilder("Search path: [");
+            for(int index: nodeIndices)
             {
-                log.warn("Message: Skipping null node at index {} (not yet initialized)", index);
-                continue;
-            }
+                /*
+                Null safety check: Skip nodes/transactions that haven't been fully initialized yet.
+                This can happen during insertion when a transaction is added to the search path
+                before it's been fully inserted into the Skip Graph.
+                 */
+                if(nodeSet.getNode(index) == null)
+                {
+                    log.warn("Skipping null node at index {} (not yet initialized)", index);
+                    continue;
+                }
 
-            if(nodeSet instanceof Nodes)
-            {
-                log.debug("Message: Node index={} numID={}", index, nodeSet.getNode(index).getNumID());
-            }
-            else
-            {
-                log.debug("Message: Block or Transaction index={} numID={} owner={}",
-                    index, nodeSet.getNode(index).getNumID(),
-                    ((Transaction) nodeSet.getNode(index)).getOwnerIndex());
-            }
-            if(lookupPrinted)
-            {
-                nodeSet.printLookupNumID(index);
-            }
+                if(nodeSet instanceof Nodes)
+                {
+                    pathBuilder.append(String.format("Node(idx=%d,numID=%d) ",
+                        index, nodeSet.getNode(index).getNumID()));
+                }
+                else
+                {
+                    pathBuilder.append(String.format("Tx(idx=%d,numID=%d,owner=%d) ",
+                        index, nodeSet.getNode(index).getNumID(),
+                        ((Transaction) nodeSet.getNode(index)).getOwnerIndex()));
+                }
+                if(lookupPrinted)
+                {
+                    nodeSet.printLookupNumID(index);
+                }
 
+            }
+            pathBuilder.append("]");
+            log.debug("{}", pathBuilder.toString());
         }
-        log.debug("----------------------------------");
     }
 }

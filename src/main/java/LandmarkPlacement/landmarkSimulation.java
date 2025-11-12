@@ -39,14 +39,27 @@ public class landmarkSimulation
                 /*
                 Generate Nodes
                  */
-            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-            {
-                Random random = new Random();
-                Point p = new Point();
-                p.x = random.nextInt((int) (SkipSimParameters.getDomainSize()));
-                p.y = random.nextInt((int) (SkipSimParameters.getDomainSize()));
-                sgo.getTG().mLandmarks.setLandmarkCoordination(i, p);
-                log.debug("Generated landmark {}: x={}, y={}", i, p.x, p.y);
+            if (log.isDebugEnabled()) {
+                StringBuilder landmarkCoords = new StringBuilder();
+                for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+                {
+                    Random random = new Random();
+                    Point p = new Point();
+                    p.x = random.nextInt((int) (SkipSimParameters.getDomainSize()));
+                    p.y = random.nextInt((int) (SkipSimParameters.getDomainSize()));
+                    sgo.getTG().mLandmarks.setLandmarkCoordination(i, p);
+                    landmarkCoords.append(String.format("[L%d: x=%d,y=%d] ", i, p.x, p.y));
+                }
+                log.debug("Generated landmarks: {}", landmarkCoords.toString().trim());
+            } else {
+                for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+                {
+                    Random random = new Random();
+                    Point p = new Point();
+                    p.x = random.nextInt((int) (SkipSimParameters.getDomainSize()));
+                    p.y = random.nextInt((int) (SkipSimParameters.getDomainSize()));
+                    sgo.getTG().mLandmarks.setLandmarkCoordination(i, p);
+                }
             }
 
                 /*

@@ -548,9 +548,14 @@ public abstract class Replication
             }
         }
 
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            log.debug("{} {} {}", subReplicationDegree[i], i, regionsPopulation[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder regionStats = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                regionStats.append(String.format("[R%d: degree=%d, pop=%d] ",
+                    i, subReplicationDegree[i], regionsPopulation[i]));
+            }
+            log.debug("Region replication stats: {}", regionStats.toString().trim());
         }
     }
 

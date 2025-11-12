@@ -135,8 +135,12 @@ public class Block extends Transaction
      */
     public void printLookup()
     {
-        for (int i = Transaction.LOOKUP_TABLE_SIZE - 1; i >= 0; i--)
-            log.debug("Block lookup - Level: {}, Left: {}, Right: {}", i, lookup[i][0], lookup[i][1]);
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = Transaction.LOOKUP_TABLE_SIZE - 1; i >= 0; i--)
+                levels.append(String.format("[L%d: L=%d,R=%d] ", i, lookup[i][0], lookup[i][1]));
+            log.debug("Block lookup table: {}", levels.toString().trim());
+        }
     }
 
     /**

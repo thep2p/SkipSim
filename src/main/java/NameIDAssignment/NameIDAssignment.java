@@ -318,15 +318,19 @@ public abstract class NameIDAssignment
 
     public void PrintB()
     {
-        log.debug("B matrix:");
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            StringBuilder row = new StringBuilder();
-            for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
+        if (log.isDebugEnabled()) {
+            StringBuilder matrix = new StringBuilder("B matrix: [");
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
             {
-                row.append(B[i][j]);
+                matrix.append("Row").append(i).append("=[");
+                for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
+                {
+                    matrix.append(B[i][j]);
+                }
+                matrix.append("] ");
             }
-            log.debug("B[{}]: {}", i, row.toString());
+            matrix.append("]");
+            log.debug("{}", matrix.toString());
         }
     }
 

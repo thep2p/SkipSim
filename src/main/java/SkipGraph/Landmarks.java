@@ -185,9 +185,13 @@ public class Landmarks implements Serializable
 
     public void printDynamicPrefix()
     {
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            log.debug("Dynamic prefix[{}]: {}", i, dynamicPrefix[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder prefixes = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                prefixes.append(String.format("[%d:%s] ", i, dynamicPrefix[i]));
+            }
+            log.debug("Dynamic prefixes: {}", prefixes.toString().trim());
         }
     }
 
@@ -207,9 +211,13 @@ public class Landmarks implements Serializable
 
     public void printDynamicPrefixExcludingIndex()
     {
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            log.debug("Dynamic prefix excluding index[{}]: {}", i, dynamicPrefix[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder prefixes = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                prefixes.append(String.format("[%d:%s] ", i, dynamicPrefix[i]));
+            }
+            log.debug("Dynamic prefixes (excluding index): {}", prefixes.toString().trim());
         }
     }
 

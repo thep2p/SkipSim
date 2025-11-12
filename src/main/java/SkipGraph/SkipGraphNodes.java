@@ -133,15 +133,19 @@ public abstract class SkipGraphNodes
 
     public void printLookupNumID(int index)
     {
-        for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
-        {
-            int right = -1;
-            int left = -1;
-            if (getNode(index).getLookup(i, 0) != -1)
-                left = getNode(getNode(index).getLookup(i, 0)).getNumID();
-            if (getNode(index).getLookup(i, 1) != -1)
-                right = getNode(getNode(index).getLookup(i, 1)).getNumID();
-            log.debug("Level: {}   Left: {}   Right: {}", i, left, right);
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
+            {
+                int right = -1;
+                int left = -1;
+                if (getNode(index).getLookup(i, 0) != -1)
+                    left = getNode(getNode(index).getLookup(i, 0)).getNumID();
+                if (getNode(index).getLookup(i, 1) != -1)
+                    right = getNode(getNode(index).getLookup(i, 1)).getNumID();
+                levels.append(String.format("[L%d: L=%d,R=%d] ", i, left, right));
+            }
+            log.debug("Lookup table (numID): {}", levels.toString().trim());
         }
 
     }
