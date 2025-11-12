@@ -32,7 +32,7 @@ SkipSim provides a realistic simulation environment with geographic node placeme
 
 ### Prerequisites
 
-- Java Development Kit (JDK) 11 or higher
+- Java Development Kit (JDK) 21
 - Maven 3.6+ (for dependency management)
 - Git (for cloning the repository)
 

@@ -41,7 +41,7 @@ mvn exec:java -Dexec.args="load my_simulation"
 **To build and run in IntelliJ:**
 - Open the project in IntelliJ IDEA
 - IntelliJ will automatically detect the Maven `pom.xml` and import dependencies
-- Ensure JDK 11 or higher is configured
+- Ensure JDK 21 is configured
 - Main entry point: `Simulator.Main.main()`
 - Build using IntelliJ's Build > Build Project
 
