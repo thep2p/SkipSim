@@ -3,6 +3,8 @@ package Aggregation;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -11,6 +13,8 @@ import java.util.ArrayList;
  */
 public class Agg_Alg1_ELATS extends Aggregation
 {
+    private static final Logger log = LoggerFactory.getLogger(Agg_Alg1_ELATS.class);
+
     //private int threshold = 3;
     private double w1 = 1;
     private double w2 = 1;
@@ -38,7 +42,7 @@ public class Agg_Alg1_ELATS extends Aggregation
 
     private void Algorithm()
     {
-        System.out.println("ELATS has started....");
+        log.info("ELATS started");
 
         //initiatorsList = initiators();
         //for(int i = 0 ; i < initiatorsList.size() ; i++)
@@ -49,7 +53,6 @@ public class Agg_Alg1_ELATS extends Aggregation
                 /*
                 The ILP on the roots of subtrees
                  */
-        //System.out.println("Merging subtrees");
         //ILP(subTrees);
     }
 
@@ -71,25 +74,23 @@ public class Agg_Alg1_ELATS extends Aggregation
 
         double coveringHalfMaxLatency = averageLatency + (nameID.length() - subProblem.length()) + (nameID.length() - nameID.length() - 1);
 
-        //System.out.println("Energy Costs: Covering All " + coveringAllEnergyCost + " Covering Half " + coveringHalfEnergyCost);
-        //System.out.println("Latency Costs: Covering All " + coveringAllLatencyCost + " Covering Half " + coveringHalfLatencyCost);
         double latencyEvaluation = (coveringAllMaxLatency - coveringHalfMaxLatency) / Math.max(coveringAllMaxLatency, coveringHalfMaxLatency);
         double energyEvaluation = (coveringAllEnergyCost - coveringHalfEnergyCost) / Math.max(coveringAllEnergyCost, coveringHalfEnergyCost);
         //double totalEvaluation = w1*latencyEvaluation + w2*energyEvaluation;
-        System.out.println("Latency Evaluation " + latencyEvaluation + " Energy Evaluation " + energyEvaluation);
+        log.debug("Latency evaluation: {}, energy evaluation: {}", latencyEvaluation, energyEvaluation);
         if (latencyEvaluation < 0.01 || energyEvaluation < 0.01 || subProblem.length() == nameID.length())
         {
             if (energyEvaluation < 0.01)
             {
-                System.out.println("Stopped for energy" + subProblem);
+                log.debug("Stopped for energy at subproblem: {}", subProblem);
             }
             else if (latencyEvaluation < 0.01)
             {
-                System.out.println("Stopped for latency" + subProblem);
+                log.debug("Stopped for latency at subproblem: {}", subProblem);
             }
             else if (subProblem.length() == nameID.length())
             {
-                System.out.println("Stopped for subproblem" + subProblem);
+                log.debug("Stopped for subproblem: {}", subProblem);
             }
             ArrayList<Integer> subDomain = extend(subProblem, nameID);
             for (int i = 0; i < subDomain.size(); i++)
@@ -103,10 +104,9 @@ public class Agg_Alg1_ELATS extends Aggregation
                 {
                     continue;
                 }
-                //System.out.println("Current parent of SkipGraph.Node " + i + " is SkipGraph.Node " + sgo.getTG().mNodeSet.getNode(subDomain.get(i)).getParent());
                 ((Node) sgo.getTG().mNodeSet.getNode(executer)).addChildren(subDomain.get(i));
                 ((Node) sgo.getTG().mNodeSet.getNode(subDomain.get(i))).setParent(executer);
-                System.out.println("SkipGraph.Node " + executer + " became parent of SkipGraph.Node " + subDomain.get(i));
+                log.trace("Node {} became parent of node {}", executer, subDomain.get(i));
             }
 
             //averageEnergyCost = coveringAllEnergyCost;

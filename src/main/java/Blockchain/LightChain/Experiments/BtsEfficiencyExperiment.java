@@ -1,6 +1,8 @@
 package Blockchain.LightChain.Experiments;
 
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +15,7 @@ import java.util.Map;
  */
 
 public class BtsEfficiencyExperiment {
+    private static final Logger log = LoggerFactory.getLogger(BtsEfficiencyExperiment.class);
     // Time slot -> (Node -> Honest view introducer number)
     private static Map<Integer, Map<Integer, Integer>> honestIntroducerNumber = new HashMap<>();
     // Calculated efficiencies so far.
@@ -44,7 +47,7 @@ public class BtsEfficiencyExperiment {
      */
     public static void calculateResults(int time) {
         if(!honestIntroducerNumber.containsKey(time)) {
-            System.out.println("Bts. Efficiency Experiment: For t=" + time + " there were no bootstrapping.");
+            log.info("Bts. Efficiency Experiment: For t={} there were no bootstrapping.", time);
         } else {
             Map<Integer, Integer> honestIntroducerNumberForTime = honestIntroducerNumber.get(time);
             // Finds and reports the average honest introducers for this time slot.
@@ -52,8 +55,7 @@ public class BtsEfficiencyExperiment {
                     .mapToInt(x -> x)
                     .average()
                     .orElse(0);
-            System.out.println("Bts. Efficiency Experiment: For t=" + time + " the avg. honest view introducer per node is "
-                    + avgHonestIntroducerForTime);
+            log.info("Bts. Efficiency Experiment: For t={} the avg. honest view introducer per node is {}", time, avgHonestIntroducerForTime);
             avgHonestIntroducers.add(avgHonestIntroducerForTime);
         }
         // Finds and reports the average honest introducers for all time slots.
@@ -61,7 +63,7 @@ public class BtsEfficiencyExperiment {
                 .mapToDouble(x -> x)
                 .average()
                 .orElse(0);
-        System.out.println("Bts. Efficiency Experiment: Avg. honest view introducer over time is " + overallHonestNodes);
+        log.info("Bts. Efficiency Experiment: Avg. honest view introducer over time is {}", overallHonestNodes);
     }
 
     public static void reset() {

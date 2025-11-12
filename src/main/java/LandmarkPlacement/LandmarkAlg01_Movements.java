@@ -3,6 +3,8 @@ package LandmarkPlacement;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
@@ -11,6 +13,7 @@ import java.awt.*;
  */
 public class LandmarkAlg01_Movements extends LandmarkPlacementEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(LandmarkAlg01_Movements.class);
 
     public LandmarkAlg01_Movements()
     {
@@ -48,21 +51,22 @@ public class LandmarkAlg01_Movements extends LandmarkPlacementEvaluation
                     coveringNodes[((Node) sgo.getTG().mNodeSet.getNode(i)).getClosetLandmarkIndex(sgo.getTG().mLandmarks)]++;
                 }
 
-            System.out.println("Average distance to a landmark");
+            StringBuilder avgDistances = new StringBuilder();
             for(int j = 0; j < SkipSimParameters.getLandmarksNum() ; j++)
                 {
                     if(coveringNodes[j] == 0)
-                        System.out.print(0 + " ");
+                        avgDistances.append("0 ");
                     else
-                        System.out.print((int) distanceToLandmark[j] / coveringNodes[j] + " ");
+                        avgDistances.append((int) distanceToLandmark[j] / coveringNodes[j]).append(" ");
                 }
-            System.out.println();
-            System.out.println("Max distance to a landmark");
+            log.debug("Average distance to landmarks: {}", avgDistances.toString().trim());
+
+            StringBuilder maxDistances = new StringBuilder();
             for(int j = 0; j < SkipSimParameters.getLandmarksNum() ; j++)
                 {
-                    System.out.print((int) maxDistanceToLandmark[j] + " ");
+                    maxDistances.append((int) maxDistanceToLandmark[j]).append(" ");
                 }
-            System.out.println();
+            log.debug("Max distance to landmarks: {}", maxDistances.toString().trim());
 
 
 
@@ -77,14 +81,11 @@ public class LandmarkAlg01_Movements extends LandmarkPlacementEvaluation
                                     if (!((Node) sgo.getTG().mNodeSet.getNode(i)).isTestedForALandmark()
                                             && ((Node) sgo.getTG().mNodeSet.getNode(i)).getClosetLandmarkIndex(sgo.getTG().mLandmarks) == j)
                                         {
-                                            System.out.println("SkipGraph.Landmarks " + j + " is relocated");
+                                            log.debug("Landmark {} relocated", j);
                                             ((Node) sgo.getTG().mNodeSet.getNode(i)).setTestedForALandmark(true);
                                             newLandmarks[j] = ((Node) sgo.getTG().mNodeSet.getNode(i)).getCoordinate();
                                             findFlag = true;
                                             break;
-                                        } else if (((Node) sgo.getTG().mNodeSet.getNode(i)).isTestedForALandmark())
-                                        {
-                                            //System.out.println("Cannot move a landmark to SkipGraph.Node " + i + " since it was already testet");
                                         }
                                 }
                             if (!findFlag)
@@ -97,7 +98,6 @@ public class LandmarkAlg01_Movements extends LandmarkPlacementEvaluation
                             newLandmarks[j] = sgo.getTG().mLandmarks.getLandmarkCoordination(j).getLocation();
                         }
                 }
-            System.out.println(" ");
 
             return newLandmarks;
 
@@ -115,6 +115,6 @@ public class LandmarkAlg01_Movements extends LandmarkPlacementEvaluation
 
             landmarkEvaluation(sgo, "Alg01_MoveAll");
             relocationEvaluation(0, rc, "Alg01_MoveAll");
-            System.out.println("Relocation is done after " + rc + " iterations");
+            log.info("Relocation completed after {} iterations", rc);
         }
 }

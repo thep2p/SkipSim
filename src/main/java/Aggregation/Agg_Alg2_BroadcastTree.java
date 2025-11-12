@@ -3,6 +3,8 @@ package Aggregation;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
@@ -11,16 +13,17 @@ import java.util.Random;
  */
 public class Agg_Alg2_BroadcastTree extends Aggregation
     {
+        private static final Logger log = LoggerFactory.getLogger(Agg_Alg2_BroadcastTree.class);
 
         public Agg_Alg2_BroadcastTree(SkipGraphOperations insgo)
             {
-                System.out.println(" BroadCastTree has started...");
+                log.info("BroadcastTree started");
                 sgo = insgo;
                 Random r  = new Random();
                 initiator = r.nextInt()% SkipSimParameters.getSystemCapacity();
                 while(initiator<0)
                     initiator = r.nextInt()% SkipSimParameters.getSystemCapacity();
-                System.out.println("Initiator " + initiator);
+                log.debug("Initiator: {}", initiator);
                 broadCast(initiator);
                 //findRoot();
                 energyEvaluation("BroadCast ");

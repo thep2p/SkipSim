@@ -3,6 +3,8 @@ package Aggregation;
 import NameIDAssignment.NameID_Assignment_LANS;
 import Simulator.SkipSimParameters;
 import SkipGraph.Nodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ import java.util.stream.DoubleStream;
  */
 public class BlockchainAvailabilityAggreegation
 {
+    private static final Logger log = LoggerFactory.getLogger(BlockchainAvailabilityAggreegation.class);
+
     private final int subDomainLength;
     private final int timeSlots;
     private Hashtable<String, double[]>[] availabilityTable;
@@ -205,7 +209,8 @@ public class BlockchainAvailabilityAggreegation
                 }
                 if (DoubleStream.of(availabilityTable[i].get(subDomain)).sum() > 0)
                 {
-                    System.out.println("region: " + i + " sub-domain: " + subDomain + " total availability: " + DoubleStream.of(availabilityTable[i].get(subDomain)).sum());
+                    log.debug("Region: {}, sub-domain: {}, total availability: {}",
+                        i, subDomain, DoubleStream.of(availabilityTable[i].get(subDomain)).sum());
                 }
                 if(counter == SkipSimParameters.getFPTI())
                 {
@@ -215,9 +220,7 @@ public class BlockchainAvailabilityAggreegation
 
         }
 
-
-
-        System.out.println(Arrays.toString(nonZeroSubRegionCounter));
+        log.debug("Non-zero subregion counters: {}", Arrays.toString(nonZeroSubRegionCounter));
         return nonZeroSubRegionCounter;
     }
 }

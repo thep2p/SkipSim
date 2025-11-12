@@ -3,6 +3,8 @@ package NameIDAssignment;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +14,8 @@ import java.util.Arrays;
  */
 public class NameID_Assignment_LANS extends NameIDAssignment
 {
+    private static final Logger log = LoggerFactory.getLogger(NameID_Assignment_LANS.class);
+
     private static double[][] landmarksCoordination = new double[SkipSimParameters.getLandmarksNum()][SkipSimParameters.getLandmarksNum()];
     private static double[] averageSearches = new double[SkipSimParameters.getTopologies()];
     private static double   numberOfSearches;
@@ -98,12 +102,12 @@ public class NameID_Assignment_LANS extends NameIDAssignment
 
                 sd = Math.sqrt(sd / SkipSimParameters.getTopologies());
 
-                System.out.println("Average number of searches for checking availability of a name ID: " + mean + " SD " + sd);
+                log.info("Average number of searches for checking availability of a name ID: {} SD {}", mean, sd);
             }
         }
         if(nameID.isEmpty())
         {
-            System.err.println("LANS.java, generating an empty nameID for a Node");
+            log.error("LANS.java: generating an empty nameID for a Node");
         }
 
         return nameID;
@@ -231,7 +235,8 @@ public class NameID_Assignment_LANS extends NameIDAssignment
             }
             if (right >= Math.pow(2, SkipSimParameters.getNameIDLength()) && left < 0)
             {
-                System.out.println("check availability falls into infinite loop on region " + closestLandmarkIndex + " with " + sgo.getTG().mLandmarks.numberOfNodesInRegion(closestLandmarkIndex, sgo));
+                log.error("LANS check availability falls into infinite loop on region {} with {} nodes",
+                    closestLandmarkIndex, sgo.getTG().mLandmarks.numberOfNodesInRegion(closestLandmarkIndex, sgo));
                 System.exit(0);
             }
         }

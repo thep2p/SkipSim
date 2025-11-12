@@ -3,6 +3,8 @@ package DataBase;
 import Simulator.SkipSimParameters;
 import SkipGraph.SkipGraphOperations;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
@@ -13,6 +15,7 @@ import java.util.Vector;
 
 public class SimulationDB extends SQLiteJDBC
 {
+    private static final Logger log = LoggerFactory.getLogger(SimulationDB.class);
 
     /**
      * name of the whole simulation in DB
@@ -217,7 +220,7 @@ public class SimulationDB extends SQLiteJDBC
                     + " VALUES (?,?,?,?) ", parameters);
         }
 
-        System.out.println("SimulationDB.java: Topology " + SkipSimParameters.getCurrentTopologyIndex() + " was saved to the database");
+        log.debug("Topology {} saved to database", SkipSimParameters.getCurrentTopologyIndex());
 
     }
 

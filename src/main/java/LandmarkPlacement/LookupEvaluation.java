@@ -5,6 +5,8 @@ import DataTypes.Message;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -14,6 +16,8 @@ import java.util.Random;
 
 public class LookupEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(LookupEvaluation.class);
+
     public static double[] DistanceMeans = new double[SkipSimParameters.getTopologies()];
     private static double[] NameIDsMeans = new double[SkipSimParameters.getTopologies()];
     private static double[] NumIDsMeans = new double[SkipSimParameters.getTopologies()];
@@ -128,7 +132,7 @@ public class LookupEvaluation
                     new ArrayList<>());
             if (result < 0)
             {
-                System.out.println("Name ID Search for " + nameID + " failed!!");
+                log.warn("Name ID search failed for nameID: {}", nameID);
             }
         }
         else
@@ -155,11 +159,9 @@ public class LookupEvaluation
                     searchDirection);
             if (sgo.getTG().mNodeSet.getNode(result).getNumID() != numID)
             {
-                System.out.println("------------------------------------------------------------");
-                System.out.println("Search for " + numID + " from " + searchIndex + " failed " );
-                System.out.println("The result is " + result + " with num ID of " +  sgo.getTG().mNodeSet.getNode(result).getNumID());
+                log.warn("Numerical ID search failed - target: {}, initiator: {}, result: {} with numID: {}",
+                    numID, searchIndex, result, sgo.getTG().mNodeSet.getNode(result).getNumID());
                 m.printSearchPath(sgo.getTG().mNodeSet, true);
-                System.out.println("------------------------------------------------------------");
             }
         }
 
@@ -200,7 +202,8 @@ public class LookupEvaluation
             averageSearchPath += averageSearchPathOFThisTopology;
             if (Operation.contains("nameID")) NameIDsMeans[SkipSimParameters.getCurrentTopologyIndex() - 1] = Mean;
             else NumIDsMeans[SkipSimParameters.getCurrentTopologyIndex() - 1] = Mean;
-            System.out.println("Average latency of " + iterations + " random searches " + Operation + " for this topology: " + (int) Mean + " average search path " + averageSearchPathOFThisTopology);
+            log.info("Average latency of {} random searches {} for topology {}: {} (avg search path: {})",
+                iterations, Operation, SkipSimParameters.getCurrentTopologyIndex(), (int) Mean, averageSearchPathOFThisTopology);
 
 
             if (SkipSimParameters.getTopologies() == SkipSimParameters.getCurrentTopologyIndex())
@@ -224,7 +227,8 @@ public class LookupEvaluation
 
                 Mean = Double.parseDouble(new DecimalFormat("##.##").format(Mean));
                 SD = Double.parseDouble(new DecimalFormat("##.##").format(SD));
-                System.out.println("Total average latency for " + Operation + " is: " + Mean + " Standard Deviation: " + SD + " \n " + " Average search path " + averageSearchPath/SkipSimParameters.getTopologies());
+                log.info("Total average latency for {}: {} (SD: {}, avg search path: {})",
+                    Operation, Mean, SD, averageSearchPath/SkipSimParameters.getTopologies());
 
             }
         }
@@ -355,7 +359,7 @@ public class LookupEvaluation
             }
             SD = (int) Math.sqrt(SD / SkipSimParameters.getTopologies());
 
-            System.out.println("The average distance of each SkipGraph.Node to it's neighbor is  " + mean + " With the SD " + SD);
+            log.info("Average distance of each node to its neighbors: {} (SD: {})", mean, SD);
         }
 
 

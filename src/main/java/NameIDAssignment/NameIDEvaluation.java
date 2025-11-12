@@ -3,6 +3,8 @@ package NameIDAssignment;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -13,6 +15,7 @@ import java.util.GregorianCalendar;
 
 public class NameIDEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(NameIDEvaluation.class);
 
     public static double[][] Results = new double[SkipSimParameters.getTopologies()][SkipSimParameters.getLookupTableSize()];
     private static final String fileAddress = "NameID_Evaluation_" + SkipSimParameters.getNameIDAssignment() + "_" + LocalDateTime.now().getHour() + LocalDateTime.now().getMinute() + LocalDateTime.now()             .getSecond() + LocalDateTime
@@ -96,8 +99,7 @@ public class NameIDEvaluation
 
             if (SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
             {
-                System.out.println(fileAddress);
-                System.out.println("Writing name ID evaluation results to a file");
+                log.info("Writing name ID evaluation results to file: {}", fileAddress);
                 FileWriter fstream = new FileWriter(fileAddress);
                 BufferedWriter out = new BufferedWriter(fstream);
                 for (int i = 0; i < SkipSimParameters.getLookupTableSize(); i++)
@@ -181,7 +183,7 @@ public class NameIDEvaluation
                 out.close();
                 SkipSimParameters.getTopologies();
                 SkipSimParameters.getCurrentTopologyIndex();
-                System.out.println("Evaluation is done!");
+                log.info("Name ID evaluation completed");
 
                 //showresult(sg);
             }
@@ -203,11 +205,12 @@ public class NameIDEvaluation
     {
         for (int i = 0; i < SkipSimParameters.getTopologies() - 1; i++)
         {
+            StringBuilder row = new StringBuilder();
             for (int j = 0; j < SkipSimParameters.getLookupTableSize(); j++)
             {
-                System.out.print((int) Results[i][j] + " ");
+                row.append((int) Results[i][j]).append(" ");
             }
-            System.out.println(" ");
+            log.debug("Results[{}]: {}", i, row.toString());
         }
     }
 }

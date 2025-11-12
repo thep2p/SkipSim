@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/skipsim.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/skipsim.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Package-specific logging levels -->
+    <logger name="Simulator" level="INFO"/>
+    <logger name="SkipGraph" level="INFO"/>
+    <logger name="Blockchain" level="INFO"/>
+    <logger name="Replication" level="DEBUG"/>
+    <logger name="ChurnStabilization" level="DEBUG"/>
+    <logger name="FaultTolerance" level="DEBUG"/>
+    <logger name="AvailabilityPrediction" level="DEBUG"/>
+    <logger name="LandmarkPlacement" level="DEBUG"/>
+    <logger name="Evaluation" level="INFO"/>
+    <logger name="DataBase" level="INFO"/>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

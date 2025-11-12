@@ -3,9 +3,12 @@ package NameIDAssignment;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NameID_Assingment_LDHT extends NameIDAssignment
 {
+    private static final Logger log = LoggerFactory.getLogger(NameID_Assingment_LDHT.class);
 
     @Override
     public void reset()
@@ -23,7 +26,7 @@ public class NameID_Assingment_LDHT extends NameIDAssignment
         String prefix = sgo.getTG().mLandmarks.getPrefix(closestLandmarkIndex).
                 substring((int) (sgo.getTG().mLandmarks.getPrefix(closestLandmarkIndex).length() - Math.ceil(Math.log(SkipSimParameters.getLandmarksNum()))) - 1, sgo.getTG().mLandmarks.getPrefix(closestLandmarkIndex).length());
         nameID = prefix + nameID;
-        System.out.println(nameID + " " + prefix + " " + nodeIndex);
+        log.debug("Generated name ID: {} with prefix: {} for node index: {}", nameID, prefix, nodeIndex);
         return nameID;
     }
 

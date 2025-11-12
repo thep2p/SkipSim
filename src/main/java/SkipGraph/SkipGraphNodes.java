@@ -4,9 +4,13 @@ import Blockchain.LightChain.Transactions;
 import DataTypes.Constants;
 import DataTypes.Constants.SimulationType;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SkipGraphNodes
 {
+    private static final Logger log = LoggerFactory.getLogger(SkipGraphNodes.class);
+
     /**
      * Stores the Node in the given index into the database
      *
@@ -137,7 +141,7 @@ public abstract class SkipGraphNodes
                 left = getNode(getNode(index).getLookup(i, 0)).getNumID();
             if (getNode(index).getLookup(i, 1) != -1)
                 right = getNode(getNode(index).getLookup(i, 1)).getNumID();
-            System.out.println("Level: " + i + "   Left: " + left + "   Right: " + right);
+            log.debug("Level: {}   Left: {}   Right: {}", i, left, right);
         }
 
     }

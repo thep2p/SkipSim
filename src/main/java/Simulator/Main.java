@@ -5,6 +5,8 @@ import DataBase.SimulationDB;
 import DataTypes.Constants;
 import LandmarkPlacement.landmarkSimulation;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Vector;
  *   java Simulator.Main delete <simulation-name>  - Delete a simulation
  */
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static boolean[] isReplica;
     private SimulationDB simDB;
@@ -67,8 +70,8 @@ public class Main {
         switch (command) {
             case "new":
                 if (args.length < 2) {
-                    System.err.println("Error: Simulation name required");
-                    System.err.println("Usage: java Simulator.Main new <simulation-name>");
+                    log.error("Error: Simulation name required");
+                    log.error("Usage: java Simulator.Main new <simulation-name>");
                     System.exit(1);
                 }
                 createNewSimulation(args[1]);
@@ -76,8 +79,8 @@ public class Main {
 
             case "load":
                 if (args.length < 2) {
-                    System.err.println("Error: Simulation name required");
-                    System.err.println("Usage: java Simulator.Main load <simulation-name>");
+                    log.error("Error: Simulation name required");
+                    log.error("Usage: java Simulator.Main load <simulation-name>");
                     System.exit(1);
                 }
                 loadSimulation(args[1]);
@@ -89,15 +92,15 @@ public class Main {
 
             case "delete":
                 if (args.length < 2) {
-                    System.err.println("Error: Simulation name required");
-                    System.err.println("Usage: java Simulator.Main delete <simulation-name>");
+                    log.error("Error: Simulation name required");
+                    log.error("Usage: java Simulator.Main delete <simulation-name>");
                     System.exit(1);
                 }
                 deleteSimulation(args[1]);
                 break;
 
             default:
-                System.err.println("Error: Unknown command '" + command + "'");
+                log.error("Error: Unknown command '{}'", command);
                 printUsage();
                 System.exit(1);
         }
@@ -110,19 +113,19 @@ public class Main {
     private static void loadConfiguration(String configPath) {
         File configFile = new File(configPath);
         if (configFile.exists()) {
-            System.out.println("Loading configuration from: " + configPath);
+            log.info("Loading configuration from: {}", configPath);
             ConfigLoader.loadFromFile(configPath);
         } else {
-            System.err.println("ERROR: Configuration file not found: " + configPath);
-            System.err.println();
-            System.err.println("Available configuration files:");
-            System.err.println("  - simulation-config.properties (default)");
-            System.err.println("  - configs/quick-test.properties (64 nodes, 24 hours)");
-            System.err.println("  - configs/full-experiment.properties (1024 nodes, 168 hours)");
-            System.err.println();
-            System.err.println("Usage:");
-            System.err.println("  make run-load NAME=my_sim CONFIG=configs/quick-test.properties");
-            System.err.println("  or create a custom config file based on the examples above");
+            log.error("ERROR: Configuration file not found: {}", configPath);
+            log.error("");
+            log.error("Available configuration files:");
+            log.error("  - simulation-config.properties (default)");
+            log.error("  - configs/quick-test.properties (64 nodes, 24 hours)");
+            log.error("  - configs/full-experiment.properties (1024 nodes, 168 hours)");
+            log.error("");
+            log.error("Usage:");
+            log.error("  make run-load NAME=my_sim CONFIG=configs/quick-test.properties");
+            log.error("  or create a custom config file based on the examples above");
             System.exit(1);
         }
     }
@@ -153,7 +156,7 @@ public class Main {
      * Creates a new simulation and runs all topologies
      */
     private void createNewSimulation(String simulationName) {
-        System.out.println("\n=== Creating New Simulation: " + simulationName + " ===");
+        log.info("\n=== Creating New Simulation: {} ===", simulationName);
 
         // Reset topology index at the start of simulation
         SkipSimParameters.resetTopologyIndex();
@@ -162,22 +165,20 @@ public class Main {
         simDB.saveSimulationName(simulationName, SkipSimParameters.getSimulationType());
 
         int totalTopologies = SkipSimParameters.getTopologies();
-        System.out.println("Number of topologies to generate: " + totalTopologies);
-        System.out.println("Simulation type: " + SkipSimParameters.getSimulationType());
+        log.info("Number of topologies to generate: {}", totalTopologies);
+        log.info("Simulation type: {}", SkipSimParameters.getSimulationType());
 
         if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.DYNAMIC)
                 || SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)) {
-            System.out.println("Simulation lifetime: " + SkipSimParameters.getLifeTime() + " hours");
+            log.info("Simulation lifetime: {} hours", SkipSimParameters.getLifeTime());
         }
-
-        System.out.println();
 
         // Run simulation for each topology
         for (int topologyIndex = 0; topologyIndex < totalTopologies; topologyIndex++) {
             SkipSimParameters.incrementSimIndex();
 
             try {
-                System.out.println(">>> Topology " + (topologyIndex + 1) + "/" + totalTopologies);
+                log.info(">>> Topology {}/{}", (topologyIndex + 1), totalTopologies);
 
                 // Initialize replica flags
                 Arrays.fill(isReplica, false);
@@ -193,16 +194,16 @@ public class Main {
 
                 // Run simulation based on type
                 if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.LANDMARK)) {
-                    System.out.println("    Running landmark placement simulation...");
+                    log.debug("Running landmark placement simulation...");
                     new landmarkSimulation(sgo, Constants.Topology.GENERATE);
 
                 } else if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.STATIC)) {
-                    System.out.println("    Running static simulation...");
+                    log.debug("Running static simulation...");
                     new staticSimulation(sgo, Constants.Topology.GENERATE);
 
                 } else if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.DYNAMIC)
                         || SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)) {
-                    System.out.println("    Running dynamic/blockchain simulation...");
+                    log.debug("Running dynamic/blockchain simulation...");
 
                     // Run simulation for each time slot
                     for (int time = 0; time < SkipSimParameters.getLifeTime(); time++) {
@@ -215,25 +216,23 @@ public class Main {
                         int progressInterval = Math.max(1, SkipSimParameters.getLifeTime() / 10);
                         if ((time + 1) % progressInterval == 0 || time == SkipSimParameters.getLifeTime() - 1) {
                             int percentComplete = (int) ((time + 1) * 100.0 / SkipSimParameters.getLifeTime());
-                            System.out.println("    Time: " + (time + 1) + "/" + SkipSimParameters.getLifeTime()
-                                    + " (" + percentComplete + "%)");
+                            log.info("Time: {}/{} ({}%)", (time + 1), SkipSimParameters.getLifeTime(), percentComplete);
                         }
                     }
                 }
 
                 // Save topology to database
                 simDB.saveSkipGraph(sgo, topologyId);
-                System.out.println("    Topology saved successfully");
+                log.debug("Topology saved successfully");
 
             } catch (Exception ex) {
-                System.err.println("Error during simulation:");
-                ex.printStackTrace();
+                log.error("Error during simulation", ex);
                 System.exit(1);
             }
         }
 
-        System.out.println("\n=== Simulation Complete ===");
-        System.out.println("Simulation '" + simulationName + "' has been created successfully.");
+        log.info("=== Simulation Complete ===");
+        log.info("Simulation '{}' has been created successfully", simulationName);
     }
 
     /**
@@ -241,7 +240,7 @@ public class Main {
      * If the simulation doesn't exist, it will be created automatically.
      */
     private void loadSimulation(String simulationName) {
-        System.out.println("\n=== Loading Simulation: " + simulationName + " ===");
+        log.info("\n=== Loading Simulation: {} ===", simulationName);
 
         // Reset topology index at the start of simulation
         SkipSimParameters.resetTopologyIndex();
@@ -254,31 +253,29 @@ public class Main {
         // Check if simulation exists
         Vector<String> availableSimulations = simDB.fetchSimulationNamesFromDB(simType);
         if (!availableSimulations.contains(simulationName)) {
-            System.out.println("Simulation '" + simulationName + "' not found in database.");
-            System.out.println("Creating new simulation...\n");
+            log.info("Simulation '{}' not found in database", simulationName);
+            log.info("Creating new simulation...");
             createNewSimulation(simulationName);
-            System.out.println("\n=== Now Loading the Created Simulation ===\n");
+            log.info("=== Now Loading the Created Simulation ===");
             // Reset topology index again after creation before loading
             SkipSimParameters.resetTopologyIndex();
         }
 
         int totalTopologies = SkipSimParameters.getTopologies();
-        System.out.println("Number of topologies to load: " + totalTopologies);
-        System.out.println("Simulation type: " + SkipSimParameters.getSimulationType());
+        log.info("Number of topologies to load: {}", totalTopologies);
+        log.info("Simulation type: {}", SkipSimParameters.getSimulationType());
 
         if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.DYNAMIC)
                 || SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)) {
-            System.out.println("Simulation lifetime: " + SkipSimParameters.getLifeTime() + " hours");
+            log.info("Simulation lifetime: {} hours", SkipSimParameters.getLifeTime());
         }
-
-        System.out.println();
 
         // Load and run each topology
         for (int topologyIndex = 0; topologyIndex < totalTopologies; topologyIndex++) {
             SkipSimParameters.incrementSimIndex();
 
             try {
-                System.out.println(">>> Topology " + (topologyIndex + 1) + "/" + totalTopologies);
+                log.info(">>> Topology {}/{}", (topologyIndex + 1), totalTopologies);
 
                 // Initialize replica flags
                 Arrays.fill(isReplica, false);
@@ -291,16 +288,16 @@ public class Main {
 
                 // Run simulation based on type
                 if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.LANDMARK)) {
-                    System.out.println("    Running landmark placement simulation...");
+                    log.debug("Running landmark placement simulation...");
                     new landmarkSimulation(sgo, Constants.Topology.LOAD);
 
                 } else if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.STATIC)) {
-                    System.out.println("    Running static simulation...");
+                    log.debug("Running static simulation...");
                     new staticSimulation(sgo, Constants.Topology.LOAD);
 
                 } else if (SkipSimParameters.getSimulationType().equals(Constants.SimulationType.DYNAMIC)
                         || SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)) {
-                    System.out.println("    Running dynamic/blockchain simulation...");
+                    log.debug("Running dynamic/blockchain simulation...");
 
                     // Get topology ID for loading churn logs
                     int topologyId = simDB.fetchTopologyIDFromDB(
@@ -317,23 +314,21 @@ public class Main {
                         int progressInterval = Math.max(1, SkipSimParameters.getLifeTime() / 10);
                         if ((time + 1) % progressInterval == 0 || time == SkipSimParameters.getLifeTime() - 1) {
                             int percentComplete = (int) ((time + 1) * 100.0 / SkipSimParameters.getLifeTime());
-                            System.out.println("    Time: " + (time + 1) + "/" + SkipSimParameters.getLifeTime()
-                                    + " (" + percentComplete + "%)");
+                            log.info("Time: {}/{} ({}%)", (time + 1), SkipSimParameters.getLifeTime(), percentComplete);
                         }
                     }
                 }
 
-                System.out.println("    Topology loaded successfully");
+                log.debug("Topology loaded successfully");
 
             } catch (Exception ex) {
-                System.err.println("Error during simulation:");
-                ex.printStackTrace();
+                log.error("Error during simulation", ex);
                 System.exit(1);
             }
         }
 
-        System.out.println("\n=== Simulation Complete ===");
-        System.out.println("Simulation '" + simulationName + "' has been loaded and executed successfully.");
+        log.info("=== Simulation Complete ===");
+        log.info("Simulation '{}' has been loaded and executed successfully", simulationName);
     }
 
     /**
@@ -367,7 +362,7 @@ public class Main {
      * Deletes a simulation from the database
      */
     private void deleteSimulation(String simulationName) {
-        System.out.println("\n=== Deleting Simulation: " + simulationName + " ===");
+        log.info("\n=== Deleting Simulation: {} ===", simulationName);
 
         // Get simulations for current simulation type
         String simType = SkipSimParameters.getSimulationType().equals(Constants.SimulationType.BLOCKCHAIN)
@@ -377,7 +372,7 @@ public class Main {
         Vector<String> availableSimulations = simDB.fetchSimulationNamesFromDB(simType);
 
         if (!availableSimulations.contains(simulationName)) {
-            System.err.println("Error: Simulation '" + simulationName + "' not found");
+            log.error("Error: Simulation '{}' not found", simulationName);
             System.exit(1);
         }
 
@@ -388,9 +383,9 @@ public class Main {
 
         if (confirmation.equals("yes") || confirmation.equals("y")) {
             simDB.deleteSimulationFromDB(simulationName);
-            System.out.println("Simulation '" + simulationName + "' has been deleted successfully.");
+            log.info("Simulation '{}' has been deleted successfully.", simulationName);
         } else {
-            System.out.println("Deletion cancelled.");
+            log.info("Deletion cancelled.");
         }
     }
 }

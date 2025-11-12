@@ -3,12 +3,15 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 
 public class Rep_Alg08_PrivateRandom extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Rep_Alg08_PrivateRandom.class);
 
 
     public void randomReplicaGenerator(int dataOwnerID)
@@ -34,7 +37,7 @@ public class Rep_Alg08_PrivateRandom extends Replication
     public void Algorithm(SkipGraphOperations inputSgo, int dataOwnerID)
     {
         sgo = inputSgo;
-        System.out.println("The Private Randomized Replication Started....");
+        log.info("Private randomized replication started for data owner {}", dataOwnerID);
         reset();
         resetRep();
         randomReplicaGenerator(dataOwnerID);

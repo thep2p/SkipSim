@@ -6,11 +6,14 @@ import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class LookupEvaluation extends SkipGraph.LookupEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(LookupEvaluation.class);
     private static final double beta = ((double) 2 / (SkipSimParameters.getLifeTime() + 1));
     /**
      * A local in memory database of average success rations per each topology, where the average is taken over all
@@ -68,8 +71,7 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
     {
         if(searchType == SkipGraph.LookupEvaluation.SEARCH_FOR_NAME_ID)
         {
-            System.err.println("ChurnStabilization\\LookupEvaluation.java: No search for name ID implemented in the randomized" +
-                    " lookup tests");
+            log.error("No search for name ID implemented in the randomized lookup tests");
             System.exit(0);
         }
         double successRatio = randomizedSearchForNumericalIDs(sgo, sgo.getSearchRandomGenerator(), currentTime);
@@ -89,11 +91,8 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
 //                    + "\n so far: average search time " + topologySearchTime / iterationCounter
 //                    + "\n so far : average successful search time " + topologySuccessfulSearchTime / iterationCounter
 //                    + "\n so far: average unsuccessful search time " + topologyFailureSearchTime / iterationCounter);
-            System.out.println("Java/ChurnStabilization/LookupEvalution.java: Average success ratio of this topology : " + successRatio
-                    + "\n average success ratio of this simulation: " + topologySuccessRate
-                    + "\n so far: average search time " + getTopologySearchTime()
-                    + "\n so far : average successful search time " + getTopologySuccessfulSearchTime()
-                    + "\n so far: average unsuccessful search time " + getTopologyFailureSearchTime());
+            log.info("Average success ratio of this topology: {}, simulation: {}, search time: {}, successful: {}, unsuccessful: {}",
+                    successRatio, topologySuccessRate, getTopologySearchTime(), getTopologySuccessfulSearchTime(), getTopologyFailureSearchTime());
 
         }
 
@@ -104,15 +103,15 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
             searchTimes[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologySearchTime();
             successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologySuccessfulSearchTime();
             failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologyFailureSearchTime();
-            //DecimalFormat df = new DecimalFormat("###.##");
-            System.out.println("------------------------------------------------------------");
-            System.out.println("Intermediate result for topology " + SkipSimParameters.getCurrentTopologyIndex());
-            System.out.println("Java/ChurnStabilization/LookupEvalution.java: " +
-                    "\n for this topology: average success ratio of this topology: " + successRatios[SkipSimParameters.getCurrentTopologyIndex() - 1]
-                    + "\n for this topology: average search time " + searchTimes[SkipSimParameters.getCurrentTopologyIndex() - 1]
-                    + "\n for this topology: average successful search time " + successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1]
-                    + "\n for this topology: average unsuccessful search time " + failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1]);
-            System.out.println("------------------------------------------------------------");
+
+            log.info("------------------------------------------------------------");
+            log.info("Intermediate result for topology {}", SkipSimParameters.getCurrentTopologyIndex());
+            log.info("Success ratio: {}, search time: {}, successful time: {}, unsuccessful time: {}",
+                    successRatios[SkipSimParameters.getCurrentTopologyIndex() - 1],
+                    searchTimes[SkipSimParameters.getCurrentTopologyIndex() - 1],
+                    successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1],
+                    failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1]);
+            log.info("------------------------------------------------------------");
             if (SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
             {
                 double averageSuccessRate = 0;
@@ -169,14 +168,14 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
                 searchFailureTimeSD /= SkipSimParameters.getTopologies();
 
 
-                System.out.println("------------------------------------------------------------");
-                System.out.println("Finalized Simulation Results: ");
-                System.out.println(SkipSimParameters.getChurnStabilizationAlgorithm());
-                System.out.println("Java/ChurnStabilization/LookupEvalution.java: average success ratio of this simulation: " + averageSuccessRate + " SD: " + successRatioSD);
-                System.out.println("Java/ChurnStabilization/LookupEvalution.java: average search time of this simulation: " + averageSearchTime + " SD: " + searchTimeSD);
-                System.out.println("Java/ChurnStabilization/LookupEvalution.java: average successful search time of this simulation " + averageSuccessTime + " SD: " + searchSuccessTimeSD);
-                System.out.println("Java/ChurnStabilization/LookupEvalution.java: average failed search time of this simulation: " + averageFailureTime + " SD: " + searchFailureTimeSD);
-                System.out.println("------------------------------------------------------------");
+                log.info("------------------------------------------------------------");
+                log.info("Finalized Simulation Results");
+                log.info("Algorithm: {}", SkipSimParameters.getChurnStabilizationAlgorithm());
+                log.info("Average success ratio: {} (SD: {})", averageSuccessRate, successRatioSD);
+                log.info("Average search time: {} (SD: {})", averageSearchTime, searchTimeSD);
+                log.info("Average successful search time: {} (SD: {})", averageSuccessTime, searchSuccessTimeSD);
+                log.info("Average failed search time: {} (SD: {})", averageFailureTime, searchFailureTimeSD);
+                log.info("------------------------------------------------------------");
             }
         }
     }
@@ -339,7 +338,7 @@ The following commented code is only for the sake of checking the correctness of
 
         if (iterations < 0)
         {
-            System.err.println("SkipGraphOperations.java: All pairs random Lookup failed");
+            log.error("All pairs random Lookup failed");
             System.exit(0);
         }
 

@@ -5,6 +5,8 @@ import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
 import SkipGraph.*;
 import ChurnStabilization.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -13,6 +15,8 @@ import java.util.ArrayList;
  */
 public class Message
 {
+    private static final Logger log = LoggerFactory.getLogger(Message.class);
+
     private static ArrayList<Integer> nodeIndices;
 
     /**
@@ -185,8 +189,8 @@ public class Message
 
     public void printSearchPath(SkipGraphNodes nodeSet, boolean lookupPrinted)
     {
-        System.out.println("----------------------------------");
-        System.out.println("Message.java: print search path");
+        log.debug("----------------------------------");
+        log.debug("Message: Print search path");
         for(int index: nodeIndices)
         {
             /*
@@ -196,19 +200,19 @@ public class Message
              */
             if(nodeSet.getNode(index) == null)
             {
-                System.out.println("Message.java/ WARNING: Skipping null node at index " + index + " (not yet initialized)");
+                log.warn("Message: Skipping null node at index {} (not yet initialized)", index);
                 continue;
             }
 
             if(nodeSet instanceof Nodes)
             {
-                System.out.println("Message.java/ Node: index " + index + " numID " + nodeSet.getNode(index).getNumID());
+                log.debug("Message: Node index={} numID={}", index, nodeSet.getNode(index).getNumID());
             }
             else
             {
-                System.out.println("Message.java/ Block or Transaction: index " + index
-                        + " numID " + nodeSet.getNode(index).getNumID()
-                        + " owner " + ((Transaction) nodeSet.getNode(index)).getOwnerIndex());
+                log.debug("Message: Block or Transaction index={} numID={} owner={}",
+                    index, nodeSet.getNode(index).getNumID(),
+                    ((Transaction) nodeSet.getNode(index)).getOwnerIndex());
             }
             if(lookupPrinted)
             {
@@ -216,6 +220,6 @@ public class Message
             }
 
         }
-        System.out.println("----------------------------------");
+        log.debug("----------------------------------");
     }
 }

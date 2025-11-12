@@ -2,11 +2,14 @@ package Replication;
 
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 public class PowerOfChoice extends Randomized
 {
+    private static final Logger log = LoggerFactory.getLogger(PowerOfChoice.class);
     /**
      * Randomly chooses two replicas and replicates on the looser one in load
      * @param dataOwnerID the id of the data owner
@@ -14,7 +17,7 @@ public class PowerOfChoice extends Randomized
     @Override
     protected void randomReplicaGenerator(int dataOwnerID)
     {
-        System.out.println("PowerOfChoice.java: Randomized replication started.");
+        log.info("Randomized replication started for data owner {}", dataOwnerID);
         Random random = new Random();
         /*
         Addresses of the rep1 and rep2
@@ -48,12 +51,12 @@ public class PowerOfChoice extends Randomized
             if (nodeRep1.getBandwidthCapacity() * nodeRep1.getNormalizedStorageCapacity() > nodeRep2.getBandwidthCapacity() * nodeRep2.getNormalizedStorageCapacity())
             {
                 nodeRep1.setAsReplica(dataOwnerID);
-                System.out.println("PowerOfChoice.java: new replica at index = " + rep1 + " total replicas till now " + i + 1);
+                log.debug("Replica created at index {} - total replicas: {}", rep1, i + 1);
             }
             else
             {
                 nodeRep2.setAsReplica(dataOwnerID);
-                System.out.println("PowerOfChoice.java: new replica at index = " + rep2 + " total replicas till now " + i + 1);
+                log.debug("Replica created at index {} - total replicas: {}", rep2, i + 1);
             }
             i++;
 

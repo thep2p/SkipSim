@@ -2,6 +2,8 @@ package Blockchain.LightChain.Experiments;
 
 import Simulator.SkipSimParameters;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
  * the number of online nodes at each time slot and taking its ratio to the system capacity.
  */
 public class OnlineProbabilityExperiment {
+    private static final Logger log = LoggerFactory.getLogger(OnlineProbabilityExperiment.class);
 
     // A list of online node amounts for each time slot.
     private static List<Integer> onlineNodeAmounts = new LinkedList<>();
@@ -27,12 +30,12 @@ public class OnlineProbabilityExperiment {
         onlineNodeAmounts.add(onlineNodes);
         // Calculate and report the current online probability.
         double probCurrent = (double)onlineNodes/ SkipSimParameters.getSystemCapacity();
-        System.out.println("Online Prob. Experiment: For t=" + time + " the prob. of a node being online is " + probCurrent);
+        log.info("Online Prob. Experiment: For t={} the prob. of a node being online is {}", time, probCurrent);
         // Calculate and report the overall online probability (over all the time slots).
         double probOverall = onlineNodeAmounts.stream()
                 .mapToDouble(x -> (double)x/SkipSimParameters.getSystemCapacity())
                 .average()
                 .orElse(0);
-        System.out.println("Online Prob. Experiment: Overall probability of a node being online is " + probOverall);
+        log.info("Online Prob. Experiment: Overall probability of a node being online is {}", probOverall);
     }
 }

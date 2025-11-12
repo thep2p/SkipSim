@@ -1,9 +1,12 @@
 package Simulator;
 
 import DataTypes.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileInteractions
 {
+    private static final Logger log = LoggerFactory.getLogger(FileInteractions.class);
 //    public static void readConfigFile()
 //    {
 //        try
@@ -281,67 +284,66 @@ public class FileInteractions
      */
     public static void PrintSimulationParameters()
     {
-        System.out.println("**************************Welcome to SkipSim Ver 2.1*****************");
-        System.out.println("A simulation has been configured with ");
-        System.out.println("System capacity:  " + SkipSimParameters.getSystemCapacity());
-        System.out.println("Number of landmarks: " + SkipSimParameters.getLandmarksNum());
-        System.out.println("Name ID size: " + SkipSimParameters.getNameIDLength());
-        //System.out.println("Landmarks' prefix size: " + SkipSimParameters.);
-        System.out.println("Number of topologies: " + SkipSimParameters.getTopologies());
-        System.out.println("Size of domain: " + SkipSimParameters.getDomainSize());
+        log.info("**************************Welcome to SkipSim Ver 2.1*****************");
+        log.info("A simulation has been configured with");
+        log.info("System capacity: {}", SkipSimParameters.getSystemCapacity());
+        log.info("Number of landmarks: {}", SkipSimParameters.getLandmarksNum());
+        log.info("Name ID size: {}", SkipSimParameters.getNameIDLength());
+        log.info("Number of topologies: {}", SkipSimParameters.getTopologies());
+        log.info("Size of domain: {}", SkipSimParameters.getDomainSize());
         if (SkipSimParameters.getLifeTime() > 0)
         {
-            System.out.println("System life time is set to: " + SkipSimParameters.getLifeTime());
+            log.info("System life time is set to: {}", SkipSimParameters.getLifeTime());
         }
         if (SkipSimParameters.getNodeGenerationStrategy().equals("landmark"))
         {
-            System.out.println("Nodes are distributed based on the SkipGraph.Nodes manifestation probability");
+            log.info("Nodes are distributed based on the SkipGraph.Nodes manifestation probability");
         }
         else
         {
-            System.out.println("Nodes are distributed uniformely at random");
+            log.info("Nodes are distributed uniformely at random");
         }
 
-        System.out.println("Name id assignment of SkipGraph.Nodes is " + SkipSimParameters.getNameIDAssignment());
+        log.info("Name id assignment of SkipGraph.Nodes is {}", SkipSimParameters.getNameIDAssignment());
 
         if (!SkipSimParameters.getReplicationAlgorithm().equalsIgnoreCase(Constants.Replication.Algorithms.NONE))
         {
-            System.out.println("Replication algorithm is " + SkipSimParameters.getReplicationAlgorithm());
-            System.out.println("Number of replicas " + SkipSimParameters.getReplicationDegree());
+            log.info("Replication algorithm is {}", SkipSimParameters.getReplicationAlgorithm());
+            log.info("Number of replicas {}", SkipSimParameters.getReplicationDegree());
             if (SkipSimParameters.getReplicationType().equals("public"))
             {
-                System.out.println("Replication type is public");
+                log.info("Replication type is public");
             }
             else
             {
-                System.out.println("Replication type is private");
-                System.out.println("A set of " + SkipSimParameters.getDataRequesterNumber() + " SkipGraph.Nodes are chosen uniformly at random as data requester SkipGraph.Nodes");
+                log.info("Replication type is private");
+                log.info("A set of {} SkipGraph.Nodes are chosen uniformly at random as data requester SkipGraph.Nodes", SkipSimParameters.getDataRequesterNumber());
             }
             if (SkipSimParameters.isReplicationLocalityAwarenessEvaluation())
             {
-                System.out.println("Replication algorithm is evaluated based on access delay");
+                log.info("Replication algorithm is evaluated based on access delay");
             }
             if (SkipSimParameters.isReplicationLoadEvaluation())
             {
-                System.out.println("Replication algorithm is evaluated based on load distribution among replicas");
+                log.info("Replication algorithm is evaluated based on load distribution among replicas");
             }
         }
 
 
         if (SkipSimParameters.isNameIDLocalityAwarenessEvaluatgion())
         {
-            System.out.println("Name ids are evaluated based on their locality awareness");
+            log.info("Name ids are evaluated based on their locality awareness");
         }
         if (SkipSimParameters.getSearchByNameID() != 0)
         {
-            System.out.println(SkipSimParameters.getSearchByNameID() + " random search by name id will be initiated");
+            log.info("{} random search by name id will be initiated", SkipSimParameters.getSearchByNameID());
         }
         if (SkipSimParameters.getSearchByNumericalID() != 0)
         {
-            System.out.println(SkipSimParameters.getSearchByNumericalID() + " random search by numerical id will be initiated");
+            log.info("{} random search by numerical id will be initiated", SkipSimParameters.getSearchByNumericalID());
         }
 
-        System.out.println("**************************End of Configuration*****************");
+        log.info("**************************End of Configuration*****************");
     }
 
 

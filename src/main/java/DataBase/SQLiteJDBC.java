@@ -1,6 +1,7 @@
 package DataBase;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
  */
 public class SQLiteJDBC
 {
+    private static final Logger log = LoggerFactory.getLogger(SQLiteJDBC.class);
+
     //private Connection con;
     private static final String SkipSimDB = "jdbc:sqlite:skipsim3db.db";
     public SQLiteJDBC()
@@ -19,7 +22,7 @@ public class SQLiteJDBC
         {
             Class.forName("org.sqlite.JDBC");
             Connection connection = DriverManager.getConnection(SkipSimDB);  //Create Database or connect if it exists
-            System.out.println("Opened database successfully");
+            log.info("Database connection opened successfully");
 
             stmt = connection.createStatement();
 

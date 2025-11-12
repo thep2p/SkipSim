@@ -10,6 +10,8 @@ import NameIDAssignment.*;
 import Replication.*;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -19,6 +21,8 @@ import java.io.ObjectOutputStream;
  */
 public class AlgorithmInvoker
 {
+    private static final Logger log = LoggerFactory.getLogger(AlgorithmInvoker.class);
+
     public AlgorithmInvoker()
     {
 
@@ -40,7 +44,7 @@ public class AlgorithmInvoker
             FileOutputStream fout = new FileOutputStream(s);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
 
-            System.out.println(s);
+            log.debug("Saving to file: {}", s);
 
             /**
              * save SkipGraph.Nodes
@@ -118,7 +122,7 @@ public class AlgorithmInvoker
 //                break;
 
             default:
-                System.out.println("AlgorithmInvoker.java: No dynamic replication algorithm found in config.txt that matches SkipSim's ones");
+                log.error("No dynamic replication algorithm found in config.txt that matches SkipSim's ones");
                 System.exit(0);
 
         }

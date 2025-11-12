@@ -3,6 +3,8 @@ package Blockchain.LightChain.Experiments;
 import Blockchain.LightChain.Transaction;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,6 +14,7 @@ import java.util.*;
  * replicas and finds the average number of online replicas (availability) for a transaction.
  */
 public class AvailabilityExperiment {
+    private static final Logger log = LoggerFactory.getLogger(AvailabilityExperiment.class);
 
     // (Transaction -> Available validator amounts as stack)
     private static Map<Transaction, Stack<Integer>> txAvailableValidatorStack = new HashMap<>();
@@ -98,7 +101,7 @@ public class AvailabilityExperiment {
             currAvgAvailability += averageAvailability * txList.size();
         }
         currAvgAvailability /= watchedTransactions.size();
-        System.out.println("Availability Experiment: For t=" + time + " avg. availability is " + currAvgAvailability);
+        log.info("Availability Experiment: For t={} avg. availability is {}", time, currAvgAvailability);
 
         // Calculate the overall availability in two different ways.
 
@@ -119,8 +122,8 @@ public class AvailabilityExperiment {
         overallCorrectedAvailability /= correctedDivisor;
         overallNaiveAvailability /= naiveDivisor;
         // Report the naive & corrected availability.
-        System.out.println("Availability Experiment: Avg. (naive) availability over time is " + overallNaiveAvailability);
-        System.out.println("Availability Experiment: Avg. (corrected) availability over time is " + overallCorrectedAvailability);
+        log.info("Availability Experiment: Avg. (naive) availability over time is {}", overallNaiveAvailability);
+        log.info("Availability Experiment: Avg. (corrected) availability over time is {}", overallCorrectedAvailability);
     }
 
     /**

@@ -9,11 +9,14 @@ import DataTypes.Message;
 import DataTypes.Pair;
 import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SkipGraphOperations
 {
+    private static final Logger log = LoggerFactory.getLogger(SkipGraphOperations.class);
 
     public static final boolean IN_BLOCKCHAIN_SKIP_GRAPH = true;
     public static final boolean IN__NODES_SKIP_GRAPH = false;
@@ -1411,7 +1414,7 @@ public class SkipGraphOperations
          */
         if (SkipSimParameters.isLog())
         {
-            System.out.println("Search by num ID started, target " + targetNumId + " current Node " + currentNode.getIndex());
+            log.debug("Search by num ID started: target={} currentNode={}", targetNumId, currentNode.getIndex());
             currentNode.printLookup();
             m.printSearchPath(nodeSet, false);
         }
@@ -1662,7 +1665,7 @@ public class SkipGraphOperations
 
         if (SkipSimParameters.isLog())
         {
-            System.out.println("Search stops at level " + level);
+            log.debug("Search stops at level {}", level);
         }
         return currentNode.getIndex();
 

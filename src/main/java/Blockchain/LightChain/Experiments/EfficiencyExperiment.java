@@ -2,6 +2,8 @@ package Blockchain.LightChain.Experiments;
 
 import Blockchain.LightChain.Transaction;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import java.util.Map;
  */
 
 public class EfficiencyExperiment {
+    private static final Logger log = LoggerFactory.getLogger(EfficiencyExperiment.class);
     // Time slot -> (Transaction -> Honest validators number)
     private static Map<Integer, Map<Integer, Integer>> honestNodesNumber = new HashMap<>();
     // Calculated efficiencies so far.
@@ -46,7 +49,7 @@ public class EfficiencyExperiment {
      */
     public static void calculateResults(int time) {
         if(!honestNodesNumber.containsKey(time)) {
-            System.out.println("Efficiency Experiment: For t=" + time + " there were no validator acquisition.");
+            log.info("Efficiency Experiment: For t={} there were no validator acquisition.", time);
         } else {
             Map<Integer, Integer> honestNodesNumberForTime = honestNodesNumber.get(time);
             // Find and report the avg. number of honest nodes for the current time slot.
@@ -54,7 +57,7 @@ public class EfficiencyExperiment {
                     .mapToInt(x -> x)
                     .average()
                     .orElse(0);
-            System.out.println("Efficiency Experiment: For t=" + time + " the avg. honest node per transaction is " + avgHonestNodesForTime);
+            log.info("Efficiency Experiment: For t={} the avg. honest node per transaction is {}", time, avgHonestNodesForTime);
             avgHonestNodes.add(avgHonestNodesForTime);
         }
         // Find and report the avg. number of honest nodes over all time slots.
@@ -62,7 +65,7 @@ public class EfficiencyExperiment {
                 .mapToDouble(x -> x)
                 .average()
                 .orElse(0);
-        System.out.println("Efficiency Experiment: Avg. honest node over time is " + overallHonestNodes);
+        log.info("Efficiency Experiment: Avg. honest node over time is {}", overallHonestNodes);
     }
 
     public static void reset() {

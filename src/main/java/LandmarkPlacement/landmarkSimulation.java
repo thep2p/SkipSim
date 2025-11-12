@@ -4,6 +4,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
 import Simulator.AlgorithmInvoker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.Random;
@@ -13,6 +15,7 @@ import java.util.Random;
  */
 public class landmarkSimulation
 {
+    private static final Logger log = LoggerFactory.getLogger(landmarkSimulation.class);
 
 
     public landmarkSimulation(SkipGraphOperations sgo1, boolean generateCoordination)
@@ -43,9 +46,7 @@ public class landmarkSimulation
                 p.x = random.nextInt((int) (SkipSimParameters.getDomainSize()));
                 p.y = random.nextInt((int) (SkipSimParameters.getDomainSize()));
                 sgo.getTG().mLandmarks.setLandmarkCoordination(i, p);
-                System.out.println("Generate landmark" + i + "x = " + p.x + "y = " + p.y);
-
-                //System.out.println("SkipGraph.Landmarks" + Simulator.system.getIndex() + "x = " + p.x + "y = " + p.y);
+                log.debug("Generated landmark {}: x={}, y={}", i, p.x, p.y);
             }
 
                 /*

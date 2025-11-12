@@ -3,6 +3,8 @@ package Blockchain.LightChain.Experiments;
 import Blockchain.LightChain.Transaction;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,6 +17,7 @@ import java.util.Map;
  * define this as malicious success.
  */
 public class MaliciousSuccessExperiment {
+    private static final Logger log = LoggerFactory.getLogger(MaliciousSuccessExperiment.class);
 
     // Time -> (Malicious node -> malicious success #)
     private static Map<Integer, Map<Integer, Integer>> successMap = new HashMap<>();
@@ -61,7 +64,7 @@ public class MaliciousSuccessExperiment {
      */
     public static void calculateResults(int time) {
         if(!successMap.containsKey(time)) {
-            System.out.println("Malicious Success Experiment: For t=" + time + " there were no malicious nodes chosen to generate a transaction.");
+            log.info("Malicious Success Experiment: For t={} there were no malicious nodes chosen to generate a transaction.", time);
         } else {
             // Malicious node -> malicious success amount
             Map<Integer, Integer> successMapForTime = successMap.get(time);
@@ -69,11 +72,11 @@ public class MaliciousSuccessExperiment {
                     .mapToInt(x -> x)
                     .sum()
                     / acquisitions;
-            System.out.println("Malicious Success Experiment: For t=" + time + " the avg malicious success chance (over the malicious nodes) was " + avgSuccessForTime);
+            log.info("Malicious Success Experiment: For t={} the avg malicious success chance (over the malicious nodes) was {}", time, avgSuccessForTime);
             successChances.add(avgSuccessForTime);
         }
         double overallSuccessChance = successChances.stream().mapToDouble(x -> x).average().orElse(0);
-        System.out.println("Malicious Success Experiment: Avg. malicious success chance over time is " + overallSuccessChance);
+        log.info("Malicious Success Experiment: Avg. malicious success chance over time is {}", overallSuccessChance);
         acquisitions = 0;
     }
 

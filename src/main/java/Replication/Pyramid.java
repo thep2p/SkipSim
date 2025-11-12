@@ -4,6 +4,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.sf.javailp.*;
 
 import java.util.*;
@@ -11,6 +13,7 @@ import java.util.stream.DoubleStream;
 
 public class Pyramid extends GLARAS
 {
+    private static final Logger log = LoggerFactory.getLogger(Pyramid.class);
     /**
      * A buffer value to keep the objective function value of the latest time that ILP solved the model
      */
@@ -87,7 +90,7 @@ public class Pyramid extends GLARAS
     @Override
     public void Algorithm(SkipGraphOperations inputSgo, int dataOwnerIndex)
     {
-        System.out.println("Pyramid has started");
+        log.info("Pyramid has started");
         sgo = inputSgo;
         resetRep();
         dataRequesterPopulation();

@@ -3,6 +3,8 @@ package LandmarkPlacement;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -11,6 +13,7 @@ import java.util.Arrays;
  */
 public class LandmarkAlg02_OneByOne extends LandmarkPlacementEvaluation
     {
+        private static final Logger log = LoggerFactory.getLogger(LandmarkAlg02_OneByOne.class);
 
         public LandmarkAlg02_OneByOne()
             {
@@ -24,9 +27,8 @@ public class LandmarkAlg02_OneByOne extends LandmarkPlacementEvaluation
                // double[] maxDistanceToLandmark = new double[Simulator.system.getLandmarksNum()];
                // int[] coveringNodes = new int[Simulator.system.getLandmarksNum()];
 
-                System.out.println("Initial statistics");
+                log.debug("Initial statistics");
                 updateAndComputeClosest(sgo);
-                System.out.println("*************************");
 
 
                 boolean flag = true;
@@ -36,7 +38,8 @@ public class LandmarkAlg02_OneByOne extends LandmarkPlacementEvaluation
                 int iterationCounter = 1;
                 while(flag)
                     {
-                        System.out.println("Iteration #" + iterationCounter++);
+                        log.debug("Iteration #{}", iterationCounter);
+                        iterationCounter++;
                         if(iterationCounter > 10)
                             flag = false;
                         for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
@@ -45,10 +48,9 @@ public class LandmarkAlg02_OneByOne extends LandmarkPlacementEvaluation
                                 int landmarkCandidateIndex = 0;
                                 for (int i = 0; i < SkipSimParameters.getSystemCapacity(); i++)
                                     {
-                                        System.out.println(" ");
                                         if (!((Node) sgo.getTG().mNodeSet.getNode(i)).isTestedForALandmark())
                                             {
-                                                System.out.println("SkipGraph.Landmarks " + j + " is relocated");
+                                                log.trace("Landmark {} being relocated", j);
                                                 landmarkCandidateIndex = i;
                                                 sgo.getTG().mLandmarks.getLandmarkCoordination(j).setLocation(((Node) sgo.getTG().mNodeSet.getNode(i)).getCoordinate());
                                                 updateAndComputeClosest(sgo);
@@ -60,14 +62,12 @@ public class LandmarkAlg02_OneByOne extends LandmarkPlacementEvaluation
                                                             }
                                                         correspondingNodeIndex[j] = landmarkCandidateIndex;
                                                         ((Node) sgo.getTG().mNodeSet.getNode(landmarkCandidateIndex)).setTestedForALandmark(true);
-                                                        System.out.println("SkipGraph.Landmarks " + j + " is fixed now ");
+                                                        log.debug("Landmark {} fixed", j);
                                                         //if(Math.abs((distanceToLandmark[j] / coveringNodes[j]) - oldDistance) / Math.max(distanceToLandmark[j] / coveringNodes[j], oldDistance) > 0.20)
                                                           //  flag = true;
                                                         break;
                                                     }
                                             }
-
-                                        System.out.println(" ");
                                     }
                             }
                     }

@@ -1,6 +1,8 @@
 package Simulator;
 
 import DataTypes.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.Properties;
  *   ConfigLoader.loadFromFile("configs/large-experiment.properties");
  */
 public class ConfigLoader {
+    private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
 
     /**
      * Load configuration from a properties file.
@@ -27,10 +30,10 @@ public class ConfigLoader {
         try (InputStream input = new FileInputStream(configPath)) {
             props.load(input);
             applyConfiguration(props);
-            System.out.println("Configuration loaded from: " + configPath);
+            log.info("Configuration loaded from: {}", configPath);
         } catch (IOException e) {
-            System.err.println("Warning: Could not load config file: " + configPath);
-            System.err.println("Using default parameters or command-line overrides.");
+            log.warn("Could not load config file: {}", configPath);
+            log.warn("Using default parameters or command-line overrides");
         }
     }
 

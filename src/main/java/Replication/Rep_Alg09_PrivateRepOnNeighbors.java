@@ -3,9 +3,12 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Rep_Alg09_PrivateRepOnNeighbors extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Rep_Alg09_PrivateRepOnNeighbors.class);
 
     private void ReplicateOnNeighborsGenerator(int dataOwnerIndex)
     {
@@ -17,7 +20,8 @@ public class Rep_Alg09_PrivateRepOnNeighbors extends Replication
 
         if (index >= SkipSimParameters.getSystemCapacity())
         {
-            System.out.println("Error in Rep_Alg03_RepOnNeighbors.java: there is no SkipGraph.Node in the Simulator.system with " + SkipSimParameters.getReplicationDegree() + " neighbors" + "\n Change MNR please");
+            log.error("Error in Rep_Alg03_RepOnNeighbors.java: there is no SkipGraph.Node in the Simulator.system with {} neighbors - Change MNR please",
+                    SkipSimParameters.getReplicationDegree());
             System.exit(0);
         }
 
