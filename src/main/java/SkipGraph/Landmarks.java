@@ -207,12 +207,10 @@ public class Landmarks implements Serializable
 
     public void printDynamicPrefixExcludingIndex()
     {
-        log.debug("==================================");
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
             log.debug("Dynamic prefix excluding index[{}]: {}", i, dynamicPrefix[i]);
         }
-        log.debug("==================================");
     }
 
     public void twoMeanClustringBasedOnPosition(String prefix, int excludingIndex)

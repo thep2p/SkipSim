@@ -743,7 +743,7 @@ public class Node extends SkipGraphNode implements Serializable
      */
     public void printAvailabilityInfo(int currentTime, String message)
     {
-        log.debug("--------------------------\n{}\n  Current time: {}\n index is {}\n introducer {}\n name id is {}\n numerical id is {}\n session length = {}\n departure time = {}\n online status = {}\n--------------------------",
+        log.debug("{}: time={}, index={}, introducer={}, nameID={}, numID={}, sessionLength={}, departureTime={}, online={}",
                 message, currentTime, index, getIntroducer(), nameID, getNumID(), getSessionLength(), getDepartureTime(), isOnline());
     }
 

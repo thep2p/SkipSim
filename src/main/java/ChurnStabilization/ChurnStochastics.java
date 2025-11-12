@@ -319,22 +319,23 @@ Average interarrival time data
         totalGeneratedInterArrivalTimes += (topologyArrivals / SkipSimParameters.getLifeTime());
         //this.totalGeneratedSessionLengthes += (topologyGeneratedSessionLengthes / system.getLifeTime());
 
-        log.info("--------------------------------------------------");
-        log.info("ChurnStochastics Intermediate Results");
-        log.info("Algorithm: {}", SkipSimParameters.getChurnStabilizationAlgorithm());
-        log.info("Bucket size: {}", SkipSimParameters.getBackupTableEntrySize());
-        log.info("Availability prediction algorithm: {}", SkipSimParameters.getAvailabilityPredictor());
+        String dbgInfo = "";
         if (SkipSimParameters.getAvailabilityPredictor().equals(Constants.Churn.AvailabilityPredictorAlgorithm.DBG))
         {
-            log.info("State size of DBG: {}", SkipSimParameters.getPredictionParameter());
+            dbgInfo = ", dbgStateSize=" + SkipSimParameters.getPredictionParameter();
         }
         else if (SkipSimParameters.getAvailabilityPredictor().equals(Constants.Churn.AvailabilityPredictorAlgorithm.SWDBG))
         {
-            log.info("Average SW-DBG state size: {}", topologyTotalSWDBGSize / stateSizeUpdateCounter);
-            log.info("Max SW-DBG state size: {}", topologyMaxSWDBGSize);
+            dbgInfo = ", avgSWDBGSize=" + (topologyTotalSWDBGSize / stateSizeUpdateCounter) + ", maxSWDBGSize=" + topologyMaxSWDBGSize;
         }
-        log.info("Average prediction error of this topology: {}", topologyPredictionErrorEMA / SkipSimParameters.getLifeTime());
-        log.info("--------------------------------------------------");
+
+        log.info("ChurnStochastics intermediate [topology={}, algorithm={}, bucketSize={}, predictor={}{}]: avgPredictionError={}",
+                SkipSimParameters.getCurrentTopologyIndex(),
+                SkipSimParameters.getChurnStabilizationAlgorithm(),
+                SkipSimParameters.getBackupTableEntrySize(),
+                SkipSimParameters.getAvailabilityPredictor(),
+                dbgInfo,
+                topologyPredictionErrorEMA / SkipSimParameters.getLifeTime());
 
         topologyAverageInterArrivalTime = 0;
         topologyAverageOfOnlineNodes = 0;
@@ -367,22 +368,23 @@ Average interarrival time data
     {
         if (SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
         {
-            log.info("---------------------------------------------------------");
-            log.info("ChurnStochastics Final Results");
-            log.info("Average number of online Nodes at a single time slot: {}", totalAverageOfOnlineNodes / SkipSimParameters.getTopologies());
-            log.info("Average number of arrival at each timeslot: {}", totalGeneratedInterArrivalTimes / SkipSimParameters.getTopologies());
-            log.info("Average number of departures at each timeslot: {}", totalAverageDepartures / SkipSimParameters.getTopologies());
-            log.info("Average session length: {}", totalAverageSessionLength / SkipSimParameters.getTopologies());
-            log.info("Average inter arrival time: {}", totalAverageInterArrivalTime / SkipSimParameters.getTopologies());
-            log.info("Average number of lookups at each timeslot: {}", averageLookups / SkipSimParameters.getTopologies());
-            log.info("Average availability prediction error: {}", overalAveragePredictionError / SkipSimParameters.getTopologies());
+            String swdbgInfo = "";
             if (SkipSimParameters.getAvailabilityPredictor().equals(Constants.Churn.AvailabilityPredictorAlgorithm.SWDBG))
             {
-                log.info("Average SWDBG state size: {}", totalAverageSWDBGSize / SkipSimParameters.getTopologies());
-                log.info("Average SWDBG max state size: {}", topologyMaxSWDBGSize / SkipSimParameters.getTopologies());
+                swdbgInfo = String.format(", avgSWDBGSize=%.2f, avgMaxSWDBGSize=%.2f",
+                        totalAverageSWDBGSize / SkipSimParameters.getTopologies(),
+                        topologyMaxSWDBGSize / SkipSimParameters.getTopologies());
             }
-            log.info("---------------------------------------------------------");
 
+            log.info("ChurnStochastics final: avgOnlineNodes={}, avgArrivals={}, avgDepartures={}, avgSessionLength={}, avgInterArrivalTime={}, avgLookups={}, avgPredictionError={}{}",
+                    totalAverageOfOnlineNodes / SkipSimParameters.getTopologies(),
+                    totalGeneratedInterArrivalTimes / SkipSimParameters.getTopologies(),
+                    totalAverageDepartures / SkipSimParameters.getTopologies(),
+                    totalAverageSessionLength / SkipSimParameters.getTopologies(),
+                    totalAverageInterArrivalTime / SkipSimParameters.getTopologies(),
+                    averageLookups / SkipSimParameters.getTopologies(),
+                    overalAveragePredictionError / SkipSimParameters.getTopologies(),
+                    swdbgInfo);
         }
     }
 

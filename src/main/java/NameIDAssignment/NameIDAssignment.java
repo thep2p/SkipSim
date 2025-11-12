@@ -141,11 +141,10 @@ public abstract class NameIDAssignment
                     if (key.length() == i)
                     {
                         double value = entry.getValue();
-                        log.info("Probability of having prefix length of {} is {}", key, (value / SkipSimParameters.getTopologies()));
+                        log.info("Prefix probability [length={}, prefix={}]: {}", i, key, (value / SkipSimParameters.getTopologies()));
                     }
 
                 }
-                log.info("----------------------------");
             }
 
         }

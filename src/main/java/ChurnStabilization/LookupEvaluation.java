@@ -104,14 +104,12 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
             successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologySuccessfulSearchTime();
             failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1] = (double) getTopologyFailureSearchTime();
 
-            log.info("------------------------------------------------------------");
-            log.info("Intermediate result for topology {}", SkipSimParameters.getCurrentTopologyIndex());
-            log.info("Success ratio: {}, search time: {}, successful time: {}, unsuccessful time: {}",
+            log.info("Intermediate results [topology={}]: successRatio={}, searchTime={}, successfulTime={}, unsuccessfulTime={}",
+                    SkipSimParameters.getCurrentTopologyIndex(),
                     successRatios[SkipSimParameters.getCurrentTopologyIndex() - 1],
                     searchTimes[SkipSimParameters.getCurrentTopologyIndex() - 1],
                     successfulSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1],
                     failureSearchTime[SkipSimParameters.getCurrentTopologyIndex() - 1]);
-            log.info("------------------------------------------------------------");
             if (SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
             {
                 double averageSuccessRate = 0;
@@ -167,15 +165,12 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
                 searchFailureTimeSD = Math.sqrt(searchFailureTimeSD);
                 searchFailureTimeSD /= SkipSimParameters.getTopologies();
 
-
-                log.info("------------------------------------------------------------");
-                log.info("Finalized Simulation Results");
-                log.info("Algorithm: {}", SkipSimParameters.getChurnStabilizationAlgorithm());
-                log.info("Average success ratio: {} (SD: {})", averageSuccessRate, successRatioSD);
-                log.info("Average search time: {} (SD: {})", averageSearchTime, searchTimeSD);
-                log.info("Average successful search time: {} (SD: {})", averageSuccessTime, searchSuccessTimeSD);
-                log.info("Average failed search time: {} (SD: {})", averageFailureTime, searchFailureTimeSD);
-                log.info("------------------------------------------------------------");
+                log.info("Final results [algorithm={}]: avgSuccessRatio={} (SD={}), avgSearchTime={} (SD={}), avgSuccessfulTime={} (SD={}), avgFailedTime={} (SD={})",
+                        SkipSimParameters.getChurnStabilizationAlgorithm(),
+                        averageSuccessRate, successRatioSD,
+                        averageSearchTime, searchTimeSD,
+                        averageSuccessTime, searchSuccessTimeSD,
+                        averageFailureTime, searchFailureTimeSD);
             }
         }
     }

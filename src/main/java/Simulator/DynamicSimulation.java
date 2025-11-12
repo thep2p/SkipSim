@@ -477,7 +477,6 @@ public class DynamicSimulation
             arrivingNode.printAvailabilityInfo(currentTime, Constants.Churn.ARRIVAL);
             log.debug("Lookup table for arriving node:");
             arrivingNode.printLookup();
-            log.debug("--------------------------------");
         }
     }
 }

@@ -284,66 +284,46 @@ public class FileInteractions
      */
     public static void PrintSimulationParameters()
     {
-        log.info("**************************Welcome to SkipSim Ver 2.1*****************");
-        log.info("A simulation has been configured with");
-        log.info("System capacity: {}", SkipSimParameters.getSystemCapacity());
-        log.info("Number of landmarks: {}", SkipSimParameters.getLandmarksNum());
-        log.info("Name ID size: {}", SkipSimParameters.getNameIDLength());
-        log.info("Number of topologies: {}", SkipSimParameters.getTopologies());
-        log.info("Size of domain: {}", SkipSimParameters.getDomainSize());
-        if (SkipSimParameters.getLifeTime() > 0)
-        {
-            log.info("System life time is set to: {}", SkipSimParameters.getLifeTime());
-        }
-        if (SkipSimParameters.getNodeGenerationStrategy().equals("landmark"))
-        {
-            log.info("Nodes are distributed based on the SkipGraph.Nodes manifestation probability");
-        }
-        else
-        {
-            log.info("Nodes are distributed uniformely at random");
-        }
+        // Core configuration parameters
+        log.info("SkipSim v2.1 - Configuration: capacity={}, landmarks={}, nameIDSize={}, topologies={}, domainSize={}, lifetime={}h, distribution={}, nameIDAssignment={}",
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getNameIDLength(),
+            SkipSimParameters.getTopologies(),
+            SkipSimParameters.getDomainSize(),
+            SkipSimParameters.getLifeTime(),
+            SkipSimParameters.getNodeGenerationStrategy().equals("landmark") ? "manifestation-based" : "uniform",
+            SkipSimParameters.getNameIDAssignment());
 
-        log.info("Name id assignment of SkipGraph.Nodes is {}", SkipSimParameters.getNameIDAssignment());
-
+        // Replication configuration if enabled
         if (!SkipSimParameters.getReplicationAlgorithm().equalsIgnoreCase(Constants.Replication.Algorithms.NONE))
         {
-            log.info("Replication algorithm is {}", SkipSimParameters.getReplicationAlgorithm());
-            log.info("Number of replicas {}", SkipSimParameters.getReplicationDegree());
-            if (SkipSimParameters.getReplicationType().equals("public"))
-            {
-                log.info("Replication type is public");
+            String evaluationType = "";
+            if (SkipSimParameters.isReplicationLocalityAwarenessEvaluation()) {
+                evaluationType = "access-delay";
             }
-            else
-            {
-                log.info("Replication type is private");
-                log.info("A set of {} SkipGraph.Nodes are chosen uniformly at random as data requester SkipGraph.Nodes", SkipSimParameters.getDataRequesterNumber());
+            if (SkipSimParameters.isReplicationLoadEvaluation()) {
+                evaluationType += (evaluationType.isEmpty() ? "" : ",") + "load-distribution";
             }
-            if (SkipSimParameters.isReplicationLocalityAwarenessEvaluation())
-            {
-                log.info("Replication algorithm is evaluated based on access delay");
-            }
-            if (SkipSimParameters.isReplicationLoadEvaluation())
-            {
-                log.info("Replication algorithm is evaluated based on load distribution among replicas");
-            }
+
+            log.info("Replication: algorithm={}, degree={}, type={}, requesters={}, evaluation={}",
+                SkipSimParameters.getReplicationAlgorithm(),
+                SkipSimParameters.getReplicationDegree(),
+                SkipSimParameters.getReplicationType(),
+                SkipSimParameters.getDataRequesterNumber(),
+                evaluationType.isEmpty() ? "none" : evaluationType);
         }
 
-
-        if (SkipSimParameters.isNameIDLocalityAwarenessEvaluatgion())
+        // Search and evaluation configuration if enabled
+        if (SkipSimParameters.isNameIDLocalityAwarenessEvaluatgion()
+            || SkipSimParameters.getSearchByNameID() != 0
+            || SkipSimParameters.getSearchByNumericalID() != 0)
         {
-            log.info("Name ids are evaluated based on their locality awareness");
+            log.info("Searches: byName={}, byNumericID={}, localityEvaluation={}",
+                SkipSimParameters.getSearchByNameID(),
+                SkipSimParameters.getSearchByNumericalID(),
+                SkipSimParameters.isNameIDLocalityAwarenessEvaluatgion());
         }
-        if (SkipSimParameters.getSearchByNameID() != 0)
-        {
-            log.info("{} random search by name id will be initiated", SkipSimParameters.getSearchByNameID());
-        }
-        if (SkipSimParameters.getSearchByNumericalID() != 0)
-        {
-            log.info("{} random search by numerical id will be initiated", SkipSimParameters.getSearchByNumericalID());
-        }
-
-        log.info("**************************End of Configuration*****************");
     }
 
 
