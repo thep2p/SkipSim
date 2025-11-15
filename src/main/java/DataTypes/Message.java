@@ -5,6 +5,8 @@ import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
 import SkipGraph.*;
 import ChurnStabilization.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -13,6 +15,8 @@ import java.util.ArrayList;
  */
 public class Message
 {
+    private static final Logger log = LoggerFactory.getLogger(Message.class);
+
     private static ArrayList<Integer> nodeIndices;
 
     /**
@@ -185,26 +189,40 @@ public class Message
 
     public void printSearchPath(SkipGraphNodes nodeSet, boolean lookupPrinted)
     {
-        System.out.println("----------------------------------");
-        System.out.println("Message.java: print search path");
-        for(int index: nodeIndices)
-        {
-            if(nodeSet instanceof Nodes)
+        if (log.isDebugEnabled()) {
+            StringBuilder pathBuilder = new StringBuilder("Search path: [");
+            for(int index: nodeIndices)
             {
-                System.out.println("Message.java/ Node: index " + index + " numID " + nodeSet.getNode(index).getNumID());
-            }
-            else
-            {
-                System.out.println("Message.java/ Block or Transaction: index " + index
-                        + " numID " + nodeSet.getNode(index).getNumID()
-                        + " owner " + ((Transaction) nodeSet.getNode(index)).getOwnerIndex());
-            }
-            if(lookupPrinted)
-            {
-                nodeSet.printLookupNumID(index);
-            }
+                /*
+                Null safety check: Skip nodes/transactions that haven't been fully initialized yet.
+                This can happen during insertion when a transaction is added to the search path
+                before it's been fully inserted into the Skip Graph.
+                 */
+                if(nodeSet.getNode(index) == null)
+                {
+                    log.warn("Skipping null node at index {} (not yet initialized)", index);
+                    continue;
+                }
 
+                if(nodeSet instanceof Nodes)
+                {
+                    pathBuilder.append(String.format("Node(idx=%d,numID=%d) ",
+                        index, nodeSet.getNode(index).getNumID()));
+                }
+                else
+                {
+                    pathBuilder.append(String.format("Tx(idx=%d,numID=%d,owner=%d) ",
+                        index, nodeSet.getNode(index).getNumID(),
+                        ((Transaction) nodeSet.getNode(index)).getOwnerIndex()));
+                }
+                if(lookupPrinted)
+                {
+                    nodeSet.printLookupNumID(index);
+                }
+
+            }
+            pathBuilder.append("]");
+            log.debug("{}", pathBuilder.toString());
         }
-        System.out.println("----------------------------------");
     }
 }

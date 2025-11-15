@@ -2,6 +2,8 @@ package Blockchain.LightChain;
 
 
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -9,6 +11,8 @@ import static java.util.Objects.hash;
 
 public class Block extends Transaction
 {
+    private static final Logger log = LoggerFactory.getLogger(Block.class);
+
     /**
      * Indices of the transactions that are included in this block. The transactions are retrievable from the Transactions
      * class that acts as the transactions database.
@@ -21,7 +25,7 @@ public class Block extends Transaction
     {
         super(previous, ownerIndex);
         if (SkipSimParameters.isLog())
-            System.out.println("Lightchain/Block.java: new block, index: " + getIndex() + " owner: " + mOwnerIndex + " name ID: " + getIndex());
+            log.debug("New block created - index: {}, owner: {}, name ID: {}", getIndex(), mOwnerIndex, getIndex());
 
 //        if(ownerIndex != -1){
 //            mNodeSet.getNode(ownerIndex).addToBlockSet(blockIndex);
@@ -131,8 +135,12 @@ public class Block extends Transaction
      */
     public void printLookup()
     {
-        for (int i = Transaction.LOOKUP_TABLE_SIZE - 1; i >= 0; i--)
-            System.out.println("Level: " + i + "   Left: " + lookup[i][0] + "   Right: " + lookup[i][1]);
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = Transaction.LOOKUP_TABLE_SIZE - 1; i >= 0; i--)
+                levels.append(String.format("[L%d: L=%d,R=%d] ", i, lookup[i][0], lookup[i][1]));
+            log.debug("Block lookup table: {}", levels.toString().trim());
+        }
     }
 
     /**

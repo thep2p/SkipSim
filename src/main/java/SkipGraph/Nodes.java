@@ -4,6 +4,8 @@ import Aggregation.BlockchainAvailabilityAggreegation;
 import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Random;
 
 public class Nodes extends SkipGraphNodes
 {
+    private static final Logger log = LoggerFactory.getLogger(Nodes.class);
     private static Random numIDRandomGen;
     /**
      * The random variable generating the storage capacity in case of dynamic replication
@@ -94,13 +97,13 @@ public class Nodes extends SkipGraphNodes
         {
             averageStorageCapacity /= SkipSimParameters.getSystemCapacity();
             overalAverageStorageCapacity += averageStorageCapacity;
-            System.out.println("Nodes.java: Average storage capacity of the nodes on this topology: " + averageStorageCapacity);
+            log.info("Nodes.java: Average storage capacity of the nodes on this topology: {}", averageStorageCapacity);
         }
         if (averageBandwidthCapacity > 0)
         {
             averageBandwidthCapacity /= SkipSimParameters.getSystemCapacity();
             overalAverageBandwidthCapacity += averageBandwidthCapacity;
-            System.out.println("Nodes.java: Average bandwidth capacity of the nodes on this topology: " + averageBandwidthCapacity);
+            log.info("Nodes.java: Average bandwidth capacity of the nodes on this topology: {}", averageBandwidthCapacity);
         }
 
         searchPathLatency = new ArrayList<Integer>();
@@ -210,7 +213,11 @@ public class Nodes extends SkipGraphNodes
 //        Updates the closet landmark to each node
 //         */
 //        updateClosestLandmark(landmarks);
-        System.out.println("Nodes.java: blockchain aggregation started");
+        log.info("Blockchain aggregation started [topology={}, domainSize={}, FPTI={}, dataOwners={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            SkipSimParameters.getAvailabilityAggregationDomainSize(),
+            SkipSimParameters.getFPTI(),
+            SkipSimParameters.getDataOwnerNumber());
         qosTable = new BlockchainAvailabilityAggreegation(SkipSimParameters.getAvailabilityAggregationDomainSize(), SkipSimParameters.getFPTI());
         for (int dataOwner = 0; dataOwner < SkipSimParameters.getDataOwnerNumber(); dataOwner++)
         {
@@ -478,13 +485,13 @@ public class Nodes extends SkipGraphNodes
                 }
                 else if (mNodeSet[i].nameID.equals(mNodeSet[j].nameID) && !mNodeSet[i].nameID.isEmpty())
                 {
-                    System.out.println("Same name id: " + i + " " + j + "\n" + mNodeSet[i].nameID + " " + mNodeSet[j].nameID);
+                    log.debug("Same name id: {} {}\n{} {}", i, j, mNodeSet[i].nameID, mNodeSet[j].nameID);
                     flag = false;
                 }
             }
         if (flag)
         {
-            System.out.println("No match was found!");
+            log.warn("No match was found!");
         }
         return true;
     }
@@ -568,7 +575,7 @@ public class Nodes extends SkipGraphNodes
     {
         if (SkipSimParameters.isLog())
         {
-            System.out.println("Nodes: " + message);
+            log.debug("Nodes: {}", message);
         }
     }
 
@@ -616,7 +623,7 @@ public class Nodes extends SkipGraphNodes
                 mNodeSet[i] = n;
             }
 
-            System.out.println("Nodes.java: A Node generated: Node name id is " + n.nameID + " numerical id is " + n.getNumID() + " Simulator.system index =  " + i);
+            log.debug("Node generated: name_id={}, num_id={}, index={}", n.nameID, n.getNumID(), i);
 
         }
 
@@ -624,16 +631,20 @@ public class Nodes extends SkipGraphNodes
 
     public void printLookupOnlineStatus(int index)
     {
-        for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
-        {
-            boolean right = false;
-            boolean left = false;
-            if (mNodeSet[index].getLookup(i, 0) != -1)
-                left = mNodeSet[mNodeSet[index].getLookup(i, 0)].isOnline();
-            if (mNodeSet[index].getLookup(i, 1) != -1)
-                right = mNodeSet[mNodeSet[index].getLookup(i, 1)].isOnline();
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
+            {
+                boolean right = false;
+                boolean left = false;
+                if (mNodeSet[index].getLookup(i, 0) != -1)
+                    left = mNodeSet[mNodeSet[index].getLookup(i, 0)].isOnline();
+                if (mNodeSet[index].getLookup(i, 1) != -1)
+                    right = mNodeSet[mNodeSet[index].getLookup(i, 1)].isOnline();
 
-            System.out.println("Level: " + i + "   Left: " + left + "   Right: " + right);
+                levels.append(String.format("[L%d: L=%b,R=%b] ", i, left, right));
+            }
+            log.debug("Lookup online status: {}", levels.toString().trim());
         }
 
     }
@@ -737,7 +748,7 @@ public class Nodes extends SkipGraphNodes
                 }
                 catch (Exception ex)
                 {
-                    System.out.println("do something");
+                    // Exception handling for coordinate distance calculation
                 }
             }
 

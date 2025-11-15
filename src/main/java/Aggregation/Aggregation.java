@@ -3,6 +3,8 @@ package Aggregation;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -11,6 +13,8 @@ import java.util.ArrayList;
  */
 public class Aggregation
     {
+        private static final Logger log = LoggerFactory.getLogger(Aggregation.class);
+
         protected SkipGraphOperations sgo;
         protected int initiator;
         protected final double E = 8;
@@ -26,16 +30,16 @@ public class Aggregation
                     {
                         if(((Node) sgo.getTG().mNodeSet.getNode(i)).getParent() == i)
                             {
-                                System.out.println("Error: Node " + i + " is its parent");
-                                System.out.println(((Node) sgo.getTG().mNodeSet.getNode(i)).getChildren());
+                                log.error("Error: Node {} is its own parent with children: {}",
+                                    i, ((Node) sgo.getTG().mNodeSet.getNode(i)).getChildren());
                                 System.exit(0);
                             }
                         if(((Node) sgo.getTG().mNodeSet.getNode(i)).getParent() == -1)
                             {
                                 if(((Node) sgo.getTG().mNodeSet.getNode(i)).getChildren().isEmpty())
                                     {
-                                        System.out.println("Error: Node " + i + " has no parent and no child " + ((Node) sgo.getTG().mNodeSet.getNode(i)).getNameID());
-                                        //System.exit(0);
+                                        log.warn("Node {} has no parent and no child (nameID: {})",
+                                            i, ((Node) sgo.getTG().mNodeSet.getNode(i)).getNameID());
                                     }
 //
 //
@@ -43,13 +47,13 @@ public class Aggregation
                                     root = i;
                                 else if(root > 0)
                                     {
-                                        System.out.println("Error: Two roots in the Simulator.system");
-                                        //System.exit(0);
+                                        log.error("Error: Two roots in the system");
                                     }
                             }
                     }
 
-                System.out.println("Find root is done, root " + root);
+                log.debug("Find root completed [algorithm={}, root={}, topology={}]",
+                    this.getClass().getSimpleName(), root, SkipSimParameters.getCurrentTopologyIndex());
                 return root;
             }
 
@@ -110,9 +114,9 @@ public class Aggregation
                                 childAve     += childAvergae[i];
                                 totalParent  += parentNumber[i];
                             }
-                        System.out.println(algName + " average energy cost on a parent " + totalEnergy/ SkipSimParameters.getTopologies());
-                        System.out.println(algName + " average number of child " + childAve/ SkipSimParameters.getTopologies());
-                        System.out.println(algName + " average number of parents " +totalParent/ SkipSimParameters.getTopologies());
+                        log.info("{} average energy cost per parent: {}", algName, totalEnergy/ SkipSimParameters.getTopologies());
+                        log.info("{} average number of children: {}", algName, childAve/ SkipSimParameters.getTopologies());
+                        log.info("{} average number of parents: {}", algName, totalParent/ SkipSimParameters.getTopologies());
                     }
             }
         protected void latencyEvaluation(String algName)
@@ -124,7 +128,7 @@ public class Aggregation
                         int parent = ((Node) sgo.getTG().mNodeSet.getNode(i)).getParent();
                         if(parent == -1 && i != root)
                             {
-                                System.out.println("Error: SkipGraph.Node " + i + " exists with parent -1 and it is not root!");
+                                log.error("Error: Node {} exists with parent -1 and it is not root!", i);
                                 System.exit(0);
                             }
                         else if(parent == -1)
@@ -152,7 +156,7 @@ public class Aggregation
                             {
                                 totalLatency += latency[i];
                             }
-                        System.out.println(algName + "Average maximum latency " + totalLatency/ SkipSimParameters.getTopologies());
+                        log.info("{} average maximum latency: {}", algName, totalLatency/ SkipSimParameters.getTopologies());
                     }
 
             }

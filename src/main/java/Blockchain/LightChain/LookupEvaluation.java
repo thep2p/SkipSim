@@ -6,6 +6,8 @@ import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
  */
 public class LookupEvaluation extends SkipGraph.LookupEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(LookupEvaluation.class);
+
     public LookupEvaluation()
     {
         super();
@@ -135,7 +139,7 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
                 int mostSimilarInResult = nodeSearchResult
                         .mostSimilarTXB(sgo.getTransactions(), searchTargetTXBNumId,
                                 m, searchDirection, 0);
-                System.out.println(" ");
+                log.trace("Transaction search unsuccessful");
             }
         }
 
@@ -153,7 +157,7 @@ public class LookupEvaluation extends SkipGraph.LookupEvaluation
         // At t=0, there are no transactions yet.
         if(currentTime == 0) return;
         double successRatio = randomizedSearchForNumericalIDs(sgo, sgo.getSearchRandomGenerator(), currentTime);
-        System.out.println("Success ratio: " + successRatio);
+        log.info("Transaction lookup success ratio at time {}: {}", currentTime, successRatio);
     }
 
 

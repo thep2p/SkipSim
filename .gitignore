@@ -1,0 +1,29 @@
+# Build artifacts
+.idea/
+out/
+target/
+*.class
+
+# Database files
+*.db
+*.db-journal
+
+# IDE files
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.swp

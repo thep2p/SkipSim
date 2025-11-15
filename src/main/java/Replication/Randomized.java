@@ -3,16 +3,23 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 
 public class Randomized extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Randomized.class);
 
     protected void randomReplicaGenerator(int dataOwnerID)
     {
-        System.out.println("Randomized.java: Randomized replication started.");
+        log.info("Randomized replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         Random random = new Random();
         int i = 0;
         while (i < SkipSimParameters.getReplicationDegree())
@@ -24,7 +31,8 @@ public class Randomized extends Replication
             boolean replicationResult = ((Node) sgo.getTG().mNodeSet.getNode(index)).setAsReplica(dataOwnerID);
             if (replicationResult)
             {
-                System.out.println("Randomized.java: new replica at " + " index = " + index + " total replicas till now " + i);
+                log.debug("Replica created [dataOwner={}, nodeIndex={}, replicaNum={}, topology={}]",
+                    dataOwnerID, index, i + 1, SkipSimParameters.getCurrentTopologyIndex());
                 i++;
             }
         }

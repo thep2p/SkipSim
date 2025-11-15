@@ -5,6 +5,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
 import mdsj.ClassicalScaling;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 public abstract class NameIDAssignment
 {
+    private static final Logger log = LoggerFactory.getLogger(NameIDAssignment.class);
 
     protected static int[][] B = new int[SkipSimParameters.getLandmarksNum()][SkipSimParameters.getLandmarksNum()]; //binary matrix
     protected static double[] M = new double[SkipSimParameters.getLandmarksNum()]; //Mean of distances to the landmarks
@@ -138,11 +141,10 @@ public abstract class NameIDAssignment
                     if (key.length() == i)
                     {
                         double value = entry.getValue();
-                        System.out.println("Probability of having prefix length of " + key + " is " + (value / SkipSimParameters.getTopologies()));
+                        log.info("Prefix probability [length={}, prefix={}]: {}", i, key, (value / SkipSimParameters.getTopologies()));
                     }
 
                 }
-                System.out.println("----------------------------");
             }
 
         }
@@ -265,11 +267,11 @@ public abstract class NameIDAssignment
     {
         for (int i = 0; i < SkipSimParameters.getSystemCapacity(); i++)
         {
-            System.out.println("name id = " + sgo.getTG().mNodeSet.getNode(i));
+            log.debug("Checking name ID availability: node={}", sgo.getTG().mNodeSet.getNode(i));
             if (!((Node) sgo.getTG().mNodeSet.getNode(i)).getNameID().isEmpty()
                     && nameID.equals(sgo.getTG().mNodeSet.getNode(i).getNameID()))
             {
-                System.out.println(nameID + " is not available");
+                log.debug("Name ID {} is not available", nameID);
                 return false;
             }
         }
@@ -310,21 +312,25 @@ public abstract class NameIDAssignment
 
     public void print(String message)
     {
-        if (SkipSimParameters.isLog()) System.out.println("DPAD: " + message);
+        if (SkipSimParameters.isLog()) log.debug("DPAD: {}", message);
     }
 
 
     public void PrintB()
     {
-        System.out.println("B is : ");
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
+        if (log.isDebugEnabled()) {
+            StringBuilder matrix = new StringBuilder("B matrix: [");
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
             {
-                System.out.print(B[i][j]);
-
+                matrix.append("Row").append(i).append("=[");
+                for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
+                {
+                    matrix.append(B[i][j]);
+                }
+                matrix.append("] ");
             }
-            System.out.println(" ");
+            matrix.append("]");
+            log.debug("{}", matrix.toString());
         }
     }
 
@@ -358,11 +364,12 @@ public abstract class NameIDAssignment
     {
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
+            StringBuilder row = new StringBuilder();
             for (int j = 0; j < SkipSimParameters.getSystemCapacity(); j++)
             {
-                System.out.print((int) adj[i][j] + "  ");
+                row.append((int) adj[i][j]).append("  ");
             }
-            System.out.println("    ");
+            log.debug("ADJ[{}]: {}", i, row.toString());
         }
     }
 

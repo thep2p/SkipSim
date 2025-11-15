@@ -5,12 +5,14 @@ import DataTypes.Pair;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public class NameID_Assignment_DPAD extends NameIDAssignment
 {
-
+    private static final Logger log = LoggerFactory.getLogger(NameID_Assignment_DPAD.class);
 
     static Pair[] landmarksAndLatencies;
 
@@ -109,7 +111,7 @@ public class NameID_Assignment_DPAD extends NameIDAssignment
                 }
                 if (right >= SkipSimParameters.getSystemCapacity() && left < 0)
                 {
-                    System.out.println("DPAD infinit loop");
+                    log.error("DPAD infinite loop detected");
                     System.exit(0);
                 }
             }

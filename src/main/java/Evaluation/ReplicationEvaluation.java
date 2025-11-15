@@ -4,11 +4,15 @@ import DataTypes.Constants;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static Simulator.Parameters.REPLICATION_TIME_INTERVAL;
+import static Simulator.SkipSimParameters.REPLICATION_TIME_INTERVAL;
 
 public class ReplicationEvaluation
 {
+    private static final Logger log = LoggerFactory.getLogger(ReplicationEvaluation.class);
+
     /**
      * Average number of available replicas per each data owner on time slot i in this current topology
      */
@@ -115,18 +119,21 @@ public class ReplicationEvaluation
 
                 sd /= SkipSimParameters.getTopologies();
                 sd = Math.sqrt(sd);
-                System.out.println("----------------------------------------------------------");
-                System.out.println("RepEvaluation.java: Dynamic Replication Evaluation. Replication Algorithm: " + algorithmName);
-                System.out.println("Replication time " + SkipSimParameters.getReplicationTime());
+
+                String pyramidParams = "";
                 if(SkipSimParameters.getReplicationAlgorithm().equalsIgnoreCase(Constants.Replication.Algorithms.PYRAMID))
                 {
-                    System.out.println("Aggregation domain size " + SkipSimParameters.getAvailabilityAggregationDomainSize());
-                    System.out.println("Search for utility alpha " + SkipSimParameters.getSearchForUtilityAlpha());
+                    pyramidParams = String.format(", aggDomainSize=%d, utilityAlpha=%s",
+                        SkipSimParameters.getAvailabilityAggregationDomainSize(),
+                        SkipSimParameters.getSearchForUtilityAlpha());
                 }
-                System.out.println("Replication degree " + SkipSimParameters.getReplicationDegree());
-                System.out.println("Average availability of replicas: " + average + ", standard deviation: " + sd);
-                System.out.println("Note: Average and standard deviation are taken over all topologies");
-                System.out.println("----------------------------------------------------------");
+                log.info("DynamicReplication evaluation [algorithm={}, repTime={}, degree={}{}]: avgAvailability={}, SD={} (across all topologies)",
+                    algorithmName,
+                    SkipSimParameters.getReplicationTime(),
+                    SkipSimParameters.getReplicationDegree(),
+                    pyramidParams,
+                    average,
+                    sd);
             }
         }
 
@@ -188,11 +195,10 @@ public class ReplicationEvaluation
                 average += loadDataSet[i];
             }
 
-            //System.out.println("Sum of average " + average);
             average = average / SkipSimParameters.getTopologies();
             double sd = SkipSimParameters.getStandardDeviation(loadDataSet, average);
 
-            System.out.println("The average load on a replica is " + average + " with the SD of " + sd);
+            log.info("Average load on replicas: {} (SD: {})", average, sd);
             return average;
         }
         return averageReplicatedLoad;
@@ -421,15 +427,22 @@ public class ReplicationEvaluation
             }
             SD = (double) SD / SkipSimParameters.getTopologies();
             SD = Math.sqrt(SD);
-            System.out.println("--------------------------------------------------");
-            if(isQoS) System.out.println("QoS evaluation of replication:");
-            else System.out.println("Locality-aware replication evaluation:");
-            System.out.println("Replication Simulation: " + algName.toUpperCase() +
-                    " , replication degree = " + SkipSimParameters.getReplicationDegree() +
-                    " data requesters number = " + SkipSimParameters.getDataRequesterNumber());
-            if(isQoS) System.out.println("Average QoS = " + overalDelay + " KB/s with SD =  " + SD);
-            else  System.out.println("Average access delay = " + overalDelay + " with SD =  " + SD);
-            System.out.println("--------------------------------------------------");
+
+            if(isQoS) {
+                log.info("QoS replication evaluation [algorithm={}, repDegree={}, dataRequesters={}]: avgQoS={} KB/s (SD={})",
+                        algName.toUpperCase(),
+                        SkipSimParameters.getReplicationDegree(),
+                        SkipSimParameters.getDataRequesterNumber(),
+                        overalDelay,
+                        SD);
+            } else {
+                log.info("Locality-aware replication evaluation [algorithm={}, repDegree={}, dataRequesters={}]: avgAccessDelay={} (SD={})",
+                        algName.toUpperCase(),
+                        SkipSimParameters.getReplicationDegree(),
+                        SkipSimParameters.getDataRequesterNumber(),
+                        overalDelay,
+                        SD);
+            }
         }
         return overalDelay;
     }

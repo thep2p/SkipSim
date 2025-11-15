@@ -2,6 +2,8 @@ package Blockchain.LightChain.Experiments;
 
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import java.util.Map;
  * define this as malicious success.
  */
 public class BtsMaliciousSuccessExperiment {
+    private static final Logger log = LoggerFactory.getLogger(BtsMaliciousSuccessExperiment.class);
 
     // Time -> (Node -> malicious success #)
     private static Map<Integer, Map<Integer, Integer>> successMap = new HashMap<>();
@@ -55,7 +58,8 @@ public class BtsMaliciousSuccessExperiment {
      */
     public static void calculateResults(int time) {
         if(!successMap.containsKey(time)) {
-            System.out.println("Bts. Malicious Success Experiment: For t=" + time + " there were no malicious nodes chosen to generate a transaction.");
+            log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: noMaliciousBootstrapping=true",
+                SkipSimParameters.getCurrentTopologyIndex(), time);
         } else {
             Map<Integer, Integer> successMapForTime = successMap.get(time);
             // Find and report the avg. success chance for the current time.
@@ -63,12 +67,14 @@ public class BtsMaliciousSuccessExperiment {
                     .mapToInt(x -> x)
                     .sum()
                     / acquisitions;
-            System.out.println("Bts. Malicious Success Experiment: For t=" + time + " the avg malicious success chance (over the malicious nodes) was " + avgSuccessForTime);
+            log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: avgMaliciousSuccessRate={}",
+                SkipSimParameters.getCurrentTopologyIndex(), time, avgSuccessForTime);
             successChances.add(avgSuccessForTime);
         }
         // Find and report the avg. success chance over all time slots.
         double overallSuccessChance = successChances.stream().mapToDouble(x -> x).average().orElse(0);
-        System.out.println("Bts. Malicious Success Experiment: Avg. malicious success chance over time is " + overallSuccessChance);
+        log.info("BtsMaliciousSuccess experiment [topology={}, time={}]: overallAvgSuccessRate={}",
+            SkipSimParameters.getCurrentTopologyIndex(), time, overallSuccessChance);
         acquisitions = 0;
     }
 

@@ -6,9 +6,13 @@ import LandmarkPlacement.LookupEvaluation;
 import NameIDAssignment.NameIDEvaluation;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class staticSimulation
 {
+    private static final Logger log = LoggerFactory.getLogger(staticSimulation.class);
+
     public static final int dataOwnerID = 0;
     public staticSimulation(SkipGraphOperations sgo1, boolean generateCoordination)
     {
@@ -17,7 +21,11 @@ public class staticSimulation
 
     private void Simulation(SkipGraphOperations sgo, boolean generateCoordination)
     {
-        System.out.println("Static Simulation started");
+        log.info("Static simulation started [capacity={}, landmarks={}, nameIDAssignment={}, replicationAlgorithm={}]",
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getNameIDAssignment(),
+            SkipSimParameters.getReplicationAlgorithm());
 
 
         //Generating or loading landmarks

@@ -12,16 +12,19 @@ import NameIDAssignment.NameIDAssignment;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-import static Simulator.Parameters.REPLICATION_TIME_INTERVAL;
+import static Simulator.SkipSimParameters.REPLICATION_TIME_INTERVAL;
 
 /**
  * Created by Yahya on 8/23/2016.
  */
 public class DynamicSimulation
 {
+    private static final Logger log = LoggerFactory.getLogger(DynamicSimulation.class);
     //    LookupEvaluation le;
     private static double previousArrivalTime; //Keeps record of previous arrival time for churn statistics only when the topology is loaded
     long time;
@@ -60,8 +63,7 @@ public class DynamicSimulation
             }
         }
 
-        //if (system.isLog())
-        System.out.println("Current time: " + currentTime + " Topology index " + SkipSimParameters.getCurrentTopologyIndex());
+        log.debug("Current time: {}, Topology index: {}", currentTime, SkipSimParameters.getCurrentTopologyIndex());
         /*
         If session length and arrival times have already been loaded into the sgo
          */
@@ -94,7 +96,7 @@ public class DynamicSimulation
             {
                 if (currentTime == SkipSimParameters.getReplicationTime() + REPLICATION_TIME_INTERVAL * dataOwner)
                 {
-                    System.out.println("Replication for data owner number " + (dataOwner + 1) + " started");
+                    log.info("Replication started for data owner {}", dataOwner + 1);
                     long startTime = System.currentTimeMillis();
                     try
                     {
@@ -102,14 +104,14 @@ public class DynamicSimulation
                     }
                     catch (Exception ex)
                     {
-                        ex.printStackTrace();
+                        log.error("Replication failed for data owner {}", dataOwner + 1, ex);
                         System.exit(0);
                     }
 
                     long stopTime = System.currentTimeMillis();
                     long elapsedTime = stopTime - startTime;
                     time += elapsedTime;
-                    System.out.println("Replication for data owner number " + (dataOwner + 1) + " finished");
+                    log.info("Replication completed for data owner {} in {} ms", dataOwner + 1, elapsedTime);
                 }
             }
         }
@@ -209,7 +211,7 @@ public class DynamicSimulation
                                 AvailabilityExperiment.registerTransaction(peer, tx, currentTime);
                             }
                         }
-                        //System.out.println("Node " + i + "added a new transaction");
+                        log.trace("Node {} added a new transaction", i);
                     }
                 }
             }
@@ -249,14 +251,8 @@ public class DynamicSimulation
          */
         ChurnStochastics.updateTotalAverageOfOnlineNodes(sgo.getTG().mNodeSet.getNumberOfOnlineNodes());
 
-        //System.out.println("Average number of active SkipGraph.Node is started");
-        //TODO update the following function based on the new implementation
-        //System.out.println("Average number of SkipGraph.Node has been updated");
-
-                    /*
-                    Updating the availability vectors of SkipGraph.Nodes
-                     */
-        //sgo.getTG().mNodeSet.updateAvailabilityVectors();
+        // TODO: update the following function based on the new implementation
+        // Updating the availability vectors of Nodes
 
         /*
         Whatever needs to be done at the end of the last time slot of ALL TOPOLOGIES
@@ -291,17 +287,14 @@ public class DynamicSimulation
         if (currentTime == SkipSimParameters.getLifeTime() - 1 && SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
         {
             if (Nodes.getOveralAverageStorageCapacity() > 0)
-                System.out.println("DynamicSimulation.java: Overall average storage capacity of the nodes: " + Nodes.getOveralAverageStorageCapacity());
+                log.info("Overall average storage capacity of the nodes: {}", Nodes.getOveralAverageStorageCapacity());
             if (Nodes.getOveralAverageBandwidthCapacity() > 0)
-                System.out.println("DynamicSimulation.java: Overall average bandwidth capacity of the nodes: " + Nodes.getOveralAverageBandwidthCapacity());
+                log.info("Overall average bandwidth capacity of the nodes: {}", Nodes.getOveralAverageBandwidthCapacity());
             if (SkipSimParameters.isLog())
             {
                 sgo.getTG().printGeneratorStochastics();
             }
             ChurnStochastics.printChurnStochastics();
-            //repEvaluation.finalizingThisTopologyEvaluation();
-            //System.out.println("Average number of SkipGraph.Node has been updated");
-            //System.out.println("Last SkipGraph.Node came on " + Simulator.system.getLastArrivalTime());
         }
 
         return sgo;
@@ -344,8 +337,7 @@ public class DynamicSimulation
         }
         else
         {
-            System.out.println("DynamicSimulation.java: No random lookup/aggregation takes place at time " + currentTime + " because " +
-                    "the replication time has been passed.");
+            log.debug("No random lookup/aggregation at time {} - replication time has passed", currentTime);
         }
     }
 
@@ -413,14 +405,15 @@ public class DynamicSimulation
         if (currentTime == 0)
         {
             previousArrivalTime = 0;
-            System.out.println("DynamicSimulation.java: Generating the topology");
-                    /*
-                    Generating landmarks
-                    */
-            sgo.getTG().mLandmarks.generatingLandmarks();
-                    /*
-                    Generating Nodes
-                     */
+            log.info("Generating topology [index={}, capacity={}, lifetime={}h]",
+                SkipSimParameters.getCurrentTopologyIndex(),
+                SkipSimParameters.getSystemCapacity(),
+                SkipSimParameters.getLifeTime());
+            // Generating landmarks (only if not already generated)
+            if (sgo.getTG().mLandmarks.getLandmarkCoordination(0) == null) {
+                sgo.getTG().mLandmarks.generatingLandmarks();
+            }
+            // Generating Nodes
             sgo.getTG().mNodeSet.generateNodes(false, sgo, currentTime, false);
         }
 
@@ -476,11 +469,11 @@ public class DynamicSimulation
             sgo.getTG().updateNextArrivalTime(arrivingNode);
         }
 
-        //System.out.println("Departure update started");
-        //sgo.getTG().departureUpdate(currentTime);
-        //System.out.println("Departure update finished");
-
-        System.out.println("Total number of arrivals: " + ChurnStochastics.getTopologyArrivals());
+        log.debug("Total arrivals [topology={}, time={}, arrivals={}, onlineNodes={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            currentTime,
+            ChurnStochastics.getTopologyArrivals(),
+            sgo.getTG().mNodeSet.getNumberOfOnlineNodes());
         return churnLog;
     }
 
@@ -489,9 +482,8 @@ public class DynamicSimulation
         if (SkipSimParameters.isLog())
         {
             arrivingNode.printAvailabilityInfo(currentTime, Constants.Churn.ARRIVAL);
-            System.out.println("lookup table");
+            log.debug("Lookup table for arriving node:");
             arrivingNode.printLookup();
-            System.out.println("--------------------------------");
         }
     }
 }

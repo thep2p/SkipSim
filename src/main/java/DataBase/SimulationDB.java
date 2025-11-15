@@ -3,6 +3,8 @@ package DataBase;
 import Simulator.SkipSimParameters;
 import SkipGraph.SkipGraphOperations;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
@@ -13,6 +15,7 @@ import java.util.Vector;
 
 public class SimulationDB extends SQLiteJDBC
 {
+    private static final Logger log = LoggerFactory.getLogger(SimulationDB.class);
 
     /**
      * name of the whole simulation in DB
@@ -31,6 +34,14 @@ public class SimulationDB extends SQLiteJDBC
          */
         if (sim_name != null && !sim_name.isEmpty())
         {
+            // Check if simulation already exists
+            int existing_sim_id = tryFetchSimIDFromDB(sim_name);
+            if (existing_sim_id >= 0) {
+                // Simulation already exists, return existing ID
+                return existing_sim_id;
+            }
+
+            // Simulation doesn't exist, insert new one
             ArrayList<String> parameters = new ArrayList<>();
             parameters.add(sim_name);
             parameters.add(simulationType);
@@ -50,11 +61,13 @@ public class SimulationDB extends SQLiteJDBC
 
     }
 
-    public int fetchSimIDFromDB(String sim_name)
+    /**
+     * Tries to fetch simulation ID from database without throwing error if not found.
+     * @param sim_name the simulation name
+     * @return simulation ID if found, -1 if not found
+     */
+    public int tryFetchSimIDFromDB(String sim_name)
     {
-        /*
-        Retrives the simulation ID
-         */
         int sim_id = -1;
         ArrayList<String> parameters = new ArrayList<>();
         parameters.add(sim_name);
@@ -62,7 +75,6 @@ public class SimulationDB extends SQLiteJDBC
 
         try
         {
-
             while (res.next())
             {
                 sim_id = res.getInt(SimulationsSchema.Columns.SIM_ID);
@@ -72,6 +84,13 @@ public class SimulationDB extends SQLiteJDBC
         {
             ex.printStackTrace();
         }
+
+        return sim_id;
+    }
+
+    public int fetchSimIDFromDB(String sim_name)
+    {
+        int sim_id = tryFetchSimIDFromDB(sim_name);
 
         if (sim_id < 0)
         {
@@ -95,9 +114,17 @@ public class SimulationDB extends SQLiteJDBC
 
     public int saveTopologyName(int sim_index, String sim_name)
     {
-
         String top_name = sim_name + "_" + sim_index;
         int sim_id = fetchSimIDFromDB(sim_name);
+
+        // Check if topology already exists
+        int existing_top_id = tryFetchTopologyIDFromDB(sim_index, sim_name);
+        if (existing_top_id >= 0) {
+            // Topology already exists, return existing ID
+            return existing_top_id;
+        }
+
+        // Topology doesn't exist, insert new one
         ArrayList<String> parameters = new ArrayList<>();
         parameters.add(top_name);
         parameters.add(Integer.toString(sim_id));
@@ -105,7 +132,13 @@ public class SimulationDB extends SQLiteJDBC
         return fetchTopologyIDFromDB(sim_index, sim_name);
     }
 
-    public int fetchTopologyIDFromDB(int sim_index, String sim_name)
+    /**
+     * Tries to fetch topology ID from database without throwing error if not found.
+     * @param sim_index the simulation index
+     * @param sim_name the simulation name
+     * @return topology ID if found, -1 if not found
+     */
+    public int tryFetchTopologyIDFromDB(int sim_index, String sim_name)
     {
         ArrayList<String> parameters = new ArrayList<>();
         int top_id = -1;
@@ -128,6 +161,13 @@ public class SimulationDB extends SQLiteJDBC
         {
             ex.printStackTrace();
         }
+
+        return top_id;
+    }
+
+    public int fetchTopologyIDFromDB(int sim_index, String sim_name)
+    {
+        int top_id = tryFetchTopologyIDFromDB(sim_index, sim_name);
 
         if (top_id < 0)
         {
@@ -180,7 +220,10 @@ public class SimulationDB extends SQLiteJDBC
                     + " VALUES (?,?,?,?) ", parameters);
         }
 
-        System.out.println("SimulationDB.java: Topology " + SkipSimParameters.getCurrentTopologyIndex() + " was saved to the database");
+        log.debug("Topology saved to database [index={}, nodesSaved={}, landmarksSaved={}]",
+            SkipSimParameters.getCurrentTopologyIndex(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getLandmarksNum());
 
     }
 

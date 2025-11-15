@@ -4,7 +4,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
 import net.sf.javailp.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -14,6 +15,7 @@ import java.util.Hashtable;
  */
 public class Awake extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Awake.class);
     @Override
     public void Algorithm(SkipGraphOperations sgo, int dataOwnerID)
     {
@@ -158,7 +160,7 @@ public class Awake extends Replication
         Solver solver = factory.get(); // you should use this solver only once for one problem
         Result result = solver.solve(problem);
         if (result != null)
-            System.out.println(result.getObjective().toString());
+            log.debug("ILP optimization objective: {}", result.getObjective());
         return result;
     }
 

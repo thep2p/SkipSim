@@ -4,9 +4,13 @@ import Blockchain.LightChain.Transactions;
 import DataTypes.Constants;
 import DataTypes.Constants.SimulationType;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SkipGraphNodes
 {
+    private static final Logger log = LoggerFactory.getLogger(SkipGraphNodes.class);
+
     /**
      * Stores the Node in the given index into the database
      *
@@ -129,15 +133,19 @@ public abstract class SkipGraphNodes
 
     public void printLookupNumID(int index)
     {
-        for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
-        {
-            int right = -1;
-            int left = -1;
-            if (getNode(index).getLookup(i, 0) != -1)
-                left = getNode(getNode(index).getLookup(i, 0)).getNumID();
-            if (getNode(index).getLookup(i, 1) != -1)
-                right = getNode(getNode(index).getLookup(i, 1)).getNumID();
-            System.out.println("Level: " + i + "   Left: " + left + "   Right: " + right);
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
+            {
+                int right = -1;
+                int left = -1;
+                if (getNode(index).getLookup(i, 0) != -1)
+                    left = getNode(getNode(index).getLookup(i, 0)).getNumID();
+                if (getNode(index).getLookup(i, 1) != -1)
+                    right = getNode(getNode(index).getLookup(i, 1)).getNumID();
+                levels.append(String.format("[L%d: L=%d,R=%d] ", i, left, right));
+            }
+            log.debug("Lookup table (numID): {}", levels.toString().trim());
         }
 
     }

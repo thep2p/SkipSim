@@ -3,6 +3,8 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.SkipGraphOperations;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -10,6 +12,7 @@ import java.util.Random;
 
 public class Rep_Alg10_PrivateRepOnPath extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Rep_Alg10_PrivateRepOnPath.class);
 
     Random random = new Random();
     private boolean adaptiveReplication;
@@ -67,7 +70,8 @@ public class Rep_Alg10_PrivateRepOnPath extends Replication
                     boolean replicationResult = ((Node) sgo.getTG().mNodeSet.getNode(MaxIndex)).setAsReplica(dataOwnerID);
                     if(replicationResult)
                     {
-                        System.out.println(repNum + "-index = " + MaxIndex + " histogram " + pathHistogram[MaxIndex]);
+                        log.debug("Replica created [dataOwner={}, replicaNum={}, nodeIndex={}, histogramValue={}, topology={}]",
+                            dataOwnerID, repNum, MaxIndex, pathHistogram[MaxIndex], SkipSimParameters.getCurrentTopologyIndex());
                         pathHistogram[MaxIndex] = 0;
                         repNum++;
                     }

@@ -2,6 +2,8 @@ package DataTypes;
 
 import SkipGraph.SkipGraphOperations;
 import SkipGraph.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -44,6 +46,8 @@ class HuffmanNode extends HuffmanTree {
 
 public class HuffmanNameIDGenerator
 	{
+	    private static final Logger log = LoggerFactory.getLogger(HuffmanNameIDGenerator.class);
+
 	    // input is an array of frequencies, indexed by character code
 	    public HuffmanTree buildTree(int[] charFreqs)
 	    {
@@ -74,7 +78,7 @@ public class HuffmanNameIDGenerator
 	            HuffmanLeaf leaf = (HuffmanLeaf)tree;
 
 	            // print out character, frequency, and code for this leaf (which is just the prefix)
-	            System.out.println( leaf.frequency + "\t" + prefix);
+	            log.debug("Huffman: frequency={} code={}", leaf.frequency, prefix);
 				((Node) sg.getTG().mNodeSet.getNode(leaf.value)).setNameID(prefix.toString());
 
 	        } else if (tree instanceof HuffmanNode) {
@@ -96,7 +100,7 @@ public class HuffmanNameIDGenerator
 	    public void buildThePrefix(int[] freq,SkipGraphOperations sg)
 	    {
 	    	HuffmanTree tree = buildTree(freq);
-	        System.out.println("WEIGHT\tHUFFMAN CODE");
+	        log.debug("WEIGHT\tHUFFMAN CODE");
 	        printCodes(tree, new StringBuffer(),sg);
 	    }
 

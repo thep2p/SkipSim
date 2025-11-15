@@ -3,6 +3,8 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -13,11 +15,16 @@ import static Replication.Pyramid.secondNorm;
  */
 public class CorrelationBased extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(CorrelationBased.class);
     @Override
     public void Algorithm(SkipGraphOperations sgo, int dataOwnerID)
     {
         this.sgo = sgo;
-        System.out.println("CorrelationBased.java: The CorrelationBased replication started");
+        log.info("CorrelationBased replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         resetRep();
 
         Node dataOwner = (Node) sgo.getTG().mNodeSet.getNode(dataOwnerID);

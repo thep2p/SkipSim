@@ -5,6 +5,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,13 +14,18 @@ import static Replication.Pyramid.secondNorm;
 
 public class ClusterBased extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(ClusterBased.class);
     private Hashtable<Integer, Integer> clusterSize;
 
     @Override
     public void Algorithm(SkipGraphOperations sgo, int dataOwnerID)
     {
         this.sgo = sgo;
-        System.out.println("ClusterBased.java: The clusterbased replication started");
+        log.info("ClusterBased replication started [dataOwner={}, degree={}, capacity={}, topology={}]",
+            dataOwnerID,
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         resetRep();
         dataRequesterPopulation();
         Node dataOwner = (Node) sgo.getTG().mNodeSet.getNode(dataOwnerID);
@@ -201,7 +208,7 @@ public class ClusterBased extends Replication
             }
         });
 
-        System.out.println(l);
+        log.debug("Sorted cluster values: {}", l);
         return l;
     }
 }

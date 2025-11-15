@@ -7,6 +7,8 @@ import Simulator.SkipSimParameters;
 //import org.apache.commons.math3.distribution.WeibullDistribution;
 import org.apache.commons.math3.distribution.WeibullDistribution;
 import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.Random;
 
 public class TopologyGenerator
 {
+    private static final Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
+
     private static Random randomX = new Random();
     private static Random randomY = new Random();
     private static Random random = new Random();
@@ -63,7 +67,7 @@ public class TopologyGenerator
         maxProb = 0;
 
         if(SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC)
-        || SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
+        || SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.BLOCKCHAIN))
         {
         /*
         Churn parameters
@@ -316,7 +320,8 @@ public class TopologyGenerator
         double interArrivalTime = weibullInterArrivalDistribution[node.getClosetLandmarkIndex(mLandmarks)].sample();
         nextArrivalTime += interArrivalTime;
         if(SkipSimParameters.isLog())
-            System.out.println("TopologyGenerator: next arrival time " + nextArrivalTime + " node's region " + node.getClosetLandmarkIndex(mLandmarks));
+            log.debug("TopologyGenerator: next arrival time {} for node's region {}",
+                nextArrivalTime, node.getClosetLandmarkIndex(mLandmarks));
     }
 
     /**
@@ -427,13 +432,17 @@ public class TopologyGenerator
 
     public void printGeneratorStochastics()
     {
-        System.out.println("------------------------------------------------------------");
-        System.out.println("TopologyGenerator.java, real generator parameters");
-        for(int landmark = 0 ; landmark < SkipSimParameters.getLandmarksNum() ; landmark++)
-        {
-            System.out.println("Region " + landmark + " Interarrival mean: " + weibullInterArrivalDistribution[landmark].getNumericalMean());
+        if (log.isInfoEnabled()) {
+            StringBuilder regionMeans = new StringBuilder();
+            for(int landmark = 0 ; landmark < SkipSimParameters.getLandmarksNum() ; landmark++)
+            {
+                regionMeans.append(String.format("R%d=%.2f ",
+                    landmark, weibullInterArrivalDistribution[landmark].getNumericalMean()));
+            }
+            log.info("TopologyGenerator params [sessionLengthMean={}, regionInterarrivalMeans=[{}]]",
+                weibullSessionLengthDistribution.getNumericalMean(),
+                regionMeans.toString().trim());
         }
-        System.out.println("Session length mean: " + weibullSessionLengthDistribution.getNumericalMean());
     }
 
 

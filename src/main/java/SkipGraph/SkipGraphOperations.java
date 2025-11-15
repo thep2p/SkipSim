@@ -9,11 +9,14 @@ import DataTypes.Message;
 import DataTypes.Pair;
 import Simulator.AlgorithmInvoker;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SkipGraphOperations
 {
+    private static final Logger log = LoggerFactory.getLogger(SkipGraphOperations.class);
 
     public static final boolean IN_BLOCKCHAIN_SKIP_GRAPH = true;
     public static final boolean IN__NODES_SKIP_GRAPH = false;
@@ -91,11 +94,22 @@ public class SkipGraphOperations
         else
             index = tx.getIndex();
         int ownerIndex = tx.getOwnerIndex();
-        ((Node) getTG().mNodeSet.getNode(ownerIndex)).addToTXSet(index);
+
+        /*
+        FIX: Insert the transaction into the Skip Graph BEFORE adding it to the owner's txSet.
+        This prevents the search during insertion from encountering an uninitialized transaction
+        in the owner's txSet, which would cause a NullPointerException when the search path
+        tries to access the transaction before it's fully inserted.
+         */
         if (index > 0)
         {
             insert(tx, mTransactions, index, true, currentTime);
         }
+
+        /*
+        Add to owner's txSet AFTER successful insertion into Skip Graph
+         */
+        ((Node) getTG().mNodeSet.getNode(ownerIndex)).addToTXSet(index);
 
     }
 
@@ -605,7 +619,8 @@ public class SkipGraphOperations
         /*
         Size of the lookup table of the Node
          */
-        int lookupTableSize = (skipGraphNode instanceof Node) ? SkipSimParameters.getLookupTableSize() : Transaction.LOOKUP_TABLE_SIZE;
+        boolean isNodeInsertion = (skipGraphNode instanceof Node);
+        int lookupTableSize = isNodeInsertion ? SkipSimParameters.getLookupTableSize() : Transaction.LOOKUP_TABLE_SIZE;
 
         /*
         Only is used to check the existence of loops in dynamic simulation adversarial churn
@@ -639,7 +654,7 @@ public class SkipGraphOperations
                 Left = nodeSet.getNode(Left).getLookup(level, 0);
                 //System.out.println("SkipGraphOperations.java: insertion inner loop, left was switched to " + Left );
                 //mTopologyGenerator.mNodeSet.getNode(index).printLookup();
-                if (visitedLeftNodes.contains(Left) || (Left != -1 && ((Node) nodeSet.getNode(Left)).isOffline()))
+                if (visitedLeftNodes.contains(Left) || (Left != -1 && isNodeInsertion && ((Node) nodeSet.getNode(Left)).isOffline()))
                 //Cycle checking in dynamic adversarial churn or offline neighbor
                 {
                     if (SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
@@ -677,7 +692,7 @@ public class SkipGraphOperations
                 Right = nodeSet.getNode(Right).getLookup(level, 1);
                 //System.out.println("SkipGraphOperations.java: insertion inner loop, right was switched to " + Right );
                 //mTopologyGenerator.mNodeSet.getNode(index).printLookup();
-                if (visitedRightNodes.contains(Right) || (Right != -1 && ((Node) nodeSet.getNode(Right)).isOffline()))
+                if (visitedRightNodes.contains(Right) || (Right != -1 && isNodeInsertion && ((Node) nodeSet.getNode(Right)).isOffline()))
                 {
                     if (SkipSimParameters.getSimulationType().equalsIgnoreCase(Constants.SimulationType.DYNAMIC))
                     {
@@ -1399,7 +1414,7 @@ public class SkipGraphOperations
          */
         if (SkipSimParameters.isLog())
         {
-            System.out.println("Search by num ID started, target " + targetNumId + " current Node " + currentNode.getIndex());
+            log.debug("Search by num ID started: target={} currentNode={}", targetNumId, currentNode.getIndex());
             currentNode.printLookup();
             m.printSearchPath(nodeSet, false);
         }
@@ -1650,7 +1665,7 @@ public class SkipGraphOperations
 
         if (SkipSimParameters.isLog())
         {
-            System.out.println("Search stops at level " + level);
+            log.debug("Search stops at level {}", level);
         }
         return currentNode.getIndex();
 

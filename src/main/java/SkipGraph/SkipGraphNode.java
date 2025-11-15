@@ -4,6 +4,8 @@ import Blockchain.LightChain.HashTools;
 import Blockchain.LightChain.Transaction;
 import DataTypes.Constants;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
@@ -12,6 +14,8 @@ import java.util.Random;
  */
 public abstract class SkipGraphNode
 {
+    private static final Logger log = LoggerFactory.getLogger(SkipGraphNode.class);
+
     protected static Random sRandom = new Random();
 
     /**
@@ -171,8 +175,12 @@ public abstract class SkipGraphNode
      */
     public void printLookup()
     {
-        for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
-            System.out.println("Level: " + i + "   Left: " + lookup[i][0] + "   Right: " + lookup[i][1]);
+        if (log.isDebugEnabled()) {
+            StringBuilder levels = new StringBuilder();
+            for (int i = SkipSimParameters.getLookupTableSize() - 1; i >= 0; i--)
+                levels.append(String.format("[L%d: L=%d,R=%d] ", i, lookup[i][0], lookup[i][1]));
+            log.debug("Lookup table: {}", levels.toString().trim());
+        }
     }
 
     @Override

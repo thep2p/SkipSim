@@ -2,6 +2,8 @@ package SkipGraph;
 
 import DataTypes.Pair;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -11,6 +13,8 @@ import java.util.Random;
 
 public class Landmarks implements Serializable
 {
+    private static final Logger log = LoggerFactory.getLogger(Landmarks.class);
+
     private Point[] landmarkSet;
     private String[] prefix = {"0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"};
     private String[] dynamicPrefix;
@@ -21,10 +25,9 @@ public class Landmarks implements Serializable
     public Landmarks()
     {
         if(SkipSimParameters.isLog())
-            System.out.println("Landmarks: Number of landmarks: " + SkipSimParameters.getLandmarksNum());
+            log.debug("Landmarks: Number of landmarks: {}, Size of landmarks set: {}",
+                SkipSimParameters.getLandmarksNum(), SkipSimParameters.getLandmarksNum());
         landmarkSet = new Point[SkipSimParameters.getLandmarksNum()];
-        if(SkipSimParameters.isLog())
-            System.out.println("Landmarks: Size of landmarks Set" + landmarkSet.length);
         freq = new int[SkipSimParameters.getLandmarksNum()];
         dynamicPrefix = new String[SkipSimParameters.getLandmarksNum()];
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
@@ -182,9 +185,13 @@ public class Landmarks implements Serializable
 
     public void printDynamicPrefix()
     {
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            System.out.println(i + "  " + dynamicPrefix[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder prefixes = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                prefixes.append(String.format("[%d:%s] ", i, dynamicPrefix[i]));
+            }
+            log.debug("Dynamic prefixes: {}", prefixes.toString().trim());
         }
     }
 
@@ -204,12 +211,14 @@ public class Landmarks implements Serializable
 
     public void printDynamicPrefixExcludingIndex()
     {
-        System.out.println("==================================");
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            System.out.println(i + "  " + dynamicPrefix[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder prefixes = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                prefixes.append(String.format("[%d:%s] ", i, dynamicPrefix[i]));
+            }
+            log.debug("Dynamic prefixes (excluding index): {}", prefixes.toString().trim());
         }
-        System.out.println("==================================");
     }
 
     public void twoMeanClustringBasedOnPosition(String prefix, int excludingIndex)

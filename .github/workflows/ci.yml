@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Verify Java version
+      run: java -version
+
+    - name: Download Maven dependencies
+      run: mvn dependency:resolve
+
+    - name: Compile sources
+      run: mvn compile
+
+    - name: Run tests
+      run: mvn test
+
+    - name: Test summary
+      if: always()
+      run: |
+        echo "📊 Test Results:"
+        if [ -f target/surefire-reports/*.xml ]; then
+          echo "Test reports generated in target/surefire-reports/"
+        fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: target/surefire-reports/
+        retention-days: 30

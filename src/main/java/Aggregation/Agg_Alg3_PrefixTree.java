@@ -3,6 +3,8 @@ package Aggregation;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -11,9 +13,10 @@ import java.util.ArrayList;
  */
 public class Agg_Alg3_PrefixTree extends Aggregation
     {
+        private static final Logger log = LoggerFactory.getLogger(Agg_Alg3_PrefixTree.class);
+
         public Agg_Alg3_PrefixTree(SkipGraphOperations insgo)
             {
-                System.out.println("PrefixTree has started...");
                 sgo = insgo;
 //                Random r  = new Random();
 //                initiator = r.nextInt()%Simulator.system.getSystemCapacity();
@@ -22,6 +25,10 @@ public class Agg_Alg3_PrefixTree extends Aggregation
 //                System.out.println("Initiator " + initiator);
 ///                initPrefix(initiator);
                 ArrayList <Integer> initiatorsList = initiators();
+                log.info("PrefixTree aggregation started [topology={}, initiators={}, depth={}]",
+                    SkipSimParameters.getCurrentTopologyIndex(),
+                    initiatorsList.size(),
+                    SkipSimParameters.getNameIDLength());
                 for(int i = 0 ; i < initiatorsList.size() ; i++)
                     prefix(initiatorsList.get(i));
                 findRoot();
@@ -100,7 +107,7 @@ public class Agg_Alg3_PrefixTree extends Aggregation
                     }
                 if(prefixLength == 0)
                     {
-                        System.out.println("Aggregation.Agg_Alg3_PrefixTree prefixLength = 0");
+                        log.error("PrefixTree error: prefixLength = 0");
                         System.exit(0);
                     }
 

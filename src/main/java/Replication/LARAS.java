@@ -3,6 +3,8 @@ package Replication;
 import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.sf.javailp.*;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 
 public class LARAS extends Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(LARAS.class);
 
     @Override
     public void Algorithm(SkipGraphOperations inputSgo, int dataOwnerIndex)
@@ -26,7 +29,11 @@ public class LARAS extends Replication
     private void RWD(int dataOwnerIndex)
     {
 
-        System.out.println("RWD of LARAS has started");
+        log.info("LARAS RWD started [dataOwner={}, regions={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
             if (getSubReplicationDegree(i) == 0) continue;

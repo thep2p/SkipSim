@@ -4,6 +4,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.SkipGraphOperations;
 import net.sf.javailp.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.stream.IntStream;
 
 public class GLARAS extends LARAS
 {
+    private static final Logger log = LoggerFactory.getLogger(GLARAS.class);
     /**
      * The initial size of the virtual system, it is normally one and grows as the bad candidates are being removed from
      * GLARAS, however, if you are running on a strong machine, you may choose it in bigger size, the bigger size implies
@@ -145,7 +148,7 @@ public class GLARAS extends LARAS
                         bestReplicaAssignment = representation;
                     }
                     counter++;
-                    System.out.println("Run of " + counter + " the average access delay for repshare assignment of " + representation + " is " + (int) accesDelay);
+                    log.debug("Run {} - average access delay for repshare assignment {}: {}", counter, representation, (int) accesDelay);
                     w.println("Run of " + counter + " the average access delay for repshare assignment of " + representation + " is " + (int) accesDelay);
                     w.println("***********************************************************************");
                     resultTable.put(representation, (int) accesDelay);
@@ -168,7 +171,7 @@ public class GLARAS extends LARAS
                 Map.Entry<String, Integer> pair = (Map.Entry) it.next();
                 if (pair.getValue().intValue() == (int) bestAverageAccessDelay)
                 {
-                    System.out.println("Simialr accuracy to optimal " + pair.getKey() + " access delay " + pair.getValue().intValue() + "\n\n");
+                    log.debug("Similar accuracy to optimal - assignment: {}, access delay: {}", pair.getKey(), pair.getValue().intValue());
                     w.println("Simialr accuracy to optimal " + pair.getKey() + " access delay " + pair.getValue().intValue() + "\n\n");
                 }
             }
@@ -233,7 +236,7 @@ public class GLARAS extends LARAS
                     bestW2 = w2;
                     bestW3 = w3;
                 }
-                System.out.println("W1 " + w1 + " W2 " + w2 + " W3 " + w3 + " average delay " + averageAccessDelay + " min average " + bestAverageAccessDelay);
+                log.debug("Weights - W1: {}, W2: {}, W3: {}, Avg delay: {}, Min avg: {}", w1, w2, w3, averageAccessDelay, bestAverageAccessDelay);
             }
 
 
@@ -251,14 +254,19 @@ public class GLARAS extends LARAS
 
         if (SkipSimParameters.getCurrentTopologyIndex() == SkipSimParameters.getTopologies())
         {
-            System.out.println("Best Average W1 " + averageW1 / SkipSimParameters.getTopologies() + " best Average W2 " + averageW2 / SkipSimParameters.getTopologies() + " best Average W3 " + averageW3 / SkipSimParameters.getTopologies());
+            log.info("Best average weights - W1: {}, W2: {}, W3: {}",
+                    averageW1 / SkipSimParameters.getTopologies(),
+                    averageW2 / SkipSimParameters.getTopologies(),
+                    averageW3 / SkipSimParameters.getTopologies());
 
-            for (int i = 0; i < 100; i++)
-                for (int j = 0; j < 100; j++)
-                {
-                    if (100 - i - j >= 0)
-                        System.out.println("(" + i + "," + j + "," + (100 - i - j) + "," + weightHistorgam[i][j] + ")");
-                }
+            if (log.isTraceEnabled()) {
+                for (int i = 0; i < 100; i++)
+                    for (int j = 0; j < 100; j++)
+                    {
+                        if (100 - i - j >= 0)
+                            log.trace("Weight histogram - ({}, {}, {}, {})", i, j, 100 - i - j, weightHistorgam[i][j]);
+                    }
+            }
 
         }
 
@@ -278,7 +286,12 @@ public class GLARAS extends LARAS
         Initial logarithm of the virtual system size
          */
         int virtualSystemSizePower = VIRTUAL_SYSTEM_INITIAL_SIZE;
-        System.out.println("RWD of GLARAS has started");
+        log.info("GLARAS RWD started [dataOwner={}, regions={}, degree={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            SkipSimParameters.getLandmarksNum(),
+            SkipSimParameters.getReplicationDegree(),
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
 
         /*
         Number of created replicas
@@ -396,7 +409,7 @@ public class GLARAS extends LARAS
                     if (replicationResult)
                     {
                         repCounter++;
-                        System.out.println("Name id " + ((Node) sgo.getTG().mNodeSet.getNode(j)).getNameID() + " belongs to Node " + j + " is selected as a replica");
+                        log.debug("Replica selected - Name ID: {}, Node: {}", ((Node) sgo.getTG().mNodeSet.getNode(j)).getNameID(), j);
                     }
                     else
                     {
@@ -405,8 +418,7 @@ public class GLARAS extends LARAS
                 }
 
             }
-            System.out.println("Sub-replication degree " + getSubReplicationDegree(i));
-            System.out.println("----------------------------------------------------------------------");
+            log.debug("Sub-replication degree: {}", getSubReplicationDegree(i));
 
         }
         /*
@@ -417,12 +429,13 @@ public class GLARAS extends LARAS
         {
             throw new IllegalStateException("GLARAS: Error in the number of placed replicas, the degree is: " + SkipSimParameters.getReplicationDegree() + " but only " + repCounter + " replicas where made");
         }
-        System.out.println("GLARAS: In overall " + repCounter + " replicas where made");
+        log.info("GLARAS completed [dataOwner={}, replicasCreated={}, expectedDegree={}, match={}]",
+            dataOwnerIndex, repCounter, SkipSimParameters.getReplicationDegree(),
+            repCounter == SkipSimParameters.getReplicationDegree() ? "VERIFIED" : "MISMATCH");
         sgo.getTG().getNodeSet().setCorrespondingReplica(dataOwnerIndex);
 
-        System.out.println("Virtual system size logarithm: "
-                + virtualSystemSizePower
-                + " Current topology index: " + SkipSimParameters.getCurrentTopologyIndex());
+        log.debug("Virtual system size logarithm: {}, Current topology index: {}",
+                virtualSystemSizePower, SkipSimParameters.getCurrentTopologyIndex());
     }
 
 
@@ -583,13 +596,17 @@ public class GLARAS extends LARAS
         int virtualSystemNameIDSize = virtualSystemNameIDSize(virtualSystemSize);
         for (int i = 0; i < virtualSystemSize; i++)
         {
-            System.out.print(toNameID(i, virtualSystemNameIDSize) + "    ");
-            for (int j = 0; j < virtualSystemSize; j++)
-            {
-                if (badCandidateIndices.contains(i) || badCandidateIndices.contains(j)) System.out.print(" * ");
-                else System.out.print((int) nameIDDistanceTable[i][j] + "    ");
+            if (log.isTraceEnabled()) {
+                StringBuilder row = new StringBuilder(toNameID(i, virtualSystemNameIDSize) + "    ");
+                for (int j = 0; j < virtualSystemSize; j++)
+                {
+                    if (badCandidateIndices.contains(i) || badCandidateIndices.contains(j))
+                        row.append(" * ");
+                    else
+                        row.append((int) nameIDDistanceTable[i][j]).append("    ");
+                }
+                log.trace("{}", row.toString());
             }
-            System.out.println();
         }
     }
 
@@ -825,21 +842,16 @@ public class GLARAS extends LARAS
             }
         }
 
-        System.out.println();
-
-        /*
-        Printing the info
-         */
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            System.out.print("index = " + i + " sub-replication degree = " + subReplicationDegree[i]
-                    + " score = " + (int) landmarksScore[i]
-                    + " closest counter = " + closestCounter[i]
-                    + " dynamic prefix = " + sgo.getTG().mLandmarks.dynamicPrefixLength(i)
-                    + " total latency to others " + totalLatencyToLandmarks[i]);
-            if (!SkipSimParameters.isPublicReplication())
-                System.out.print("  number of data requesters " + dataRequesterNumbers[i]);
-            System.out.println();
+        if (log.isDebugEnabled()) {
+            log.debug("SWD assignment info:");
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++) {
+                String info = String.format("index=%d sub-rep-degree=%d score=%d closest-counter=%d dynamic-prefix=%d total-latency=%d",
+                        i, subReplicationDegree[i], (int) landmarksScore[i], closestCounter[i],
+                        sgo.getTG().mLandmarks.dynamicPrefixLength(i), totalLatencyToLandmarks[i]);
+                if (!SkipSimParameters.isPublicReplication())
+                    info += " data-requesters=" + dataRequesterNumbers[i];
+                log.debug("{}", info);
+            }
         }
     }
 

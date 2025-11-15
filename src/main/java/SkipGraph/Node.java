@@ -8,8 +8,10 @@ import ChurnStabilization.BucketItem;
 import ChurnStabilization.ChurnStochastics;
 import DataTypes.Constants;
 import DataTypes.Message;
-import Simulator.GUI;
+import Simulator.Main;
 import Simulator.SkipSimParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -19,6 +21,7 @@ import java.util.*;
 
 public class Node extends SkipGraphNode implements Serializable
 {
+    private static final Logger log = LoggerFactory.getLogger(Node.class);
 
     private Point mCoordinate;
     /**
@@ -630,8 +633,8 @@ public class Node extends SkipGraphNode implements Serializable
                 }
             }
         }
-        if (GUI.isReplica != null)
-            GUI.isReplica[index] = true;
+        if (Main.isReplica != null)
+            Main.isReplica[index] = true;
         replicaIDSet.add(dataOwnerIndex);
         //System.out.println("Node.java: index " + index + " replication load " + replicaIDSet.size() + " maximum load " +  SkipSimParameters.getStorageCapacity());
         return true;
@@ -693,7 +696,7 @@ public class Node extends SkipGraphNode implements Serializable
 
         else
         {
-            System.out.println("Wrong value for departure time  ");
+            log.error("Wrong value for departure time");
             System.exit(0);
         }
 
@@ -740,8 +743,8 @@ public class Node extends SkipGraphNode implements Serializable
      */
     public void printAvailabilityInfo(int currentTime, String message)
     {
-        System.out
-                .println("--------------------------" + "\n" + message + "\n  Current time: " + currentTime + "\n index is " + index + "\n introducer " + getIntroducer() + "\n name id is " + nameID + "\n numerical id is " + getNumID() + "\n session length = " + getSessionLength() + "\n departure time = " + getDepartureTime() + "\n online status = " + isOnline() + "--------------------------");
+        log.debug("{}: time={}, index={}, introducer={}, nameID={}, numID={}, sessionLength={}, departureTime={}, online={}",
+                message, currentTime, index, getIntroducer(), nameID, getNumID(), getSessionLength(), getDepartureTime(), isOnline());
     }
 
 

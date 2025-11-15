@@ -5,6 +5,8 @@ import Simulator.SkipSimParameters;
 import SkipGraph.Node;
 import SkipGraph.Nodes;
 import SkipGraph.SkipGraphOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -14,6 +16,7 @@ import java.util.stream.IntStream;
  */
 public abstract class Replication
 {
+    private static final Logger log = LoggerFactory.getLogger(Replication.class);
 
 
     private static int[] replicationDegreeDataBase = new int[SkipSimParameters.getTopologies()];
@@ -67,7 +70,7 @@ public abstract class Replication
         int before = startIndex;
         if (sgo.getTG().mNodeSet.getNode(startIndex).getLookup(0, 0) == -1 && sgo.getTG().mNodeSet.getNode(startIndex).getLookup(0, 1) == -1)
         { // if only the introducer exists
-            System.out.println("Search by num id for " + num + " resulted in null");
+            log.debug("Search by num id for {} resulted in null", num);
             return RepNum;
         }
         else if (sgo.getTG().mNodeSet.getNode(startIndex).getNumID() < num)
@@ -87,7 +90,7 @@ public abstract class Replication
 
             if (level == 0)
             {
-                System.out.println("Search by num id for " + num + " resulted in " + sgo.getTG().mNodeSet.getNode(sgo.getTG().mNodeSet.getNode(startIndex).getLookup(level, 1)).getNumID());
+                log.debug("Search by num id for {} resulted in {}", num, sgo.getTG().mNodeSet.getNode(sgo.getTG().mNodeSet.getNode(startIndex).getLookup(level, 1)).getNumID());
                 return RepNum;
             }
             if (level > 0)
@@ -116,7 +119,7 @@ public abstract class Replication
                         }
                         else
                         {
-                            System.out.println("Rep on path terminates the search");
+                            log.debug("Rep on path terminates the search");
                             return RepNum;
                         }
                         //realWorldReplicaSet[next] = true;
@@ -156,7 +159,7 @@ public abstract class Replication
                                     }
                                     else
                                     {
-                                        System.out.println("Rep on path terminates the search");
+                                        log.trace("Rep on path terminates the search");
                                         return RepNum;
                                     }
                                     //realWorldReplicaSet[next] = true;
@@ -168,7 +171,7 @@ public abstract class Replication
                             sgo.getTG().mNodeSet.addTime(before, next);
                             if (sgo.getTG().mNodeSet.getNode(next).getNumID() == num)
                             {
-                                System.out.println("Search by num id for " + num + " resulted in " + sgo.getTG().mNodeSet.getNode(next).getNumID());
+                                log.debug("Search by num id for {} resulted in {}", num, sgo.getTG().mNodeSet.getNode(next).getNumID());
                                 return RepNum;
                             }
                         }
@@ -178,7 +181,7 @@ public abstract class Replication
                 }
             }
 
-            System.out.println("Search by num id for " + num + " resulted in " + sgo.getTG().mNodeSet.getNode(next).getNumID());
+            log.debug("Search by num id for {} resulted in {}", num, sgo.getTG().mNodeSet.getNode(next).getNumID());
             return RepNum;
         }
         else
@@ -223,7 +226,7 @@ public abstract class Replication
                         }
                         else
                         {
-                            System.out.println("Rep on path terminates the search");
+                            log.trace("Rep on path terminates the search");
                             return RepNum;
                         }
                         //realWorldReplicaSet[next] = true;
@@ -264,7 +267,7 @@ public abstract class Replication
                                     }
                                     else
                                     {
-                                        System.out.println("Rep on path terminates the search");
+                                        log.trace("Rep on path terminates the search");
                                         return RepNum;
                                     }
                                     //realWorldReplicaSet[next] = true;
@@ -276,7 +279,7 @@ public abstract class Replication
                             sgo.getTG().mNodeSet.addTime(before, next);
                             if (sgo.getTG().mNodeSet.getNode(next).getNumID() == num)
                             {
-                                System.out.println("Search by num id for " + num + " resulted in " + sgo.getTG().mNodeSet.getNode(next).getNumID());
+                                log.debug("Search by num id for {} resulted in {}", num, sgo.getTG().mNodeSet.getNode(next).getNumID());
                                 return RepNum;
                             }
                         }
@@ -287,7 +290,7 @@ public abstract class Replication
 
             }
 
-            System.out.println("Search by num id for " + num + " resulted in " + sgo.getTG().mNodeSet.getNode(next).getNumID());
+            log.debug("Search by num id for {} resulted in {}", num, sgo.getTG().mNodeSet.getNode(next).getNumID());
             return RepNum;
         }
     }
@@ -450,15 +453,16 @@ public abstract class Replication
 
     protected void printLandmarkPairwiseLatency()
     {
-        System.out.println("SkipGraph.Landmarks pairwise latencies: ");
+        StringBuilder sb = new StringBuilder("SkipGraph.Landmarks pairwise latencies:\n");
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
             for (int j = 0; j < SkipSimParameters.getLandmarksNum(); j++)
             {
-                System.out.print((int) sgo.getTG().mLandmarks.getLandmarkCoordination(i).distance(sgo.getTG().mLandmarks.getLandmarkCoordination(j)) + "    ");
+                sb.append((int) sgo.getTG().mLandmarks.getLandmarkCoordination(i).distance(sgo.getTG().mLandmarks.getLandmarkCoordination(j))).append("    ");
             }
-            System.out.println();
+            sb.append("\n");
         }
+        log.debug(sb.toString());
     }
 
 
@@ -544,9 +548,14 @@ public abstract class Replication
             }
         }
 
-        for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
-        {
-            System.out.println(subReplicationDegree[i] + " " + i + " " + regionsPopulation[i]);
+        if (log.isDebugEnabled()) {
+            StringBuilder regionStats = new StringBuilder();
+            for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
+            {
+                regionStats.append(String.format("[R%d: degree=%d, pop=%d] ",
+                    i, subReplicationDegree[i], regionsPopulation[i]));
+            }
+            log.debug("Region replication stats: {}", regionStats.toString().trim());
         }
     }
 
@@ -601,10 +610,10 @@ public abstract class Replication
             adaptiveSubproblemSizes[i] = subProblemSize;
         }
 
-        System.out.println("Adaptive Sub-problem defining: ");
+        log.debug("Adaptive Sub-problem defining:");
         for (int i = 0; i < SkipSimParameters.getLandmarksNum(); i++)
         {
-            System.out.println("Population based Sub-problem size = " + adaptiveSubproblemSizes[i] + "\t SkipGraph.Landmarks Index = " + i);
+            log.debug("Population based Sub-problem size = {}\t SkipGraph.Landmarks Index = {}", adaptiveSubproblemSizes[i], i);
         }
     }
 
@@ -666,7 +675,12 @@ public abstract class Replication
         {
             throw new IllegalStateException("Delay based replication is not applicable to multiple-data owner cases, data owner index:" + dataOwnerIndex);
         }
-        System.out.println("Delay based replication just started!");
+        log.info("Delay-based replication started [dataOwner={}, initialDegree={}, delayBound={}, capacity={}, topology={}]",
+            dataOwnerIndex,
+            initialReplicationDegree,
+            delayBound,
+            SkipSimParameters.getSystemCapacity(),
+            SkipSimParameters.getCurrentTopologyIndex());
         int replicationDegree = initialReplicationDegree;
         double averageDelay;
         do
@@ -675,7 +689,7 @@ public abstract class Replication
             SkipSimParameters.setReplicationDegree(replicationDegree);
             Algorithm(sgo, dataOwnerIndex);
             averageDelay = averageAccessDelay(sgo.getTG().mNodeSet, dataOwnerIndex);
-            System.out.println("Replication degree " + replicationDegree + " average delay " + averageDelay);
+            log.debug("Replication degree {} average delay {}", replicationDegree, averageDelay);
             if (averageDelay >= delayBound)
             {
                 replicationDegree++;
@@ -687,7 +701,8 @@ public abstract class Replication
         {
             double average = (double) IntStream.of(replicationDegreeDataBase).sum() / SkipSimParameters.getTopologies();
             double SD = SkipSimParameters.getStandardDeviation(replicationDegreeDataBase, average);
-            System.out.println("Delay bound simulation to obtain average bount of " + delayBound + " ms " + " \n Average replication degree " + average + "\n algorithm name " + algorithmName + " SD " + SD + " NOR = " + SkipSimParameters.getDataRequesterNumber());
+            log.info("Delay bound simulation to obtain average bount of {} ms - Average replication degree {} - algorithm name {} - SD {} - NOR = {}",
+                    delayBound, average, algorithmName, SD, SkipSimParameters.getDataRequesterNumber());
         }
     }
 
